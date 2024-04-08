@@ -4,7 +4,7 @@ fun getMinimumDailyGoal(){
 
 }
 
-fun editMinimumDailyGoal(){
+fun updateMinimumDailyGoal(){
 
 }
 
@@ -12,6 +12,6 @@ fun getMaximumDailyGoal(){
 
 }
 
-fun editMaximumDailyGoal(){
+fun updateMaximumDailyGoal(){
 
 }

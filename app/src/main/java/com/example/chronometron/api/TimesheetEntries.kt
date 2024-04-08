@@ -1,10 +1,12 @@
 package com.example.chronometron.api
 
-fun getTimesheetEntries(){
+import com.example.chronometron.types.TimesheetEntry
+
+fun getTimesheetEntries(): MutableList<TimesheetEntry>{
 
 }
 
-fun getTimesheetEntry(id: Int){
+fun getTimesheetEntry(id: Int): TimesheetEntry{
 
 }
 
@@ -12,7 +14,7 @@ fun createTimesheetEntry(){
 
 }
 
-fun editTimesheetEntry(){
+fun updateTimesheetEntry(){
 
 }
 

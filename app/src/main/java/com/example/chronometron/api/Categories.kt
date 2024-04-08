@@ -1,10 +1,12 @@
 package com.example.chronometron.api
 
-fun getCategories(){
+import com.example.chronometron.types.Category
+
+fun getCategories(): MutableList<Category> {
 
 }
 
-fun getCategory(id: Int){
+fun getCategory(id: Int): Category {
 
 }
 
@@ -12,7 +14,7 @@ fun createCategory(){
 
 }
 
-fun editCategory(){
+fun updatedCategory(){
 
 }
 

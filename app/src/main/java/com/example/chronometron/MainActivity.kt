@@ -30,6 +30,13 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
+fun BackendTesting(){
+
+}
+
+
+
+@Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
     Text(
         text = "Hello $name!",
