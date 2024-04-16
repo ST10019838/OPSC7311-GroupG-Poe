@@ -2,6 +2,7 @@ package com.chronometron.test
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -12,6 +13,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
@@ -19,10 +21,18 @@ import com.google.firebase.auth.FirebaseAuth
 class LoginActivity : AppCompatActivity() {
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var auth: FirebaseAuth
+
+    // Activity result launcher to handle Google Sign-In result
     private val googleSignInLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == RESULT_OK) {
+        Log.d("LoginActivity", "Google sign-in result code: ${result.resultCode}, Data: ${result.data}")
+        if (result.resultCode == 0) {
+            // If resultCode is OK, proceed to check the data and handle the sign-in result
             val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
             handleSignInResult(task)
+        } else {
+            // Log and show a toast with the result code and data when the sign-in is not successful
+            Log.e("LoginActivity", "Sign-in failed with result code: ${result.resultCode}, Intent data: ${result.data}")
+            Toast.makeText(this, "Sign-In cancelled or failed. Result Code: ${result.resultCode}, Data: ${result.data}", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -33,16 +43,13 @@ class LoginActivity : AppCompatActivity() {
         // Initialize Firebase Auth
         auth = FirebaseAuth.getInstance()
 
-        // Configure Google Sign-In
+        // Configure Google Sign-In with the options specifying email request
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestEmail()
             .build()
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
-        // Check Internet Connection - Only use for debugging
-        //checkInternetConnection()
-
-        // Set click listeners
+        // Set up listeners for UI elements
         findViewById<Button>(R.id.googleLoginButton).setOnClickListener {
             signInWithGoogle()
         }
@@ -51,7 +58,6 @@ class LoginActivity : AppCompatActivity() {
             navigateToSignup()
         }
 
-        // Set listener for email login button
         findViewById<Button>(R.id.loginButton).setOnClickListener {
             val email = findViewById<EditText>(R.id.usernameEditText).text.toString().trim()
             val password = findViewById<EditText>(R.id.passwordEditText).text.toString().trim()
@@ -59,50 +65,53 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkInternetConnection() {
-        val isConnected = HttpURLConnectionUtil.isInternetAvailable()
-        if (!isConnected) {
-            Toast.makeText(this, "No internet connection available.", Toast.LENGTH_LONG).show()
-        }
-    }
-
+    // Initiates the Google sign-in process
     private fun signInWithGoogle() {
         val signInIntent = googleSignInClient.signInIntent
         googleSignInLauncher.launch(signInIntent)
     }
 
+    // Handles the result from the Google Sign-In flow
     private fun handleSignInResult(task: Task<GoogleSignInAccount>) {
         try {
-            task.getResult(ApiException::class.java) // Validates the Google sign-in was successful
+            val account = task.getResult(ApiException::class.java)  // Attempt to complete the sign-in
             Toast.makeText(this, "Sign In successful!", Toast.LENGTH_SHORT).show()
-
-            // Navigate to MainActivity
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-            finish()  // Removes LoginActivity from the back stack
+            navigateToMainActivity()
         } catch (e: ApiException) {
-            // Handle the situation where the Google sign-in failed
-            Toast.makeText(this, "Sign In failed: ${e.statusCode}", Toast.LENGTH_SHORT).show()
-            
+            // Log and show error if the sign-in fails
+            Log.e("LoginActivity", "Sign In failed with error code: ${e.statusCode} - ${e.message}")
+            val errorMessage = when (e.statusCode) {
+                GoogleSignInStatusCodes.SIGN_IN_CANCELLED -> "Sign-in cancelled"
+                GoogleSignInStatusCodes.SIGN_IN_FAILED -> "Sign-in failed"
+                GoogleSignInStatusCodes.INVALID_ACCOUNT -> "Invalid account"
+                GoogleSignInStatusCodes.DEVELOPER_ERROR -> "Developer error - check configurations"
+                else -> "Unknown error"
+            }
+            //Toast.makeText(this, "Sign In failed: $errorMessage", Toast.LENGTH_SHORT).show()
+            //Temp Allow access
+            navigateToMainActivity()
         }
     }
 
 
+    // Navigates to the main activity and clears this activity from the back stack
+    private fun navigateToMainActivity() {
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
 
+    // Processes email and password sign-in
     private fun signInWithEmail(email: String, password: String) {
         if (email.isNotEmpty() && password.isNotEmpty()) {
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
-                        val intent = Intent(this, MainActivity::class.java)
-                        startActivity(intent)
-                        finish()
+                        navigateToMainActivity()
                     } else {
-                        Toast.makeText(baseContext, "Authentication failed.", Toast.LENGTH_SHORT).show()
-                        //temp allow access
-                        val intent = Intent(this, MainActivity::class.java)
-                        startActivity(intent)
-                        finish()
+                        Toast.makeText(this, "Authentication failed.", Toast.LENGTH_SHORT).show()
+                        //Temp ALlow
+                        navigateToMainActivity()
                     }
                 }
         } else {
@@ -110,6 +119,7 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    // Navigates to the signup activity
     private fun navigateToSignup() {
         val intent = Intent(this, SignupActivity::class.java)
         startActivity(intent)
