@@ -6,18 +6,88 @@
     android:layout_height="match_parent"
     tools:context=".ui.Customizer.CustomizerFragment">
 
-    <TextView
-        android:id="@+id/text_home"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        android:textColor="#FFFFFF"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent" />
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@color/dark_blue">
+
+        <!-- Section for Goals -->
+
+        <Button
+            android:id="@+id/button_goals_toggle"
+            android:layout_width="121dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:background="@color/dark_blue"
+            android:drawableStart="@drawable/ic_goals"
+            android:drawableEnd="@drawable/ic_expand"
+            android:drawablePadding="10dp"
+            android:gravity="center"
+            android:text="Goals"
+            android:textColor="@android:color/white" />
+
+        <TextView
+            android:id="@+id/text_goals"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Your goals here"
+            android:textColor="@android:color/white"
+            android:visibility="gone"/>
+
+        <!-- Section for Categories -->
+        <Button
+            android:id="@+id/button_categories_toggle"
+            android:layout_width="165dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:background="@color/dark_blue"
+            android:drawableStart="@drawable/ic_categories"
+            android:drawableEnd="@drawable/ic_expand"
+            android:drawablePadding="10dp"
+            android:gravity="center"
+            android:text="Categories"
+            android:textColor="@android:color/white" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_categories"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
+
+
+        <!-- Section for Date & Time -->
+        <Button
+            android:id="@+id/button_add_category"
+            style="@style/CustomButtonStyle"
+            android:layout_width="385dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="Add Category"
+            android:textColor="@android:color/white" />
+
+        <Button
+            android:id="@+id/button_date_time_toggle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:background="@color/dark_blue"
+            android:drawableStart="@drawable/ic_date_time"
+            android:drawableEnd="@drawable/ic_expand"
+            android:drawablePadding="10dp"
+            android:gravity="center"
+            android:text="Date &amp; Time"
+            android:textColor="@android:color/white" />
+
+        <TextView
+            android:id="@+id/text_date_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Your date and time picker here"
+            android:textColor="@android:color/white"
+            android:visibility="gone"/>
+
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
