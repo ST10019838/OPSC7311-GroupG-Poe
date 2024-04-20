@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:background="@color/dark_blue"
-            android:drawableStart="@drawable/ic_goals"
+            android:drawableStart="@drawable/ic_google_logo"
             android:drawableEnd="@drawable/ic_expand"
             android:drawablePadding="10dp"
             android:gravity="center"
