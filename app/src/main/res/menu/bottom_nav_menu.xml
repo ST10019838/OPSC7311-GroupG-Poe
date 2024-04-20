@@ -3,17 +3,17 @@
 
     <item
         android:id="@+id/navigation_customizer"
-        android:icon="@drawable/ic_customizer_black_24dp"
+        android:icon="@drawable/ic_customizer_white_24dp"
         android:title="Customizer" />
 
     <item
         android:id="@+id/navigation_time_entries"
-        android:icon="@drawable/ic_timeentries_black_24dp"
+        android:icon="@drawable/ic_timeentries_white_24dp"
         android:title="Time Entries" />
 
     <item
         android:id="@+id/navigation_statistics"
-        android:icon="@drawable/ic_statistics_black_24dp"
+        android:icon="@drawable/ic_statistics_white_24dp"
         android:title="Statistics" />
 
 </menu>
