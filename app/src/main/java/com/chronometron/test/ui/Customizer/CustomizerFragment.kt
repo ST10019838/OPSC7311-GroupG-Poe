@@ -10,7 +10,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.chronometron.test.databinding.FragmentCustomizerBinding
 import com.chronometron.test.R
 
-
 class CustomizerFragment : Fragment() {
 
     private var _binding: FragmentCustomizerBinding? = null
@@ -24,12 +23,12 @@ class CustomizerFragment : Fragment() {
         val root: View = binding.root
 
         setupSectionToggle(binding.buttonGoalsToggle, binding.textGoals)
-        setupSectionToggle(binding.buttonCategoriesToggle, binding.recyclerCategories)
+        setupSectionToggle(binding.buttonCategoriesToggle, binding.layoutCategories) // Use layoutCategories here
         setupSectionToggle(binding.buttonDateTimeToggle, binding.textDateTime)
 
         // Set initial icons
         setInitialIcons(binding.buttonGoalsToggle, binding.textGoals)
-        setInitialIcons(binding.buttonCategoriesToggle, binding.recyclerCategories)
+        setInitialIcons(binding.buttonCategoriesToggle, binding.layoutCategories) // Use layoutCategories here
         setInitialIcons(binding.buttonDateTimeToggle, binding.textDateTime)
 
         // Observing the LiveData from ViewModel (if needed)
@@ -51,8 +50,14 @@ class CustomizerFragment : Fragment() {
     }
 
     private fun updateIcon(button: Button, visibility: Int) {
-        val iconRes = if (visibility == View.VISIBLE) R.drawable.ic_collapse else R.drawable.ic_expand
-        button.setCompoundDrawablesWithIntrinsicBounds(0, 0, iconRes, 0)
+        val startIconRes = when(button.id) {
+            R.id.button_goals_toggle -> R.drawable.ic_goals
+            R.id.button_categories_toggle -> R.drawable.ic_categories
+            R.id.button_date_time_toggle -> R.drawable.ic_date_time
+            else -> 0  // Default to no icon if none of the IDs match
+        }
+        val endIconRes = if (visibility == View.VISIBLE) R.drawable.ic_collapse else R.drawable.ic_expand
+        button.setCompoundDrawablesWithIntrinsicBounds(startIconRes, 0, endIconRes, 0)
     }
 
     override fun onDestroyView() {

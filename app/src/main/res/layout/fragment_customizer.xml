@@ -15,19 +15,19 @@
         android:background="@color/dark_blue">
 
         <!-- Section for Goals -->
-
         <Button
             android:id="@+id/button_goals_toggle"
-            android:layout_width="121dp"
+            android:layout_width="182dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:background="@color/dark_blue"
-            android:drawableStart="@drawable/ic_google_logo"
+            android:drawableStart="@drawable/ic_goals"
             android:drawableEnd="@drawable/ic_expand"
             android:drawablePadding="10dp"
             android:gravity="center"
             android:text="Goals"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/white"
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/text_goals"
@@ -40,7 +40,7 @@
         <!-- Section for Categories -->
         <Button
             android:id="@+id/button_categories_toggle"
-            android:layout_width="165dp"
+            android:layout_width="248dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:background="@color/dark_blue"
@@ -49,28 +49,35 @@
             android:drawablePadding="10dp"
             android:gravity="center"
             android:text="Categories"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/white"
+            android:textSize="18sp" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_categories"
+        <LinearLayout
+            android:id="@+id/layout_categories"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"/>
+            android:orientation="vertical"
+            android:visibility="gone">
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_categories"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <Button
+                android:id="@+id/button_add_category"
+                style="@style/CustomButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Add Category"
+                android:layout_margin="16dp"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
 
         <!-- Section for Date & Time -->
         <Button
-            android:id="@+id/button_add_category"
-            style="@style/CustomButtonStyle"
-            android:layout_width="385dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="Add Category"
-            android:textColor="@android:color/white" />
-
-        <Button
             android:id="@+id/button_date_time_toggle"
-            android:layout_width="wrap_content"
+            android:layout_width="259dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:background="@color/dark_blue"
@@ -79,7 +86,8 @@
             android:drawablePadding="10dp"
             android:gravity="center"
             android:text="Date &amp; Time"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/white"
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/text_date_time"

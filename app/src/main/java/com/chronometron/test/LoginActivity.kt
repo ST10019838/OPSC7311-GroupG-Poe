@@ -18,6 +18,7 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 
+// LoginActivity manages the user sign-in process using both Google sign-in and email/password authentication.
 class LoginActivity : AppCompatActivity() {
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var auth: FirebaseAuth
@@ -87,6 +88,7 @@ class LoginActivity : AppCompatActivity() {
                 GoogleSignInStatusCodes.DEVELOPER_ERROR -> "Developer error - check configurations"
                 else -> "Unknown error"
             }
+            //Do not display this message - part2 only
             //Toast.makeText(this, "Sign In failed: $errorMessage", Toast.LENGTH_SHORT).show()
             //Temp Allow access
             navigateToMainActivity()
@@ -109,7 +111,8 @@ class LoginActivity : AppCompatActivity() {
                     if (task.isSuccessful) {
                         navigateToMainActivity()
                     } else {
-                        Toast.makeText(this, "Authentication failed.", Toast.LENGTH_SHORT).show()
+                        //Do not display this message - part2 only
+                        //Toast.makeText(this, "Authentication failed.", Toast.LENGTH_SHORT).show()
                         //Temp ALlow
                         navigateToMainActivity()
                     }

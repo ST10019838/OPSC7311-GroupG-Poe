@@ -101,6 +101,7 @@
     <!-- Google Login Button -->
     <Button
         android:id="@+id/googleLoginButton"
+        style="@style/WhiteFrameStyle"
         android:layout_width="163dp"
         android:layout_height="48dp"
         android:background="@drawable/button_border_only"
@@ -165,6 +166,7 @@
     <!-- GitHub Login Button -->
     <Button
         android:id="@+id/githubLoginButton"
+        style="@style/WhiteFrameStyle"
         android:layout_width="163dp"
         android:layout_height="48dp"
         android:background="@drawable/button_border_only"
