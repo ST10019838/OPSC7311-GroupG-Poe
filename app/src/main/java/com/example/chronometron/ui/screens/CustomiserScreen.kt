@@ -1,11 +1,9 @@
 package com.example.chronometron.ui.screens
 
 //import com.example.chronometron.api.getCategories
-import android.app.TimePickerDialog
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -13,68 +11,80 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TimeInput
-import androidx.compose.material3.TimePickerDefaults
-import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import cafe.adriel.voyager.navigator.tab.Tab
+import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.example.chronometron.types.Goal
 import com.example.chronometron.ui.composables.CategoryChip
 import com.example.chronometron.ui.composables.GoalInput
-import com.example.chronometron.ui.composables.ScreenLayout
-import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
-
-
 
 
 //
-@Composable
-fun CustomiserScreen() {
-//   Daily goal Section
 
-//   Categories Section
+object CustomiserTab : Tab {
+
+    override val options: TabOptions
+        @Composable
+        get() {
+            val title = "Customiser"
+            val icon = rememberVectorPainter(Icons.Default.Home)
+
+            return remember {
+                TabOptions(
+                    index = 0u,
+                    title = title,
+                    icon = icon
+                )
+            }
+        }
+
+    @Composable
+    override fun Content() {
+
+        //   Daily goal Section
+
+        //   Categories Section
 //
-//   Other customizeables
+//   Other customizables
 
-    ScreenLayout(displayFAB = true) {
-        Goals()
+        Column {
+            Goals()
 
-        Categories()
+            Categories()
+        }
+
+//        }
+
     }
-
 }
 
 //@Composable
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun Goals(){
+private fun Goals() {
     var isSectionOpen by rememberSaveable { mutableStateOf(true) }
 //    var isSectionOpen by rememberSaveable { mutableStateOf(true) }
 
-    var minimumGoal = Goal(0,0)
+    var minimumGoal = Goal(0, 0)
 
 
     val (value, setValue) = remember { mutableStateOf(0) }
@@ -90,7 +100,7 @@ private fun Goals(){
             textAlign = TextAlign.Center)
 
         AnimatedVisibility(visible = isSectionOpen) {
-            Row{
+            Row {
                 GoalInput(state = value, changeState = setValue)
             }
 
@@ -167,7 +177,7 @@ private fun Categories() {
             text = {
 
 
-                OutlinedTextField (
+                OutlinedTextField(
                     value = text,
                     onValueChange = { text = it },
                     label = { Text("Category Name") }
