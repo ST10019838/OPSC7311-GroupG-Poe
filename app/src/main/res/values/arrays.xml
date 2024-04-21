@@ -1,0 +1,12 @@
+<resources>
+    <array name="icon_names">
+        <item>@drawable/ic_fun</item>
+        <item>@drawable/ic_sport</item>
+        <item>@drawable/ic_work</item>
+        <item>@drawable/ic_coding</item>
+        <item>@drawable/ic_varsity</item>
+        <item>@drawable/ic_star</item>
+        <item>@drawable/ic_arrow</item>
+        <!-- Add all other icon resources here -->
+    </array>
+</resources>
