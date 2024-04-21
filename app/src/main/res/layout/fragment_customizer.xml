@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Root layout using ConstraintLayout for flexible positioning -->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -6,6 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.Customizer.CustomizerFragment">
 
+    <!-- Vertical LinearLayout for stacking UI components -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -14,7 +16,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:background="@color/dark_blue">
 
-        <!-- Section for Goals -->
+        <!-- Button to toggle visibility of goals section -->
         <Button
             android:id="@+id/button_goals_toggle"
             android:layout_width="182dp"
@@ -29,6 +31,7 @@
             android:textColor="@android:color/white"
             android:textSize="18sp" />
 
+        <!-- TextView to display goals, initially hidden -->
         <TextView
             android:id="@+id/text_goals"
             android:layout_width="match_parent"
@@ -37,7 +40,7 @@
             android:textColor="@android:color/white"
             android:visibility="gone"/>
 
-        <!-- Section for Categories -->
+        <!-- Button to toggle visibility of categories section -->
         <Button
             android:id="@+id/button_categories_toggle"
             android:layout_width="248dp"
@@ -52,29 +55,41 @@
             android:textColor="@android:color/white"
             android:textSize="18sp" />
 
-        <LinearLayout
-            android:id="@+id/layout_categories"
+        <!-- ScrollView to make the categories container scrollable -->
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone">
+            android:layout_height="match_parent"
+            android:fillViewport="true"> <!-- Ensures ScrollView expands to fill the space if content is smaller than screen -->
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_categories"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
-            <Button
-                android:id="@+id/button_add_category"
-                style="@style/CustomButtonStyle"
+            <!-- Layout to contain categories and the addition button, initially hidden -->
+            <LinearLayout
+                android:id="@+id/layout_categories"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Add Category"
-                android:layout_margin="16dp"
-                android:textColor="@android:color/white" />
-        </LinearLayout>
+                android:orientation="vertical"
+                android:visibility="gone">
 
-        <!-- Section for Date & Time -->
+                <!-- Container for dynamically added category items -->
+                <LinearLayout
+                    android:id="@+id/categoryItemsContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center_horizontal"/>
+
+                <!-- Button for adding new categories -->
+                <Button
+                    android:id="@+id/button_add_category"
+                    style="@style/CustomButtonStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Add Category"
+                    android:layout_margin="16dp"
+                    android:textColor="@android:color/white" />
+            </LinearLayout>
+        </ScrollView>
+
+        <!-- Button to toggle visibility of date & time section -->
         <Button
             android:id="@+id/button_date_time_toggle"
             android:layout_width="259dp"
@@ -89,6 +104,7 @@
             android:textColor="@android:color/white"
             android:textSize="18sp" />
 
+        <!-- TextView to display date & time options, initially hidden -->
         <TextView
             android:id="@+id/text_date_time"
             android:layout_width="match_parent"

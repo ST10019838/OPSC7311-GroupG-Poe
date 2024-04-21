@@ -1,30 +1,32 @@
 package com.chronometron.test.ui.Customizer
+// Import necessary Android and Kotlin libraries for UI and application functionality
+import android.app.Dialog  // Used to create new dialog windows
+import android.os.Bundle  // Allows passing data between activities as key-value pairs
+import android.content.Context  // Provides access to application-specific resources
+import android.view.LayoutInflater  // Instantiates layout XML file into its corresponding View objects
+import android.view.View  // Basic building block for user interface components
+import android.view.ViewGroup  // Special view that can contain other views (called children)
+import android.widget.*  // Widgets that are used within layouts, such as Button, TextView, etc.
+import androidx.core.content.ContextCompat  // Helper for accessing features in Context
+import androidx.fragment.app.Fragment  // A piece of an application's user interface or behavior that can be placed in an Activity
+import androidx.lifecycle.ViewModelProvider  // Provides ViewModels to a scope, such as a fragment or an activity
+import android.view.Gravity  // Constants used to specify the placement of a view within a ViewGroup
+import android.util.TypedValue  // Container for a dynamically typed data value
+import com.chronometron.test.databinding.FragmentCustomizerBinding  // Generated binding class from the layout file for easier component handling
+import com.chronometron.test.R  // Accessor to the resources
 
-import android.app.Dialog
-import android.os.Bundle
-import android.content.Context
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.*
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import com.chronometron.test.databinding.FragmentCustomizerBinding
-import com.chronometron.test.R
-
+// Define a Fragment for handling the customization part of the application
 class CustomizerFragment : Fragment() {
 
-    // Property to hold the binding for the views, ensuring safe access with non-null assertion.
-    private var _binding: FragmentCustomizerBinding? = null
-    private val binding get() = _binding!!
+    private var _binding: FragmentCustomizerBinding? = null  // Nullable binding variable for accessing the views
+    private val binding get() = _binding!!  // Non-nullable getter for the binding
 
-    // List to store categories throughout the application lifecycle.
-    private val categories = mutableListOf<Category>()
+    private val categories = mutableListOf<Category>()  // List to hold the categories dynamically
 
+    // Called to have the fragment instantiate its user interface view
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val customizerViewModel = ViewModelProvider(this)[CustomizerViewModel::class.java]
 
-        // Inflate the layout for this fragment using binding to ensure direct access to views.
         _binding = FragmentCustomizerBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
@@ -34,41 +36,75 @@ class CustomizerFragment : Fragment() {
         return root
     }
 
+
+    // Display categories in the user interface
+    private fun displayCategories() {
+        val categoryItemsLayout = binding.categoryItemsContainer
+        categoryItemsLayout.removeAllViews()  // Remove all views before adding new ones
+
+        val inflater = LayoutInflater.from(requireContext())  // Get the LayoutInflater from the context
+        categories.forEach { category ->
+            val categoryView = inflater.inflate(R.layout.category_item, categoryItemsLayout, false) as LinearLayout
+            configureCategoryView(categoryView, category)  // Configure the category view
+
+            val layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            layoutParams.gravity = Gravity.CENTER_HORIZONTAL  // Center the category views horizontally
+            layoutParams.bottomMargin = TypedValue.applyDimension(  // Apply bottom margin in dp
+                TypedValue.COMPLEX_UNIT_DIP, 16f, resources.displayMetrics
+            ).toInt()
+            categoryView.layoutParams = layoutParams
+
+            categoryItemsLayout.addView(categoryView)  // Add the category view to the layout
+        }
+    }
+
+    // Configure individual category views
+    private fun configureCategoryView(view: View, category: Category) {
+        val iconView = view.findViewById<ImageView>(R.id.category_icon)  // Find the ImageView
+        val textView = view.findViewById<TextView>(R.id.category_name)  // Find the TextView
+        iconView.setImageResource(category.iconResId)  // Set the icon from the category
+        textView.text = category.name  // Set the text from the category
+        textView.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))  // Set the text color
+    }
+
+    // Setup toggle buttons and their actions
     private fun setupSectionToggle() {
-        // Configures each toggle section with corresponding listeners and initial icons.
         listOf(
             Pair(binding.buttonGoalsToggle, binding.textGoals),
             Pair(binding.buttonCategoriesToggle, binding.layoutCategories),
             Pair(binding.buttonDateTimeToggle, binding.textDateTime)
         ).forEach { (button, view) ->
-            setupSectionToggle(button, view)
-            setInitialIcons(button, view)
+            setupSectionToggle(button, view)  // Setup toggle for each pair
+            setInitialIcons(button, view)  // Set initial icons based on state
         }
 
-        // Set up listener for the add category button to open the dialog.
         binding.buttonAddCategory.setOnClickListener {
-            showAddCategoryDialog()
+            showAddCategoryDialog()  // Show dialog to add a new category
         }
     }
 
+    // Observe changes from the ViewModel
     private fun observeViewModel(customizerViewModel: CustomizerViewModel) {
-        // Observes changes in LiveData from the ViewModel.
-        customizerViewModel.text.observe(viewLifecycleOwner) {
-            // React to data changes, if necessary.
-        }
+        customizerViewModel.text.observe(viewLifecycleOwner) { }
     }
 
+    // Toggle visibility of views and update icons accordingly
     private fun setupSectionToggle(toggleButton: Button, contentView: View) {
         toggleButton.setOnClickListener {
             contentView.visibility = if (contentView.visibility == View.GONE) View.VISIBLE else View.GONE
-            updateIcon(toggleButton, contentView.visibility)
+            updateIcon(toggleButton, contentView.visibility)  // Update the icon based on visibility
         }
     }
 
+    // Set initial icons based on visibility
     private fun setInitialIcons(button: Button, contentView: View) {
         updateIcon(button, contentView.visibility)
     }
 
+    // Update icons for buttons based on the visibility of the associated view
     private fun updateIcon(button: Button, visibility: Int) {
         val startIconRes = when (button.id) {
             R.id.button_goals_toggle -> R.drawable.ic_goals
@@ -80,73 +116,65 @@ class CustomizerFragment : Fragment() {
         button.setCompoundDrawablesWithIntrinsicBounds(startIconRes, 0, endIconRes, 0)
     }
 
-    // Shows a dialog to add a new category with a Spinner that displays both icons and text.
+    // Show a dialog to add a new category
     private fun showAddCategoryDialog() {
         val dialog = Dialog(requireContext()).apply {
-            setContentView(R.layout.dialog_add_category)
-            window?.let {
-                it.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-                it.setBackgroundDrawableResource(android.R.color.transparent)
+            setContentView(R.layout.dialog_add_category)  // Set the content view for the dialog
+            window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)  // Set layout parameters
+            window?.setBackgroundDrawableResource(android.R.color.transparent)  // Set the background to transparent
+        }
+
+        val nameEditText = dialog.findViewById<EditText>(R.id.edit_category_name)  // Get the EditText for name input
+        val iconSpinner = dialog.findViewById<Spinner>(R.id.spinnerCategoryIcon)  // Get the Spinner for selecting an icon
+        val icons = listOf(R.drawable.ic_fun, R.drawable.ic_sport, R.drawable.ic_work, R.drawable.ic_coding, R.drawable.ic_varsity, R.drawable.ic_star, R.drawable.ic_arrow)  // List of icons
+        val texts = listOf("Fun", "Sport", "Work", "Coding", "Varsity", "Star", "Arrow")  // Corresponding descriptions
+        val adapter = IconTextAdapter(requireContext(), icons, texts)  // Adapter for the Spinner
+        iconSpinner.adapter = adapter  // Set the adapter to the Spinner
+
+        dialog.findViewById<Button>(R.id.button_save_category).setOnClickListener {
+            val name = nameEditText.text.toString()  // Get the entered name
+            if (name.isEmpty()) {
+                nameEditText.error = "Name cannot be empty"  // Show error if name is empty
+            } else {
+                val iconResId = icons[iconSpinner.selectedItemPosition]  // Get the selected icon
+                categories.add(Category(name, iconResId))  // Add new category
+                dialog.dismiss()  // Dismiss the dialog
+                displayCategories()  // Refresh the category display
             }
         }
 
-        val nameEditText = dialog.findViewById<EditText>(R.id.edit_category_name)
-        val iconSpinner = dialog.findViewById<Spinner>(R.id.spinnerCategoryIcon)
-
-        // Setting up the spinner with icons and names
-        val icons = listOf(
-            R.drawable.ic_fun, R.drawable.ic_sport, R.drawable.ic_work,
-            R.drawable.ic_coding, R.drawable.ic_varsity, R.drawable.ic_star,
-            R.drawable.ic_arrow
-        )
-        val iconNames = listOf("Fun", "Sport", "Work", "Coding", "Varsity", "Star", "Arrow")
-        val adapter = IconTextAdapter(requireContext(), icons, iconNames)
-        iconSpinner.adapter = adapter
-
-        dialog.findViewById<Button>(R.id.button_save_category).setOnClickListener {
-            val name = nameEditText.text.toString()
-            val iconResId = icons[iconSpinner.selectedItemPosition]
-            categories.add(Category(name, iconResId))
-            dialog.dismiss()
-        }
-
         dialog.findViewById<TextView>(R.id.text_cancel).setOnClickListener {
-            dialog.dismiss()
+            dialog.dismiss()  // Dismiss the dialog on cancel
         }
 
-        dialog.show()
+        dialog.show()  // Show the dialog
     }
 
+    // Called when the fragment view is being destroyed
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null
+        _binding = null  // Clear the binding
     }
 }
 
-// Custom adapter for handling icons and text in the spinner.
-class IconTextAdapter(
-    context: Context,
-    private val icons: List<Int>,
-    private val texts: List<String>
-) : ArrayAdapter<String>(context, R.layout.spinner_item, texts) {
+// Adapter class for displaying icons with text in a Spinner
+class IconTextAdapter(context: Context, private val icons: List<Int>, private val texts: List<String>) : ArrayAdapter<String>(context, R.layout.spinner_item, texts) {
+    private val inflater: LayoutInflater = LayoutInflater.from(context)  // Obtain the LayoutInflater from context
 
-    private val inflater: LayoutInflater = LayoutInflater.from(context)
-
+    // Return the view for each item in the Spinner
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val view = convertView ?: inflater.inflate(R.layout.spinner_item, parent, false)
-        val iconView = view.findViewById<ImageView>(R.id.icon)
-        val textView = view.findViewById<TextView>(R.id.text)
+        val view = convertView ?: inflater.inflate(R.layout.spinner_item, parent, false)  // Inflate the spinner item layout
+        val iconView = view.findViewById<ImageView>(R.id.icon)  // Get the icon view
+        val textView = view.findViewById<TextView>(R.id.text)  // Get the text view
+        iconView.setImageResource(icons[position])  // Set the icon for the item
+        textView.text = texts[position]  // Set the text for the item
 
-        iconView.setImageResource(icons[position])
-        textView.text = texts[position]
-
-        return view
+        return view  // Return the composed view
     }
 
-    override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
-        return getView(position, convertView, parent)
-    }
+    // Return the dropdown view for each item in the Spinner
+    override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View = getView(position, convertView, parent)
 }
 
-// Data class to hold category information.
+// Data class for holding category information
 data class Category(val name: String, val iconResId: Int)
