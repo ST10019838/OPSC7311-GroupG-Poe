@@ -1,30 +1,25 @@
-package com.example.chronometron.ui.screens
+package com.example.chronometron.ui.tabs
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.res.stringResource
-import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
-import com.example.chronometron.R
-import com.example.chronometron.ui.composables.ScreenLayout
 
 
-object StatisticsTab : Tab {
+object TimeEntriesTab : Tab {
 
     override val options: TabOptions
         @Composable
         get() {
-            val title = "Statistics"
+            val title = "Time Entries"
             val icon = rememberVectorPainter(Icons.Default.Home)
 
             return remember {
                 TabOptions(
-                    index = 2u,
+                    index = 1u,
                     title = title,
                     icon = icon
                 )
@@ -33,11 +28,16 @@ object StatisticsTab : Tab {
 
     @Composable
     override fun Content() {
-//    // Category hours tab
+
+        //1.  list of entries
+//    var entries by remember(mutableStateOf<List<TimeEntries>>(getTimeEntries()))
+
+//   // 1.1. loop through entries in a list
+//      value.foreach {
+//          TimesheetListEntry(it)
+//      }
 //
-//    // Daily hours tab
-//        ScreenLayout(displayFAB = true) {
-            Text("Stats Screen")
-//        }
+//    // creation button & daily goal display
+
     }
 }
