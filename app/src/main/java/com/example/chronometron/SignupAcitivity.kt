@@ -1,0 +1,76 @@
+package com.example.chronometron
+
+import android.os.Bundle
+import android.widget.Toast
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.unit.dp
+import com.google.firebase.auth.FirebaseAuth
+
+class SignupActivity : ComponentActivity() {
+
+    private lateinit var auth: FirebaseAuth
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        auth = FirebaseAuth.getInstance() // Initialize Firebase Authentication
+
+        setContent {
+            SignupScreen(auth)
+        }
+    }
+}
+
+@Composable
+fun SignupScreen(auth: FirebaseAuth) {
+    val context = LocalContext.current
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text("Sign Up", style = MaterialTheme.typography.h6)
+        TextField(
+            value = email,
+            onValueChange = { email = it },
+            label = { Text("Email") }
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        TextField(
+            value = password,
+            onValueChange = { password = it },
+            label = { Text("Password") },
+            visualTransformation = PasswordVisualTransformation()
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(onClick = { createUser(email, password, auth, context) }) {
+            Text("Sign Up")
+        }
+    }
+}
+
+fun createUser(email: String, password: String, auth: FirebaseAuth, context: android.content.Context) {
+    if (email.isNotEmpty() && password.isNotEmpty()) {
+        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Toast.makeText(context, "Signup successful!", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(context, "Signup failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
+            }
+        }
+    } else {
+        Toast.makeText(context, "Email and password cannot be empty", Toast.LENGTH_SHORT).show()
+    }
+}
