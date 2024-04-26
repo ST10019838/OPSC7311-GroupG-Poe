@@ -16,6 +16,13 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        // The following line of code was taken from youtube
+        // Author: Tech Harvest BD  -  THBD
+        // Link: https://www.youtube.com/watch?v=ZtiaNrHKkJo
+        maven {
+
+            url = uri("https://jitpack.io")
+        }
     }
 }
 

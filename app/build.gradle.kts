@@ -96,7 +96,11 @@ dependencies {
     implementation("cafe.adriel.voyager:voyager-hilt:$voyagerVersion")
     // LiveData integration
     implementation("cafe.adriel.voyager:voyager-livedata:$voyagerVersion")
+
+
+    implementation("com.github.benjamin-luescher:compose-form:0.2.8")
 }
+
 
 //repositories {
 //    mavenCentral()

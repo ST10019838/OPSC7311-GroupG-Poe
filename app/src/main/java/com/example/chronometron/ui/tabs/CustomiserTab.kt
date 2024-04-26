@@ -36,7 +36,7 @@ import com.chargemap.compose.numberpicker.FullHours
 import com.chargemap.compose.numberpicker.Hours
 import com.example.chronometron.ui.composables.CategoryChip
 import com.example.chronometron.ui.composables.CollapsibleSection
-import com.example.chronometron.ui.composables.GoalSetter
+import com.example.chronometron.ui.composables.TimeSelector
 
 
 object CustomiserTab : Tab {
@@ -95,29 +95,29 @@ private fun Goals() {
 
     CollapsibleSection(heading = "Goals") {
         Column(verticalArrangement = Arrangement.spacedBy(35.dp)) {
-            GoalSetter(title = "Minimum Goal:", value = minimumGoal, onValueChange = {
-                minimumGoal = it
-            }, action = {
-                saveMinimumGoal()
-            }, actionIcon = {
-                Icon(
-                    Icons.Filled.Add,
-                    contentDescription = "Localized description",
-                    Modifier.size(InputChipDefaults.AvatarSize)
-                )
-            })
-
-            GoalSetter(title = "Maximum Goal:", value = maximumGoal, onValueChange = {
-                maximumGoal = it
-            }, action = {
-                saveMaximumGoal()
-            }, actionIcon = {
-                Icon(
-                    Icons.Filled.Add,
-                    contentDescription = "Localized description",
-                    Modifier.size(InputChipDefaults.AvatarSize)
-                )
-            })
+//            TimeSelector(title = "Minimum Goal:", value = minimumGoal, onValueChange = {
+//                minimumGoal = it
+//            }, action = {
+//                saveMinimumGoal()
+//            }, actionIcon = {
+//                Icon(
+//                    Icons.Filled.Add,
+//                    contentDescription = "Localized description",
+//                    Modifier.size(InputChipDefaults.AvatarSize)
+//                )
+//            })
+//
+//            TimeSelector(title = "Maximum Goal:", value = maximumGoal, onValueChange = {
+//                maximumGoal = it
+//            }, action = {
+//                saveMaximumGoal()
+//            }, actionIcon = {
+//                Icon(
+//                    Icons.Filled.Add,
+//                    contentDescription = "Localized description",
+//                    Modifier.size(InputChipDefaults.AvatarSize)
+//                )
+//            })
         }
     }
 }
