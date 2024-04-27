@@ -1,40 +1,41 @@
 plugins {
-    // Apply the Android application plugin to support Android app development.
+    // Applies the Android application plugin for building Android apps.
     alias(libs.plugins.androidApplication)
-    // Apply the Kotlin Android plugin for Kotlin support.
+    // Applies the Kotlin Android plugin to add support for Kotlin in the project.
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    // Applies the Google Services plugin, necessary for integrating Firebase and other Google services.
     id("com.google.gms.google-services")
 }
 
 android {
-    // Set the namespace used for resources and R class generation.
+    // Defines the unique namespace used for resources and R class generation.
     namespace = "com.example.chronometron"
-    // Set the compile SDK version used by your app.
+    // Sets the compile SDK version that your app will be compiled against.
     compileSdk = 34
 
     defaultConfig {
-        // Define the application ID that uniquely identifies your app on the device and in Google Play Store.
+        // Unique application ID that identifies your app on devices and in the Google Play Store.
         applicationId = "com.example.chronometron"
-        // Set the minimum SDK version. The app will not install on devices with an SDK lower than this.
+        // Minimum SDK version; the app will not run on devices with a lower SDK.
         minSdk = 24
-        // Set the target SDK version. Your app is optimized for running on devices with this SDK.
+        // Target SDK version; the app is tested and optimized for running on this SDK version.
         targetSdk = 34
-        // Define the version code of your app, which Google Play uses to identify the version.
+        // An integer value that represents the version of the application code, relative to other versions.
         versionCode = 1
-        // Define the version name of your app, which is displayed to users.
+        // A string value that represents the release version of the application as displayed to users.
         versionName = "1.0"
 
-        // Specify the AndroidJUnitRunner class as the default test instrumentation runner.
+        // Specifies which testing framework to use for running unit tests.
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        // Enable support for vector drawables on older Android versions.
+        // Enables support for vector drawables on API levels lower than 21.
         vectorDrawables.useSupportLibrary = true
     }
 
     buildTypes {
         release {
-            // Enable minification and resource shrinking for release builds to reduce APK size.
+            // Enables code shrinking, obfuscation, and optimization to reduce the APK size.
             isMinifyEnabled = false
-            // Specify the ProGuard rules file for code shrinking and obfuscation.
+            // Specifies the location of the ProGuard rules file.
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -42,31 +43,33 @@ android {
         }
     }
     compileOptions {
-        // Set Java compatibility to Java 8.
+        // Specifies Java version compatibility.
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        // Use JVM target 1.8 for Kotlin to enable certain features such as lambda expressions.
+        // Sets the version of Kotlin bytecode to be generated.
         jvmTarget = "1.8"
     }
     buildFeatures {
-        // Enable Jetpack Compose for this project.
+        // Enables Jetpack Compose, a modern toolkit for building native UI.
         compose = true
     }
 
     composeOptions {
-        // Specify the version of Kotlin compiler extensions for Jetpack Compose.
+        // Sets the Kotlin compiler version for Jetpack Compose.
         kotlinCompilerExtensionVersion = "1.5.1"
     }
-    packagingOptions {
-        // Exclude certain files to avoid build errors related to duplicate files.
-        resources.excludes += "/META-INF/{AL2.0,LGPL2.1}"
+    packaging {
+        resources {
+            // Excludes certain files that might be packaged into the APK under META-INF directory.
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
     }
 }
 
 dependencies {
-    // Include essential libraries for Android development and Jetpack Compose.
+    // Core library dependencies for Android development.
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -76,7 +79,8 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
-    // Include additional libraries for UI components and testing.
+
+    // UI component and testing libraries.
     implementation("com.chargemap.compose:numberpicker:1.0.3")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -86,7 +90,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    // Include navigation and dependency injection libraries.
+    // Libraries for navigation and dependency injection.
     val voyagerVersion = "1.0.0"
     implementation("cafe.adriel.voyager:voyager-navigator:$voyagerVersion")
     implementation("cafe.adriel.voyager:voyager-screenmodel:$voyagerVersion")
@@ -97,13 +101,20 @@ dependencies {
     implementation("cafe.adriel.voyager:voyager-hilt:$voyagerVersion")
     implementation("cafe.adriel.voyager:voyager-livedata:$voyagerVersion")
 
-    // Google Firebase and Play Services for authentication and analytics.
+    // Firebase and Play Services for authentication and analytics.
     implementation("com.google.android.gms:play-services-auth:21.1.0")
     implementation(platform("com.google.firebase:firebase-bom:32.8.1"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.android.material:material:1.11.0")
+
+    // Compose Form library for enhanced forms in Compose UI.
+    implementation("com.github.benjamin-luescher:compose-form:0.2.8")
+
+    implementation("androidx.compose.material:material-icons-core:1.6.6")
+    implementation("androidx.compose.material:material-icons-extended:1.6.6")
+
 }
 
-// Apply Google Services plugin at the end to ensure it configures the project based on the google-services.json file.
+// Applies the Google Services plugin to read the google-services.json file and integrate Firebase services.
 apply(plugin = "com.google.gms.google-services")

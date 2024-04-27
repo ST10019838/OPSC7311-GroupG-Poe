@@ -1,77 +1,108 @@
 package com.example.chronometron.ui.screens
 
-import android.content.Context
-import android.widget.Toast // Import Toast class
-
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.google.firebase.auth.FirebaseAuth
+import androidx.compose.ui.unit.sp
+import com.example.chronometron.R
 
 @Composable
-fun SignupScreen() {
-    val context = LocalContext.current
-    val auth = FirebaseAuth.getInstance()
-
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var isSigningUp by remember { mutableStateOf(false) }
-
-    Column(
+fun SignUpScreen() {
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .background(Color(0xFF03045E)) // Replace with your actual dark_blue color
+            .padding(16.dp)
     ) {
-        Text("Sign Up", style = MaterialTheme.typography.h5)
-        Spacer(modifier = Modifier.height(16.dp))
-        TextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Email") },
-            enabled = !isSigningUp
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        TextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Password") },
-            visualTransformation = PasswordVisualTransformation(),
-            enabled = !isSigningUp
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(
-            onClick = {
-                isSigningUp = true
-                createUser(email, password, auth, context) {
-                    isSigningUp = false
-                }
-            },
-            enabled = email.isNotEmpty() && password.isNotEmpty() && !isSigningUp
+        Column(
+            modifier = Modifier.align(Alignment.Center),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            Text("Sign Up")
-        }
-    }
-}
+            Text(
+                text = "Sign Up",
+                color = Color.White,
+                fontSize = 24.sp,
+                modifier = Modifier.padding(top = 32.dp)
+            )
 
-fun createUser(email: String, password: String, auth: FirebaseAuth, context: Context, onResult: () -> Unit) {
-    if (email.isNotEmpty() && password.isNotEmpty()) {
-        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
-            onResult()
-            if (task.isSuccessful) {
-                Toast.makeText(context, "Signup successful!", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(context, "Signup failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
+            Image(
+                painter = painterResource(id = R.drawable.ic_chronometron_logo),
+                contentDescription = "Chronometron Logo",
+                modifier = Modifier
+                    .size(width = 233.dp, height = 102.dp)
+                    .padding(top = 12.dp)
+            )
+
+            Spacer(modifier = Modifier.height(52.dp))
+
+            TextField(
+                value = "",
+                onValueChange = {},
+                label = { Text("Email") },
+                singleLine = true,
+                leadingIcon = { Icon(Icons.Filled.Email, contentDescription = "Email Icon") },
+                colors = TextFieldDefaults.textFieldColors(textColor = Color.White),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(40.dp))
+
+            TextField(
+                value = "",
+                onValueChange = {},
+                label = { Text("Password") },
+                singleLine = true,
+                leadingIcon = { Icon(Icons.Filled.Lock, contentDescription = "Password Icon") },
+                colors = TextFieldDefaults.textFieldColors(textColor = Color.White),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(40.dp))
+
+            TextField(
+                value = "",
+                onValueChange = {},
+                label = { Text("Confirm Password") },
+                singleLine = true,
+                leadingIcon = { Icon(Icons.Filled.Lock, contentDescription = "Password Icon") },
+                colors = TextFieldDefaults.textFieldColors(textColor = Color.White),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(56.dp))
+
+            Button(
+                onClick = { /* Perform sign up */ },
+                colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF00B4D8)), // Replace with your actual button color
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Sign Up")
             }
+
+            Spacer(modifier = Modifier.height(40.dp))
+
+            Text(
+                text = "Cancel",
+                color = Color.White,
+                modifier = Modifier.clickable(onClick = { /* Handle cancel */ })
+            )
         }
-    } else {
-        Toast.makeText(context, "Email and password cannot be empty", Toast.LENGTH_SHORT).show()
     }
 }

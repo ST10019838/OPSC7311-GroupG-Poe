@@ -9,6 +9,7 @@ pluginManagement {
         }
         mavenCentral()
         gradlePluginPortal()
+        maven(url = "https://jitpack.io") // Add JitPack repository
     }
 }
 dependencyResolutionManagement {
@@ -16,9 +17,9 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven(url = "https://jitpack.io") // Add JitPack repository
     }
 }
 
 rootProject.name = "ChronoMetron"
 include(":app")
- 

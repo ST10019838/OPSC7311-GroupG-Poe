@@ -9,6 +9,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="google_red">#DB4437</color>
     <color name="github_black">#333333</color>
-    <color name="dark_blue">#03045E</color>
+    <color name="dark_blue">#FF03045E</color>
     <color name="pure_white">#FFFFFF</color>
 </resources>

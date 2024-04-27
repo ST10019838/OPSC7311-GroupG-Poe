@@ -39,13 +39,13 @@ fun CategoryChip(
         },
         label = { Text(category) },
         selected = false,
-        avatar = {
-            Icon(
-                Icons.Filled.Person,
-                contentDescription = "Localized description",
-                Modifier.size(InputChipDefaults.AvatarSize)
-            )
-        },
+//        avatar = {
+//            Icon(
+//                Icons.Filled.Person,
+//                contentDescription = "Localized description",
+//                Modifier.size(InputChipDefaults.AvatarSize)
+//            )
+//        },
         trailingIcon = {
             Icon(
                 Icons.Default.Close,

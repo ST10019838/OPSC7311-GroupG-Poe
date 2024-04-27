@@ -22,14 +22,15 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.navigator.tab.CurrentTab
 import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabNavigator
-import com.example.chronometron.ui.screens.CustomiserTab
-import com.example.chronometron.ui.screens.StatisticsTab
-import com.example.chronometron.ui.screens.TimeEntriesTab
+import com.example.chronometron.ui.tabs.CustomiserTab
+import com.example.chronometron.ui.tabs.StatisticsTab
+import com.example.chronometron.ui.tabs.TimeEntriesTab
 import com.example.chronometron.ui.theme.ChronoMetronTheme
 
 class MainActivity : ComponentActivity() {
@@ -41,7 +42,7 @@ class MainActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
         setContent {
-            ChronoMetronTheme {
+            ChronoMetronTheme(darkTheme = false) {
                 // A surface container using the 'background' color from the theme
 //                Surface(
 //                    modifier = Modifier.fillMaxSize(),
@@ -86,7 +87,7 @@ class MainActivity : ComponentActivity() {
                             }
                         },
                         content = {
-                            Box(modifier = Modifier.padding(it)) {
+                            Box(modifier = Modifier.padding(it).padding(horizontal = 25.dp)) {
                                 CurrentTab()
                             }
                         }

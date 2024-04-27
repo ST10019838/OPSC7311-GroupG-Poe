@@ -138,7 +138,7 @@ private fun Categories() {
                     categories.forEachIndexed { index, item ->
                         CategoryChip(
                             item,
-                            modifier = Modifier.padding(horizontal = 5.dp),
+                            modifier = Modifier.padding(horizontal = 10.dp),
                             confirmationAction = {
                                 categories = categories.minusElement(item)
                             })

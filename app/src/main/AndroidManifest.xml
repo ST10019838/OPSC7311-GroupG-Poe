@@ -38,9 +38,10 @@
         <activity
             android:name=".SignupActivity"
             android:exported="true"
-            android:label="@string/signup_title"
-        android:theme="@style/Theme.ChronoMetron.NoActionBar">
-    </activity>
+            android:theme="@style/Theme.ChronoMetron.NoActionBar"
+            android:label="@string/signup_title">
+        </activity>
+
 
 </application>
 
