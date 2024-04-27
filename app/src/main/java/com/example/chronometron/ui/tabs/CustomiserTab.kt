@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.EditNote
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,8 +30,6 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
-import com.chargemap.compose.numberpicker.FullHours
-import com.chargemap.compose.numberpicker.Hours
 import com.example.chronometron.types.Category
 import com.example.chronometron.ui.composables.CategoryChip
 import com.example.chronometron.ui.composables.CollapsibleSection
@@ -46,7 +46,7 @@ object CustomiserTab : Tab {
         @Composable
         get() {
             val title = "Customiser"
-            val icon = rememberVectorPainter(Icons.Default.Home)
+            val icon = rememberVectorPainter(Icons.Outlined.EditNote)
 
             return remember {
                 TabOptions(
@@ -66,10 +66,12 @@ object CustomiserTab : Tab {
 //
 //   Other customizables
 
-        LazyColumn {
+        LazyColumn(verticalArrangement = Arrangement.spacedBy(25.dp)) {
             item {
                 Goals()
+            }
 
+            item {
                 Categories()
             }
         }

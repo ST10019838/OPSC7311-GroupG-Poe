@@ -2,7 +2,9 @@ package com.example.chronometron.ui.tabs
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.CallMade
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.sharp.AccessTime
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,7 +22,7 @@ object TimeEntriesTab : Tab {
         @Composable
         get() {
             val title = "Time Entries"
-            val icon = rememberVectorPainter(Icons.Default.Home)
+            val icon = rememberVectorPainter(Icons.Sharp.AccessTime)
 
             return remember {
                 TabOptions(
