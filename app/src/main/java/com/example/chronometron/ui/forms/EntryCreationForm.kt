@@ -1,5 +1,6 @@
 package com.example.chronometron.ui.forms
 
+import android.graphics.Bitmap
 import androidx.compose.runtime.mutableStateOf
 import ch.benlu.composeform.FieldState
 import ch.benlu.composeform.Form
@@ -11,6 +12,7 @@ import com.example.chronometron.types.Category
 import com.example.chronometron.ui.validators.IsRequiredValidator
 import com.example.chronometron.ui.validators.MaxLengthValidator
 import com.example.chronometron.ui.validators.TimeValidator
+import com.example.chronometron.ui.viewModels.UserSession
 import java.util.Date
 
 
@@ -74,11 +76,7 @@ class EntryCreationForm() : Form() {
     @FormField
     val category = FieldState(
         state = mutableStateOf<Category?>(null),
-        options = mutableListOf(
-            Category(id = 1, name = "Switzerland"),
-            Category(id = 2, name = "Switzerland1"),
-            Category(id = 3, name = "Switzerland2"),
-        ),
+        options = UserSession.categories.toMutableList(),
         optionItemFormatter = { "${it?.name}" },
         validators = mutableListOf(
             NotEmptyValidator()
@@ -87,6 +85,9 @@ class EntryCreationForm() : Form() {
 
     @FormField
     val photograph = FieldState(
-        state = mutableStateOf<String?>(null)
+        state = mutableStateOf<Bitmap?>(null),
+        validators = mutableListOf(
+            NotEmptyValidator()
+        )
     )
 }

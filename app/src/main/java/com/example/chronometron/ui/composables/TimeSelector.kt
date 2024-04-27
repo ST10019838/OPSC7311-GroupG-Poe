@@ -4,13 +4,12 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -38,9 +37,7 @@ class TimeSelector(
     visualTransformation: VisualTransformation = VisualTransformation.None,
     changed: ((v: Hours?) -> Unit)? = null,
 
-
-    action: () -> Unit = {},
-    actionIcon: @Composable () -> Unit = {}
+    val onValueChange: ((Hours) -> Unit)? = null
 ) : Field<Hours>(
     label = label,
     form = form,
@@ -61,54 +58,58 @@ class TimeSelector(
             return
         }
 
-
-        Column {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(label)
-
-//                FilledIconButton(onClick = action) {
-//                    actionIcon()
-//                }
-            }
-
-
-            HoursNumberPicker(
-                textStyle = TextStyle(color = MaterialTheme.colorScheme.primary),
-                dividersColor = MaterialTheme.colorScheme.primary,
-                leadingZero = true,
-                value = fieldState.state.value!!,
-                onValueChange = {
-                    onChange(it, form)
-                },
-                hoursDivider = {
-                    if(useSemicolonDivider){
-                        Text(
-                            textAlign = TextAlign.Center,
-                            text = ":",
-                            modifier = Modifier.padding(horizontal = 10.dp)
-                        )
-                    } else {
-                        Text(
-                            textAlign = TextAlign.Center,
-                            text = "hours",
-                            modifier = Modifier.padding(horizontal = 10.dp)
-                        )
-                    }
-                },
-                minutesDivider = {
-                    if(!useSemicolonDivider){
-                        Text(
-                            textAlign = TextAlign.Center,
-                            text = "minutes",
-                            modifier = Modifier.padding(horizontal = 10.dp)
-                        )
-                    }
-                }
+        Column(verticalArrangement = Arrangement.spacedBy(5.dp)) {
+            Text(
+                text = label,
+                modifier = Modifier
+                    .fillMaxWidth(),
+                textAlign = TextAlign.Center
             )
+
+//                HorizontalDivider(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .clip(RoundedCornerShape(100.dp))
+//                        .padding(top = 10.dp),
+//                    thickness = 2.dp
+//                )
+
+            OutlinedCard {
+                HoursNumberPicker(
+                    textStyle = TextStyle(color = MaterialTheme.colorScheme.primary),
+                    dividersColor = MaterialTheme.colorScheme.primary,
+                    leadingZero = true,
+                    value = fieldState.state.value!!,
+                    onValueChange = onValueChange ?: {
+                        onChange(it, form)
+                    },
+                    hoursDivider = {
+                        if (useSemicolonDivider) {
+                            Text(
+                                textAlign = TextAlign.Center,
+                                text = ":",
+                                modifier = Modifier.padding(horizontal = 10.dp)
+                            )
+                        } else {
+                            Text(
+                                textAlign = TextAlign.Center,
+                                text = "hours",
+                                modifier = Modifier.padding(horizontal = 10.dp)
+                            )
+                        }
+                    },
+                    minutesDivider = {
+                        if (!useSemicolonDivider) {
+                            Text(
+                                textAlign = TextAlign.Center,
+                                text = "minutes",
+                                modifier = Modifier.padding(horizontal = 10.dp)
+                            )
+                        }
+                    },
+                    modifier = Modifier.padding(horizontal = 15.dp),
+                )
+            }
 
             if (fieldState.hasError()) {
                 Text(

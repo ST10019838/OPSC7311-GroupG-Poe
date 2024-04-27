@@ -1,6 +1,6 @@
 package com.example.chronometron.types
 
-data class TimesheetEntry(
+data class TimeEntry(
     var id: Int,
 //    var date,
 //    var startTime,

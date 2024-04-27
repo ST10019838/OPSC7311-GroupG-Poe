@@ -1,6 +1,8 @@
 package com.example.chronometron.types
 
-data class Goal(
-    var hours: Int,
-    var minutes: Int
+import com.chargemap.compose.numberpicker.Hours
+
+data class Goals(
+    var minimumHours: Hours,
+    var maximumHours: Hours
 )
