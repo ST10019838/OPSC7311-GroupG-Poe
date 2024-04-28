@@ -59,8 +59,8 @@ class EntryCreationForm() : Form() {
 //    val duration = FieldState(
 //        state = mutableStateOf<Hours?>(
 //            FullHours(
-//                startTime.state.value!! - endTime.state.value!!,
-//                startTime.state.value!! - endTime.state.value?.minutes!!
+//                startTime.state.value?.hours!! - endTime.state.value?.hours!!,
+//                startTime.state.value?.minutes!! - endTime.state.value?.minutes!!
 //            )
 //        ),
 //        validators = mutableListOf(
@@ -85,9 +85,6 @@ class EntryCreationForm() : Form() {
 
     @FormField
     val photograph = FieldState(
-        state = mutableStateOf<Bitmap?>(null),
-        validators = mutableListOf(
-            NotEmptyValidator()
-        )
+        state = mutableStateOf<Bitmap?>(null)
     )
 }

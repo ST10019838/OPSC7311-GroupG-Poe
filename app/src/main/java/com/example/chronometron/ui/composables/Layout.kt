@@ -11,6 +11,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -98,6 +99,6 @@ private fun RowScope.TabNavigationItem(tab: Tab) {
                 fontSize = if (isSelected) TextUnit.Unspecified else 10.sp,
                 modifier = Modifier.alpha(if (!isSelected) 0.5f else 1f)
             )
-        }
+        },
     )
 }

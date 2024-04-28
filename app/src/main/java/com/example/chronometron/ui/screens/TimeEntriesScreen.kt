@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.chronometron.ui.viewModels.EntryCreationViewModel
+import com.example.chronometron.ui.viewModels.UserSession
 
 @Composable
 fun TimeEntriesScreen() {
@@ -40,8 +41,10 @@ fun TimeEntriesScreen() {
     Box(modifier = Modifier.fillMaxSize()) {
 
         LazyColumn {
-            items(entries) { entry ->
-                Text(entry)
+            items(UserSession.timeEntries) { entry ->
+                Text(entry.description)
+
+//                Text("${UserSession.timeEntries.size}")
             }
         }
 
@@ -52,6 +55,8 @@ fun TimeEntriesScreen() {
             Icon(Icons.Default.Add, contentDescription = "Add")
         }
     }
+
+
 
 
     if (viewModel.isDialogOpen) {
