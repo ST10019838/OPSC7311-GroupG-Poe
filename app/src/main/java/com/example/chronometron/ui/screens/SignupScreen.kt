@@ -68,7 +68,7 @@ fun SignupScreen(navController: NavController) {
                 imageVector = Icons.Filled.ArrowBack,
                 contentDescription = "Back",
                 modifier = Modifier
-                    .clickable { (context as Activity).finish() } // Finishes the activity to navigate back
+                    .clickable { navController.navigate("loginScreen") } // Finishes the activity to navigate back
                     .size(36.dp),
                 tint = Color.White // Set icon color to white
             )
@@ -126,7 +126,7 @@ fun SignupScreen(navController: NavController) {
             text = "Cancel",
             color = Color.White, // Set text color to white
             modifier = Modifier
-                .clickable { (context as Activity).finish() } // Finish the activity to cancel the operation
+                .clickable { navController.navigate("loginScreen") } // Finish the activity to cancel the operation
                 .align(Alignment.CenterHorizontally)
                 .padding(top = 16.dp),
             fontSize = 18.sp
