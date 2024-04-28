@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Image
-import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -68,12 +67,6 @@ class ImageCapturer(
                 value = if (fieldState.state.value == null) "Capture Image" else "Image Captured",
                 onValueChange = {},
                 readOnly = true,
-//                leadingIcon = {
-//                    Icon(
-//                        imageVector = Icons.Default.PhotoCamera,
-//                        contentDescription = "Camera",
-//                    )
-//                },
                 trailingIcon = {
                     if (fieldState.state.value != null) {
                         IconButton(
@@ -121,8 +114,12 @@ class ImageCapturer(
             ImagePreview(
                 image = fieldState.state.value?.asImageBitmap()!!,
                 onGoBack = { isImagePreviewOpen = false },
-                onClose = {
+                onFinish = {
                     isCameraOpen = false
+                    isImagePreviewOpen = false
+                },
+                onRemove = {
+                    onChange(null, form)
                     isImagePreviewOpen = false
                 })
         }

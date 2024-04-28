@@ -71,7 +71,6 @@ fun TimeEntriesCreationScreen(navigationAction: () -> Unit = {}, onCreate: () ->
                 TextButton(onClick = {
                     form.validate(true)
                     if (form.isValid) {
-                        // call creation function
                         UserSession.addTimeEntry(form)
                         navigationAction()
                     }
