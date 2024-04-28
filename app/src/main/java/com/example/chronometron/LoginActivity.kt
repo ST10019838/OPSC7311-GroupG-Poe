@@ -8,6 +8,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
+import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -17,6 +18,12 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.example.chronometron.ui.screens.LoginScreen
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import com.example.chronometron.ui.screens.SignupScreen
+
+
+
 
 // LoginActivity manages the user sign-in process using both Google sign-in and email/password authentication.
 class LoginActivity : ComponentActivity() {
@@ -49,12 +56,20 @@ class LoginActivity : ComponentActivity() {
 
         // Set content from Compose
         setContent {
-            LoginScreen(
-                onLoginClick = { email, password -> signInWithEmail(email, password) },
-                onGoogleSignInClick = { signInWithGoogle() },
-                onGithubSignInClick = { /* Implement GitHub login if necessary */ },
-                onSignUpClick = { navigateToSignup() }
-            )
+            val navController = rememberNavController()
+            NavHost(navController = navController, startDestination = "loginScreen") {
+                composable("loginScreen") {
+                    LoginScreen(
+                        onLoginClick = { email, password -> signInWithEmail(email, password) },
+                        onGoogleSignInClick = { signInWithGoogle() },
+                        onGithubSignInClick = { /* Implement GitHub login if necessary */ },
+                        onSignUpClick = { navController.navigate("signupScreen") }
+                    )
+                }
+                composable("signupScreen") {
+                    SignupScreen(navController)  // Ensure this function takes only NavController as parameter
+                }
+            }
         }
     }
 
@@ -75,19 +90,11 @@ class LoginActivity : ComponentActivity() {
     }
 
     private fun signInWithEmail(email: String, password: String) {
-        if (email.isNotEmpty() && password.isNotEmpty()) {
-            auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this) { task ->
-                if (task.isSuccessful) {
-                    navigateToMainActivity()
-                } else {
-                    //Temp allow - Part2
-                    //Toast.makeText(this, "Authentication failed.", Toast.LENGTH_SHORT).show()
-                    //Temp allow - Part2
-                    navigateToMainActivity()
-                }
-            }
+        if (CredentialsManager.validateCredential(email, password)) {
+            Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show()
+            navigateToMainActivity()
         } else {
-            Toast.makeText(this, "Please enter email and password", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Login failed: Invalid credentials.", Toast.LENGTH_SHORT).show()
         }
     }
 

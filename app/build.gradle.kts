@@ -78,6 +78,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation("androidx.navigation:navigation-compose:2.7.7")
 
 
     // UI component and testing libraries.
@@ -108,6 +109,7 @@ dependencies {
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.android.material:material:1.11.0")
     implementation("com.google.android.gms:play-services-identity:18.0.1")
+    implementation("com.google.android.gms:play-services-safetynet:18.0.1")
 
 
     // Compose Form library for enhanced forms in Compose UI.
@@ -115,6 +117,7 @@ dependencies {
 
     implementation("androidx.compose.material:material-icons-core:1.6.6")
     implementation("androidx.compose.material:material-icons-extended:1.6.6")
+    implementation("io.coil-kt:coil-compose:2.1.0")
 
 }
 
