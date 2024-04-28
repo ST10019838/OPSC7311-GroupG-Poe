@@ -28,12 +28,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.chargemap.compose.numberpicker.FullHours
 import com.chargemap.compose.numberpicker.Hours
+import com.example.chronometron.R
 import com.example.chronometron.ui.composables.CategoryChip
 import com.example.chronometron.ui.composables.CollapsibleSection
 import com.example.chronometron.ui.composables.TimeSelector
@@ -42,19 +45,17 @@ import com.example.chronometron.ui.composables.TimeSelector
 object CustomiserTab : Tab {
 
     override val options: TabOptions
-        @Composable
-        get() {
-            val title = "Customiser"
-            val icon = rememberVectorPainter(Icons.Default.Home)
+    @Composable
+    get() {
+        val title = "Customiser"
+        val iconPainter: Painter = painterResource(id = R.drawable.ic_customizer_white_24dp)
 
-            return remember {
-                TabOptions(
-                    index = 0u,
-                    title = title,
-                    icon = icon
-                )
-            }
-        }
+        return TabOptions(
+            index = 0u,
+            title = title,
+            icon = iconPainter
+        )
+    }
 
     @Composable
     override fun Content() {

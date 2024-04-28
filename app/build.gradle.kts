@@ -107,6 +107,8 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.android.material:material:1.11.0")
+    implementation("com.google.android.gms:play-services-identity:18.0.1")
+
 
     // Compose Form library for enhanced forms in Compose UI.
     implementation("com.github.benjamin-luescher:compose-form:0.2.8")

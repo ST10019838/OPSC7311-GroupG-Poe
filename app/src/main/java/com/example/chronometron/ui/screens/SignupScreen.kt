@@ -21,34 +21,39 @@ import com.example.chronometron.R
 
 @Composable
 fun SignUpScreen() {
+    // Overall container for the sign up screen.
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF03045E)) // Replace with your actual dark_blue color
+            .background(Color(0xFF03045E)) // Dark blue color for background.
             .padding(16.dp)
     ) {
+        // Column for aligning sign up components.
         Column(
             modifier = Modifier.align(Alignment.Center),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            // Title text for sign up screen.
             Text(
                 text = "Sign Up",
                 color = Color.White,
-                fontSize = 24.sp,
+                fontSize = 28.sp,
                 modifier = Modifier.padding(top = 32.dp)
             )
 
+            // Logo display.
             Image(
                 painter = painterResource(id = R.drawable.ic_chronometron_logo),
-                contentDescription = "Chronometron Logo",
+                contentDescription = "App Logo",
                 modifier = Modifier
-                    .size(width = 233.dp, height = 102.dp)
-                    .padding(top = 12.dp)
+                    .size(width = 233.dp, height = 150.dp)
+                    .padding(top = 96.dp)
             )
 
             Spacer(modifier = Modifier.height(52.dp))
 
+            // Email input field.
             TextField(
                 value = "",
                 onValueChange = {},
@@ -62,6 +67,7 @@ fun SignUpScreen() {
 
             Spacer(modifier = Modifier.height(40.dp))
 
+            // Password input field.
             TextField(
                 value = "",
                 onValueChange = {},
@@ -75,12 +81,13 @@ fun SignUpScreen() {
 
             Spacer(modifier = Modifier.height(40.dp))
 
+            // Confirm Password input field.
             TextField(
                 value = "",
                 onValueChange = {},
                 label = { Text("Confirm Password") },
                 singleLine = true,
-                leadingIcon = { Icon(Icons.Filled.Lock, contentDescription = "Password Icon") },
+                leadingIcon = { Icon(Icons.Filled.Lock, contentDescription = "Confirm Password Icon") },
                 colors = TextFieldDefaults.textFieldColors(textColor = Color.White),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 modifier = Modifier.fillMaxWidth()
@@ -88,9 +95,10 @@ fun SignUpScreen() {
 
             Spacer(modifier = Modifier.height(56.dp))
 
+            // Sign up button.
             Button(
-                onClick = { /* Perform sign up */ },
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF00B4D8)), // Replace with your actual button color
+                onClick = { /* Perform sign up operation */ },
+                colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF00B4D8)), // Light blue button color.
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Sign Up")
@@ -98,10 +106,11 @@ fun SignUpScreen() {
 
             Spacer(modifier = Modifier.height(40.dp))
 
+            // Cancel text with clickable modifier.
             Text(
                 text = "Cancel",
                 color = Color.White,
-                modifier = Modifier.clickable(onClick = { /* Handle cancel */ })
+                modifier = Modifier.clickable(onClick = { /* Handle cancel operation */ })
             )
         }
     }

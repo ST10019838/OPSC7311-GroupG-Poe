@@ -91,7 +91,7 @@ fun LoginScreen(onLoginClick: (String, String) -> Unit, onGoogleSignInClick: () 
             modifier = Modifier.padding(top = 32.dp)
         )
 
-        // Chronometro logo
+        // Chronometron logo
         Image(
             painter = painterResource(id = R.drawable.ic_chronometron_logo),
             contentDescription = "App Logo",

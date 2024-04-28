@@ -36,6 +36,7 @@ fun SignupScreen(auth: FirebaseAuth) {
     val context = LocalContext.current
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }  // State for confirm password
 
     Column(
         modifier = Modifier
@@ -63,8 +64,21 @@ fun SignupScreen(auth: FirebaseAuth) {
             visualTransformation = PasswordVisualTransformation()
         )
         Spacer(Modifier.height(16.dp))
+        OutlinedTextField(  // Adding confirm password field
+            value = confirmPassword,
+            onValueChange = { confirmPassword = it },
+            label = { Text("Confirm Password") },
+            visualTransformation = PasswordVisualTransformation()
+        )
+        Spacer(Modifier.height(16.dp))
         Button(
-            onClick = { createUser(email, password, auth, context) },
+            onClick = {
+                if (password == confirmPassword) {
+                    createUser(email, password, auth, context)
+                } else {
+                    Toast.makeText(context, "Passwords do not match", Toast.LENGTH_SHORT).show()
+                }
+            },
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
