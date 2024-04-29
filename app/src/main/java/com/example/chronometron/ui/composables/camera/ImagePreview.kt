@@ -1,4 +1,4 @@
-package com.example.chronometron.ui.camera
+package com.example.chronometron.ui.composables.camera
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement

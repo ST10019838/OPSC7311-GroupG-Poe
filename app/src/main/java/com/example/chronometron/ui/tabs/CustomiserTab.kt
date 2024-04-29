@@ -10,8 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.EditNote
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -33,7 +31,7 @@ import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.example.chronometron.types.Category
 import com.example.chronometron.ui.composables.CategoryChip
 import com.example.chronometron.ui.composables.CollapsibleSection
-import com.example.chronometron.ui.composables.TimeSelector
+import com.example.chronometron.ui.composables.formFields.TimeSelector
 import com.example.chronometron.ui.forms.GoalSettingForm
 import com.example.chronometron.ui.viewModels.UserSession
 import java.util.UUID

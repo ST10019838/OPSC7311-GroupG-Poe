@@ -1,4 +1,4 @@
-package com.example.chronometron.ui.camera
+package com.example.chronometron.ui.composables.camera
 
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView

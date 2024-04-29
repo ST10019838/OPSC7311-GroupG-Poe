@@ -30,8 +30,8 @@ import ch.benlu.composeform.fields.DateField
 import ch.benlu.composeform.fields.PickerField
 import ch.benlu.composeform.fields.TextField
 import ch.benlu.composeform.formatters.dateShort
-import com.example.chronometron.ui.camera.ImageCapturer
-import com.example.chronometron.ui.composables.TimeSelector
+import com.example.chronometron.ui.composables.formFields.ImageCapturer
+import com.example.chronometron.ui.composables.formFields.TimeSelector
 import com.example.chronometron.ui.forms.EntryCreationForm
 import com.example.chronometron.ui.viewModels.UserSession
 

@@ -9,9 +9,9 @@ import ch.benlu.composeform.validators.NotEmptyValidator
 import com.chargemap.compose.numberpicker.FullHours
 import com.chargemap.compose.numberpicker.Hours
 import com.example.chronometron.types.Category
-import com.example.chronometron.ui.validators.IsRequiredValidator
-import com.example.chronometron.ui.validators.MaxLengthValidator
-import com.example.chronometron.ui.validators.TimeValidator
+import com.example.chronometron.ui.forms.validators.IsRequiredValidator
+import com.example.chronometron.ui.forms.validators.MaxLengthValidator
+import com.example.chronometron.ui.forms.validators.TimeValidator
 import com.example.chronometron.ui.viewModels.UserSession
 import java.util.Date
 

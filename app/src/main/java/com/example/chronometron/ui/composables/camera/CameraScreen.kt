@@ -1,4 +1,4 @@
-package com.example.chronometron.ui.composables
+package com.example.chronometron.ui.composables.camera
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -40,7 +40,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
-import com.example.chronometron.ui.camera.CameraPreview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

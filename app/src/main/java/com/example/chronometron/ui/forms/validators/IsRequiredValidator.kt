@@ -1,4 +1,4 @@
-package com.example.chronometron.ui.validators
+package com.example.chronometron.ui.forms.validators
 import ch.benlu.composeform.Validator
 
 

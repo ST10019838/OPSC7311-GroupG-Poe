@@ -40,7 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.chronometron.types.TimeEntry
-import com.example.chronometron.ui.camera.ImagePreview
+import com.example.chronometron.ui.composables.camera.ImagePreview
 
 @Composable
 fun TimeEntryListItem(entry: TimeEntry) {

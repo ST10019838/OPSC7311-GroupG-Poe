@@ -1,4 +1,4 @@
-package com.example.chronometron.ui.composables
+package com.example.chronometron.ui.composables.formFields
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.ExperimentalFoundationApi

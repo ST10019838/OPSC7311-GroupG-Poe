@@ -1,4 +1,4 @@
-package com.example.chronometron.ui.camera
+package com.example.chronometron.ui.composables.formFields
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
@@ -30,7 +30,8 @@ import androidx.compose.ui.unit.dp
 import ch.benlu.composeform.Field
 import ch.benlu.composeform.FieldState
 import ch.benlu.composeform.Form
-import com.example.chronometron.ui.composables.CameraScreen
+import com.example.chronometron.ui.composables.camera.CameraScreen
+import com.example.chronometron.ui.composables.camera.ImagePreview
 
 //@Composable
 class ImageCapturer(
