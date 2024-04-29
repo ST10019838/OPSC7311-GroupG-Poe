@@ -140,6 +140,7 @@ fun TimeEntriesCreationScreen(navigationAction: () -> Unit = {}, onCreate: () ->
                         label = "Category*", form = form, fieldState = form.category
                     ).Field()
 
+
                     ImageCapturer(
                         label = "",
                         form = form,
