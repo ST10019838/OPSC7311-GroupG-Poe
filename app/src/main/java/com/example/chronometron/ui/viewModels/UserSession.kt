@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import ch.benlu.composeform.formatters.dateShort
 import com.chargemap.compose.numberpicker.FullHours
 import com.chargemap.compose.numberpicker.Hours
 import com.example.chronometron.types.Category
@@ -15,18 +16,19 @@ import java.util.UUID
 object UserSession : ViewModel() {
     var timeEntries by mutableStateOf<List<TimeEntry>>(emptyList())
 
-    fun getListOfTimeEntryDates(): Map<Date, MutableList<Int>> {
+    fun getListOfTimeEntryDates(): Map<String, MutableList<Int>> {
 //        var listOfDates = mutableListOf<Date>()
 
-        val datesAndEntriesMap = mutableMapOf<Date, MutableList<Int>>()
+        val datesAndEntriesMap = mutableMapOf<String, MutableList<Int>>()
         val sortedEntries = timeEntries.sortedByDescending { it.date }
 
         sortedEntries.forEachIndexed { index, entry ->
+            val date = dateShort(entry.date)
 
-            if (datesAndEntriesMap.containsKey(entry.date)) {
-                datesAndEntriesMap[entry.date]?.add(index)
+            if (datesAndEntriesMap.containsKey(date)) {
+                datesAndEntriesMap[date]?.add(index)
             } else {
-                datesAndEntriesMap[entry.date] = mutableListOf(index)
+                datesAndEntriesMap[dateShort(entry.date)] = mutableListOf(index)
             }
 
 //            listOfDates += entry.date
@@ -96,6 +98,23 @@ object UserSession : ViewModel() {
         private set
     var maximumGoal: Hours by mutableStateOf(FullHours(0, 0))
         private set
+
+
+    fun getTotalDailyDuration(date: Date? = Date(), formattedDate: String? = null): Hours {
+        var totalHours = 0
+        var totalMinutes = 0
+
+        val dateToUse = formattedDate ?: dateShort(date)
+
+        timeEntries.forEach { entry ->
+            if (dateToUse == dateShort(entry.date)) {
+                totalHours += entry.duration.hours
+                totalHours += entry.duration.minutes
+            }
+        }
+
+        return FullHours(totalHours, totalMinutes)
+    }
 
 
     fun addTimeEntry(form: EntryCreationForm) {
