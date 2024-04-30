@@ -22,15 +22,18 @@ import java.util.Date
 
 @Composable
 fun SelectablePeriodSearch(
+    value: Period,
     onSelectionChange: (Period?) -> Unit = { },
+    isOpen: Boolean = true
 ) {
-    var fromDate: Date? by remember { mutableStateOf(null) }
-    var toDate: Date? by remember { mutableStateOf(null) }
+//    var fromDate: Date? by remember { mutableStateOf(null) }
+//    var toDate: Date? by remember { mutableStateOf(null) }
 
 
     CollapsibleSection(
         heading = "Search",
-        icon = { Icon(Icons.Default.Search, contentDescription = "Search") }) {
+        icon = { Icon(Icons.Default.Search, contentDescription = "Search") },
+        isOpen = isOpen) {
         Row(
             modifier = Modifier,
             horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -38,19 +41,17 @@ fun SelectablePeriodSearch(
         ) {
             DatePicker(
                 label = "From",
-                value = fromDate,
+                value = value.fromDate,
                 onConfirm = {
-                    fromDate = it
-                    onSelectionChange(Period(fromDate, toDate))
+                    onSelectionChange(Period(it, value.toDate))
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
                 trailingIcon = {
-                    if (fromDate != null) {
+                    if (value.fromDate != null) {
                         IconButton(onClick = {
-                            fromDate = null
-                            onSelectionChange(Period(fromDate, toDate))
+                            onSelectionChange(Period(null, value.toDate))
                         }) {
                             Icon(Icons.Default.Remove, contentDescription = "Remove From Date")
                         }
@@ -67,19 +68,17 @@ fun SelectablePeriodSearch(
 
             DatePicker(
                 label = "To",
-                value = toDate,
+                value = value.toDate,
                 onConfirm = {
-                    toDate = it
-                    onSelectionChange(Period(fromDate, toDate))
+                    onSelectionChange(Period(value.fromDate, it))
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
                 trailingIcon = {
-                    if (toDate != null) {
+                    if (value.toDate != null) {
                         IconButton(onClick = {
-                            toDate = null
-                            onSelectionChange(Period(fromDate, toDate))
+                            onSelectionChange(Period(value.fromDate, null))
                         }) {
                             Icon(Icons.Default.Remove, contentDescription = "Remove To Date")
                         }

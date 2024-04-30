@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.TaskAlt
@@ -28,6 +29,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.chronometron.ui.composables.SelectablePeriodSearch
@@ -39,14 +41,15 @@ import com.example.chronometron.ui.viewModels.UserSession.onSelectedPeriodChange
 @Composable
 fun TimeEntriesScreen() {
     var viewModel = viewModel<EntryCreationViewModel>()
-    val timeEntries by UserSession.timeEntries.collectAsState()
-//    val isSearching by viewModel.isSearching.collectAsState()
     val datesAndEntries by UserSession.datesAndEntries.collectAsState()
+    val selectablePeriod by UserSession.selectedPeriod.collectAsState()
 
     // Needs to be a column
     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(5.dp)) {
         SelectablePeriodSearch(
-            onSelectionChange = { onSelectedPeriodChange(it?.fromDate, it?.toDate) }
+            value = selectablePeriod,
+            onSelectionChange = { onSelectedPeriodChange(it?.fromDate, it?.toDate) },
+            isOpen = false
         )
 
         LazyColumn(
@@ -121,6 +124,7 @@ fun TimeEntriesScreen() {
             HorizontalDivider(
                 modifier = Modifier
                     .fillMaxWidth(0.5f)
+                    .clip(RoundedCornerShape(100))
                     .align(Alignment.CenterHorizontally),
                 thickness = 2.dp
             )

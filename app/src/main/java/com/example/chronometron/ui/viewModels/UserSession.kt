@@ -24,7 +24,7 @@ object UserSession : ViewModel() {
     // Author: Philipp Lackner
     // Link: https://www.youtube.com/watch?v=CfL6Dl2_dAE
     private val _selectedPeriod = MutableStateFlow(Period())
-    private val selectedPeriod = _selectedPeriod.asStateFlow()
+    val selectedPeriod = _selectedPeriod.asStateFlow()
 
     private val _timeEntries = MutableStateFlow(listOf<TimeEntry>())
     val timeEntries = combine(_timeEntries) { entries ->
@@ -101,6 +101,36 @@ object UserSession : ViewModel() {
 
     private val _categories = MutableStateFlow(listOf<Category>())
     val categories = _categories.asStateFlow()
+
+
+    // Date, entry, categories
+    val categoryHours = combine(datesAndEntries, categories) { entries, categories ->
+        var categoryHoursMap = mutableMapOf<Category, Hours>()
+
+        entries.forEach {
+            it.value.forEach { id ->
+                val entry = timeEntries.value[id]
+                val category = entry.category
+
+                if (categoryHoursMap.containsKey(category)) {
+                    categoryHoursMap[category] = FullHours(
+                        hours = categoryHoursMap[category]?.hours?.plus(entry.duration.hours) ?: 0,
+                        minutes = categoryHoursMap[category]?.minutes?.plus(entry.duration.minutes)
+                            ?: 0
+                    )
+                } else {
+                    categoryHoursMap[category] =
+                        FullHours(entry.duration.hours, entry.duration.minutes)
+                }
+            }
+        }
+
+        categoryHoursMap.toMap()
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        mapOf<Category, Hours>()
+    )
 
     private val _minimumGoal = MutableStateFlow<Hours>(FullHours(0, 0))
     val minimumGoal = _minimumGoal.asStateFlow()
