@@ -15,12 +15,12 @@ class GoalSettingForm : Form() {
 
     @FormField
     val minimumGoal = FieldState(
-        state = mutableStateOf<Hours?>(UserSession.minimumGoal),
+        state = mutableStateOf<Hours?>(UserSession.minimumGoal.value),
     )
 
     @FormField
     val maximumGoal = FieldState(
-        state = mutableStateOf<Hours?>(UserSession.maximumGoal),
+        state = mutableStateOf<Hours?>(UserSession.maximumGoal.value),
     )
 
 }

@@ -1,10 +1,12 @@
 package com.example.chronometron.ui.composables.formFields
 
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.DatePicker
@@ -28,6 +30,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -52,6 +55,7 @@ fun DatePicker(
     placeholderText: String? = null,
     hasError: Boolean = false,
     errorText: MutableList<String> = mutableListOf(),
+    resetOnClose: Boolean = false,
 
     leadingIcon: @Composable() (() -> Unit)? = null,
     trailingIcon: @Composable() (() -> Unit)? = null,
@@ -88,6 +92,7 @@ fun DatePicker(
                         focusManager.clearFocus()
                     }
                 },
+            singleLine = true,
             value = dateShort(value),
             onValueChange = {},
             leadingIcon = leadingIcon,
@@ -101,7 +106,11 @@ fun DatePicker(
             interactionSource = interactionSource ?: remember { MutableInteractionSource() },
             visualTransformation = visualTransformation,
             placeholder = {
-                Text(text = placeholderText ?: "")
+                Text(
+                    text = placeholderText ?: "",
+                    maxLines = 1,
+                    modifier = Modifier.horizontalScroll(rememberScrollState())
+                )
             }
         )
 
@@ -116,7 +125,8 @@ fun DatePicker(
 
 
     if (isPickerOpen) {
-        val datePickerState = rememberDatePickerState(value?.time?.milliseconds?.inWholeMilliseconds)
+        val datePickerState =
+            rememberDatePickerState(if (!resetOnClose) value?.time?.milliseconds?.inWholeMilliseconds else null)
         val confirmEnabled = remember {
             derivedStateOf { datePickerState.selectedDateMillis != null }
         }
@@ -150,7 +160,8 @@ fun DatePicker(
             }
         ) {
             DatePicker(
-                state = datePickerState
+                state = datePickerState,
+                showModeToggle = false
             )
         }
     }

@@ -24,29 +24,42 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.chronometron.ui.composables.SelectablePeriodSearch
 import com.example.chronometron.ui.composables.TimeEntryListItem
 import com.example.chronometron.ui.viewModels.EntryCreationViewModel
 import com.example.chronometron.ui.viewModels.UserSession
-import java.util.Date
+import com.example.chronometron.ui.viewModels.UserSession.onSelectedPeriodChange
 
 @Composable
 fun TimeEntriesScreen() {
     var viewModel = viewModel<EntryCreationViewModel>()
-
+    val timeEntries by UserSession.timeEntries.collectAsState()
+//    val isSearching by viewModel.isSearching.collectAsState()
+    val datesAndEntries by UserSession.datesAndEntries.collectAsState()
 
     // Needs to be a column
     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(5.dp)) {
+        SelectablePeriodSearch(
+            onSelectionChange = { onSelectedPeriodChange(it?.fromDate, it?.toDate) }
+        )
+
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(25.dp),
             modifier = Modifier
                 .fillMaxHeight()
                 .weight(1f)
         ) {
-            items(UserSession.getListOfTimeEntryDates().toList()) {
+//            items(timeEntries){
+//                Text(it.description)
+//            }
+
+            items(datesAndEntries.toList()) {
 
                 var totalDateMinuteDuration = 0
                 var totalDateHourDuration = 0
@@ -55,7 +68,7 @@ fun TimeEntriesScreen() {
                 // totals and displaying the records simultaneously, however that did not
                 // seem to work, leaving us with having to iterate over the list twice
                 it.second.forEach { id ->
-                    val entry = UserSession.timeEntries[id]
+                    val entry = UserSession.timeEntries.value[id]
 
                     totalDateHourDuration += entry.duration.hours
                     totalDateMinuteDuration += entry.duration.minutes
@@ -75,15 +88,15 @@ fun TimeEntriesScreen() {
                         Spacer(Modifier.size(ButtonDefaults.IconSpacing))
 
                         // Make a util function
-                        if (dateDuration.hours >= UserSession.minimumGoal.hours &&
-                            dateDuration.minutes >= UserSession.minimumGoal.minutes
-                        ) {
-                            Icon(
-                                Icons.Default.TaskAlt,
-                                contentDescription = "Goal Stamp",
-                                modifier = Modifier.size(20.dp)
-                            )
-                        }
+//                        if (dateDuration.hours >= UserSession.minimumGoal.hours &&
+//                            dateDuration.minutes >= UserSession.minimumGoal.minutes
+//                        ) {
+//                            Icon(
+//                                Icons.Default.TaskAlt,
+//                                contentDescription = "Goal Stamp",
+//                                modifier = Modifier.size(20.dp)
+//                            )
+//                        }
                     }
 
                     Text(
@@ -94,7 +107,7 @@ fun TimeEntriesScreen() {
 
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     it.second.forEach { id ->
-                        TimeEntryListItem(entry = UserSession.timeEntries[id])
+                        TimeEntryListItem(entry = UserSession.timeEntries.value[id])
                     }
                 }
             }
@@ -145,16 +158,16 @@ fun TimeEntriesScreen() {
 @Composable
 private fun DailyGoalDisplay() {
     val totalDailyDuration = UserSession.getTotalDailyDuration()
-    val minimumDailyGoal = UserSession.minimumGoal
-    val maximumDailyGoal = UserSession.maximumGoal
+    val minimumDailyGoal = UserSession.minimumGoal.collectAsState()
+    val maximumDailyGoal = UserSession.maximumGoal.collectAsState()
 
     var goalToDisplay =
-        if (totalDailyDuration.hours < minimumDailyGoal.hours &&
-            totalDailyDuration.minutes < minimumDailyGoal.minutes
+        if (totalDailyDuration.hours < minimumDailyGoal.value.hours &&
+            totalDailyDuration.minutes < minimumDailyGoal.value.minutes
         ) {
-            "${minimumDailyGoal.hours}h ${minimumDailyGoal.minutes}m"
+            "${minimumDailyGoal.value.hours}h ${minimumDailyGoal.value.minutes}m"
         } else {
-            "${maximumDailyGoal.hours}h ${maximumDailyGoal.minutes}m"
+            "${maximumDailyGoal.value.hours}h ${maximumDailyGoal.value.minutes}m"
         }
 
     Column(

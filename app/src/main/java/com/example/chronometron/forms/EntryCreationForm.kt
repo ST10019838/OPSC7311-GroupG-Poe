@@ -1,6 +1,7 @@
 package com.example.chronometron.forms
 
 import android.graphics.Bitmap
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import ch.benlu.composeform.FieldState
 import ch.benlu.composeform.Form
@@ -76,7 +77,7 @@ class EntryCreationForm() : Form() {
     @FormField
     val category = FieldState(
         state = mutableStateOf<Category?>(null),
-        options = UserSession.categories.toMutableList(),
+        options = UserSession.categories.value.toMutableList(),
         optionItemFormatter = { "${it?.name}" },
         validators = mutableListOf(
             NotEmptyValidator()

@@ -1,41 +1,113 @@
 package com.example.chronometron.ui.viewModels
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import ch.benlu.composeform.formatters.dateShort
 import com.chargemap.compose.numberpicker.FullHours
 import com.chargemap.compose.numberpicker.Hours
-import com.example.chronometron.types.Category
-import com.example.chronometron.types.TimeEntry
 import com.example.chronometron.forms.EntryCreationForm
+import com.example.chronometron.types.Category
+import com.example.chronometron.types.Period
+import com.example.chronometron.types.TimeEntry
+import com.example.chronometron.utils.areShortDatesEqual
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import java.util.Date
 import java.util.UUID
 
 object UserSession : ViewModel() {
-    var timeEntries by mutableStateOf<List<TimeEntry>>(emptyList())
+    // The following search functionality was adapted from youtube
+    // Author: Philipp Lackner
+    // Link: https://www.youtube.com/watch?v=CfL6Dl2_dAE
+    private val _selectedPeriod = MutableStateFlow(Period())
+    private val selectedPeriod = _selectedPeriod.asStateFlow()
 
-    fun getListOfTimeEntryDates(): Map<String, MutableList<Int>> {
-//        var listOfDates = mutableListOf<Date>()
+    private val _timeEntries = MutableStateFlow(listOf<TimeEntry>())
+    val timeEntries = combine(_timeEntries) { entries ->
+        entries[0].sortedByDescending { entry -> entry.date }
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        _timeEntries.value
+    )
 
+
+    private val _datesAndEntries = combine(timeEntries) { sortedEntries ->
         val datesAndEntriesMap = mutableMapOf<String, MutableList<Int>>()
-        val sortedEntries = timeEntries.sortedByDescending { it.date }
 
-        sortedEntries.forEachIndexed { index, entry ->
+        sortedEntries[0].forEachIndexed { index, entry ->
             val date = dateShort(entry.date)
-
             if (datesAndEntriesMap.containsKey(date)) {
                 datesAndEntriesMap[date]?.add(index)
             } else {
                 datesAndEntriesMap[dateShort(entry.date)] = mutableListOf(index)
             }
-
-//            listOfDates += entry.date
         }
 
-        return datesAndEntriesMap
-    }
+        datesAndEntriesMap.toMap()
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        mapOf<String, MutableList<Int>>()
+    )
+
+
+    val datesAndEntries =
+        selectedPeriod.combine(_datesAndEntries) { selectedPeriod, datesAndEntries ->
+            if (selectedPeriod.fromDate == null && selectedPeriod.toDate == null) {
+                datesAndEntries
+            } else {
+                val onlyFromDate = selectedPeriod.fromDate != null && selectedPeriod.toDate == null
+                val onlyToDate = selectedPeriod.fromDate == null && selectedPeriod.toDate != null
+
+                // To explain the complex looking if statement:
+                // - IF "ToDate" is empty: show all dates before or equal to "ToDate"
+                // - IF "FromDate" is empty: show all entries after or equal to "FromDate"
+                // - Otherwise show all entries between (inclusive) the "FromDate" and "ToDate"
+                datesAndEntries.filter { item ->
+                    if (onlyToDate) {
+                        Date(item.key).before(selectedPeriod.toDate) ||
+                                areShortDatesEqual(
+                                    shortDate = item.key,
+                                    date = selectedPeriod.toDate!!
+                                )
+                    } else if (onlyFromDate) {
+                        Date(item.key).after(selectedPeriod.fromDate) ||
+                                areShortDatesEqual(
+                                    shortDate = item.key,
+                                    date = selectedPeriod.fromDate!!
+                                )
+                    } else Date(item.key).after(selectedPeriod.fromDate) &&
+                            Date(item.key).before(selectedPeriod.toDate) ||
+                            areShortDatesEqual(
+                                shortDate = item.key,
+                                date = selectedPeriod.fromDate!!
+                            ) ||
+                            areShortDatesEqual(
+                                shortDate = item.key,
+                                date = selectedPeriod.toDate!!
+                            )
+                }
+            }
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            _datesAndEntries.value
+        )
+
+    private val _categories = MutableStateFlow(listOf<Category>())
+    val categories = _categories.asStateFlow()
+
+    private val _minimumGoal = MutableStateFlow<Hours>(FullHours(0, 0))
+    val minimumGoal = _minimumGoal.asStateFlow()
+
+    private val _maximumGoal = MutableStateFlow<Hours>(FullHours(0, 0))
+    val maximumGoal = _maximumGoal.asStateFlow()
+
 
     init {
         val startTimeValue = FullHours(1, 0)
@@ -55,8 +127,7 @@ object UserSession : ViewModel() {
             photograph = null
         )
 
-        timeEntries += newTimeEntry
-
+        _timeEntries.update { it + newTimeEntry }
 
         val startTimeValue2 = FullHours(1, 0)
         val endTimeValue2 = FullHours(2, 0)
@@ -75,38 +146,26 @@ object UserSession : ViewModel() {
             photograph = null
         )
 
-        timeEntries += newTimeEntry2
+        _timeEntries.update { it + newTimeEntry2 }
+        _timeEntries.update { it + newTimeEntry2 }
+        _timeEntries.update { it + newTimeEntry2 }
 
-        timeEntries += newTimeEntry
-        timeEntries += newTimeEntry2
-
-        timeEntries += newTimeEntry2
-        timeEntries += newTimeEntry2
-        timeEntries += newTimeEntry2
-        timeEntries += newTimeEntry2
-
-
-        timeEntries = timeEntries.sortedByDescending { it.date }
     }
 
 
-    var categories by mutableStateOf<List<Category>>(emptyList())
-        private set
+    fun onSelectedPeriodChange(fromDate: Date?, toDate: Date?) {
+        _selectedPeriod.value = Period(fromDate, toDate)
+    }
 
 
-    var minimumGoal: Hours by mutableStateOf(FullHours(0, 0))
-        private set
-    var maximumGoal: Hours by mutableStateOf(FullHours(0, 0))
-        private set
-
-
+    // *Maybe convert to state
     fun getTotalDailyDuration(date: Date? = Date(), formattedDate: String? = null): Hours {
         var totalHours = 0
         var totalMinutes = 0
 
         val dateToUse = formattedDate ?: dateShort(date)
 
-        timeEntries.forEach { entry ->
+        timeEntries.value.forEach { entry ->
             if (dateToUse == dateShort(entry.date)) {
                 totalHours += entry.duration.hours
                 totalHours += entry.duration.minutes
@@ -135,26 +194,27 @@ object UserSession : ViewModel() {
             photograph = form.photograph.state.value
         )
 
-        timeEntries += newTimeEntry
+//        timeEntries += newTimeEntry
+
+        _timeEntries.update { it + newTimeEntry }
     }
 
+
     fun updateMinimumGoal(goal: Hours) {
-        minimumGoal = goal
+        _minimumGoal.update { goal }
     }
 
     fun updateMaximumGoal(goal: Hours) {
-        maximumGoal = goal
+        _maximumGoal.update { goal }
     }
 
+
     fun addCategory(category: Category) {
-//        categories = categories.plus(text)
-        categories += category
+        _categories.update { it + category }
     }
 
     fun removeCategory(category: Category) {
-        categories = categories.minusElement(category)
+        _categories.update { it.minusElement(category) }
     }
-//    private val _timeEntries = MutableStateFlow(GameUiState())
-//    val uiState: StateFlow<GameUiState> = _timeEntries.asStateFlow()
 
 }

@@ -18,6 +18,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -84,12 +85,15 @@ object CustomiserTab : Tab {
 @Composable
 private fun Goals() {
     val form = GoalSettingForm()
+    val minGoal = UserSession.minimumGoal.collectAsState()
+    val maxGoal = UserSession.maximumGoal.collectAsState()
+
 
     CollapsibleSection(heading = "Daily Goals") {
         Column(verticalArrangement = Arrangement.spacedBy(35.dp)) {
             TimeSelector(
                 label = "Minimum Goal",
-                value = form.minimumGoal.state.value,
+                value = minGoal.value,
                 onChange = {
                     UserSession.updateMinimumGoal(it)
                 }
@@ -97,7 +101,7 @@ private fun Goals() {
 
             TimeSelector(
                 label = "Maximum Goal",
-                value = form.maximumGoal.state.value,
+                value = maxGoal.value,
                 onChange = {
                     UserSession.updateMaximumGoal(it)
                 }
@@ -112,7 +116,7 @@ private fun Goals() {
 @Composable
 private fun Categories() {
     var isDialogOpen by rememberSaveable { mutableStateOf(false) }
-    val categories = UserSession.categories
+    val categories = UserSession.categories.collectAsState()
 
     CollapsibleSection(heading = "Categories") {
         Column {
@@ -122,7 +126,7 @@ private fun Categories() {
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                categories.forEachIndexed { index, item ->
+                categories.value.forEachIndexed { index, item ->
                     CategoryChip(
                         item.name,
                         modifier = Modifier.padding(horizontal = 5.dp),
