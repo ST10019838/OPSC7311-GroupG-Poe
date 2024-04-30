@@ -1,4 +1,4 @@
-package com.example.chronometron.ui.forms
+package com.example.chronometron.forms
 
 import androidx.compose.runtime.mutableStateOf
 import ch.benlu.composeform.FieldState

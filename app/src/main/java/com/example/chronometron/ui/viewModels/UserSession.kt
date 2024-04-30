@@ -9,7 +9,7 @@ import com.chargemap.compose.numberpicker.FullHours
 import com.chargemap.compose.numberpicker.Hours
 import com.example.chronometron.types.Category
 import com.example.chronometron.types.TimeEntry
-import com.example.chronometron.ui.forms.EntryCreationForm
+import com.example.chronometron.forms.EntryCreationForm
 import java.util.Date
 import java.util.UUID
 

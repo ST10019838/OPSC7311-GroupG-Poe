@@ -1,11 +1,6 @@
 package com.example.chronometron.ui.tabs
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Analytics
-import androidx.compose.material.icons.filled.BarChart
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.outlined.Analytics
-import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material.icons.sharp.BarChart
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,7 +33,8 @@ object StatisticsTab : Tab {
 //
 //    // Daily hours tab
 //        ScreenLayout(displayFAB = true) {
-            Text("Stats Screen")
+        Text("Stats Screen")
+
 //        }
     }
 }

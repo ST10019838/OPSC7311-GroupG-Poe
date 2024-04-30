@@ -1,4 +1,4 @@
-package com.example.chronometron.ui.forms.validators
+package com.example.chronometron.forms.validators
 
 import ch.benlu.composeform.Validator
 import com.chargemap.compose.numberpicker.Hours

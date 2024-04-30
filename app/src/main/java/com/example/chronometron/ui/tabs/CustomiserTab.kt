@@ -32,7 +32,7 @@ import com.example.chronometron.types.Category
 import com.example.chronometron.ui.composables.CategoryChip
 import com.example.chronometron.ui.composables.CollapsibleSection
 import com.example.chronometron.ui.composables.formFields.TimeSelector
-import com.example.chronometron.ui.forms.GoalSettingForm
+import com.example.chronometron.forms.GoalSettingForm
 import com.example.chronometron.ui.viewModels.UserSession
 import java.util.UUID
 
@@ -88,22 +88,20 @@ private fun Goals() {
     CollapsibleSection(heading = "Daily Goals") {
         Column(verticalArrangement = Arrangement.spacedBy(35.dp)) {
             TimeSelector(
-                label = "Minimum Goal:",
-                form = form,
-                fieldState = form.minimumGoal,
-                onValueChange = {
+                label = "Minimum Goal",
+                value = form.minimumGoal.state.value,
+                onChange = {
                     UserSession.updateMinimumGoal(it)
                 }
-            ).Field()
+            )
 
             TimeSelector(
-                label = "Maximum Goal:",
-                form = form,
-                fieldState = form.maximumGoal,
-                onValueChange = {
+                label = "Maximum Goal",
+                value = form.maximumGoal.state.value,
+                onChange = {
                     UserSession.updateMaximumGoal(it)
                 }
-            ).Field()
+            )
 
         }
     }
