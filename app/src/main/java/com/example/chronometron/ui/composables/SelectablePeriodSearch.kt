@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
@@ -27,7 +28,9 @@ fun SelectablePeriodSearch(
     var toDate: Date? by remember { mutableStateOf(null) }
 
 
-    CollapsibleSection(heading = "Search") {
+    CollapsibleSection(
+        heading = "Search",
+        icon = { Icon(Icons.Default.Search, contentDescription = "Search") }) {
         Row(
             modifier = Modifier,
             horizontalArrangement = Arrangement.spacedBy(10.dp),

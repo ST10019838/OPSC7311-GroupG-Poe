@@ -10,10 +10,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Category
+import androidx.compose.material.icons.filled.TaskAlt
 import androidx.compose.material.icons.outlined.EditNote
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -29,11 +32,11 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
+import com.example.chronometron.forms.GoalSettingForm
 import com.example.chronometron.types.Category
 import com.example.chronometron.ui.composables.CategoryChip
 import com.example.chronometron.ui.composables.CollapsibleSection
 import com.example.chronometron.ui.composables.formFields.TimeSelector
-import com.example.chronometron.forms.GoalSettingForm
 import com.example.chronometron.ui.viewModels.UserSession
 import java.util.UUID
 
@@ -89,7 +92,9 @@ private fun Goals() {
     val maxGoal = UserSession.maximumGoal.collectAsState()
 
 
-    CollapsibleSection(heading = "Daily Goals") {
+    CollapsibleSection(
+        heading = "Daily Goals",
+        icon = { Icon(Icons.Default.TaskAlt, contentDescription = "Goals") }) {
         Column(verticalArrangement = Arrangement.spacedBy(35.dp)) {
             TimeSelector(
                 label = "Minimum Goal",
@@ -118,7 +123,9 @@ private fun Categories() {
     var isDialogOpen by rememberSaveable { mutableStateOf(false) }
     val categories = UserSession.categories.collectAsState()
 
-    CollapsibleSection(heading = "Categories") {
+    CollapsibleSection(
+        heading = "Categories",
+        icon = { Icon(Icons.Default.Category, contentDescription = "Categories") }) {
         Column {
             // Try optimize by making it lazy load items (use ContextualFlowRow)
             FlowRow(
