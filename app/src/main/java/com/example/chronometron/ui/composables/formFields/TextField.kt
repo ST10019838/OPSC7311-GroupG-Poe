@@ -19,16 +19,11 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.text.Placeholder
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.example.chronometron.utils.buildFieldLabel
 
@@ -60,10 +55,7 @@ fun TextField(
     focusRequester: FocusRequester = FocusRequester(),
     visualTransformation: VisualTransformation = VisualTransformation.None
 ) {
-
-
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(5.dp)) {
-
         Text(
             text = buildFieldLabel(label = label, isRequired = isRequired),
             maxLines = 1,
@@ -73,7 +65,7 @@ fun TextField(
         )
 
 
-        OutlinedTextField (
+        OutlinedTextField(
             modifier = Modifier
                 .fillMaxWidth()
                 .focusRequester(focusRequester)
@@ -95,7 +87,7 @@ fun TextField(
             interactionSource = interactionSource ?: remember { MutableInteractionSource() },
             visualTransformation = visualTransformation,
             placeholder = {
-                Text(text = placeholderText ?: "", )
+                Text(text = placeholderText ?: "")
             }
         )
 

@@ -9,7 +9,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 
 @Composable
-fun buildFieldLabel(label: String, isRequired: Boolean ): AnnotatedString{
+fun buildFieldLabel(label: String, isRequired: Boolean): AnnotatedString {
     return buildAnnotatedString {
         append("$label")
         withStyle(

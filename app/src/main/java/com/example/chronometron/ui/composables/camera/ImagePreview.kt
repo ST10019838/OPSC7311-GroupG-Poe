@@ -65,18 +65,15 @@ fun ImagePreview(
                                 imageVector = Icons.Filled.Delete,
                                 contentDescription = "Delete",
                             )
-//                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-//                        Text("Go Back")
                         }
                     }
-
 
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(20.dp)
                     ) {
-                        if(canGoBack){
+                        if (canGoBack) {
                             Button(
                                 onClick = onGoBack!!,
                                 modifier = Modifier.weight(0.5f)
@@ -86,8 +83,6 @@ fun ImagePreview(
                                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                         contentDescription = "Go Back",
                                     )
-//                                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-//                                Text("Remove")
                                 }
 
                             }
@@ -103,8 +98,6 @@ fun ImagePreview(
                                     imageVector = Icons.Default.Check,
                                     contentDescription = "Close Image Preview",
                                 )
-//                                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-//                                Text("Finished")
                             }
 
                         }

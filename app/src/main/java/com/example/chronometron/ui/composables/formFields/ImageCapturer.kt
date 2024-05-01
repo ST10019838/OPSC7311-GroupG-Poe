@@ -10,8 +10,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonColors
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -27,13 +25,8 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import ch.benlu.composeform.FieldState
-import ch.benlu.composeform.Form
 import com.example.chronometron.ui.composables.camera.CameraScreen
 import com.example.chronometron.ui.composables.camera.ImagePreview
 import com.example.chronometron.utils.buildFieldLabel
@@ -46,7 +39,6 @@ fun ImageCapturer(
     onChange: (Bitmap?) -> Unit = {},
     isRequired: Boolean = false,
     color: TextFieldColors? = null,
-    placeholderText: String? = null,
     hasError: Boolean = false,
     errorText: MutableList<String> = mutableListOf(),
 ) {
@@ -89,9 +81,8 @@ fun ImageCapturer(
                         focusManager.clearFocus()
                     }
                 },
-            // Placeholder
             placeholder = {
-                Text(text = if (value == null) "Capture Image" else "Image Captured" )
+                Text(text = if (value == null) "Capture Image" else "Image Captured")
             },
             isError = hasError
         )

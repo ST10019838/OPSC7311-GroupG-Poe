@@ -30,7 +30,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -65,7 +64,6 @@ fun DatePicker(
     isEnabled: Boolean = true,
     interactionSource: MutableInteractionSource? = null,
     isReadOnly: Boolean = false,
-    focusChanged: ((focus: FocusState) -> Unit)? = null,
     focusRequester: FocusRequester = FocusRequester(),
     visualTransformation: VisualTransformation = VisualTransformation.None
 ) {

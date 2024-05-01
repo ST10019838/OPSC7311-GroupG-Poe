@@ -50,11 +50,8 @@ fun TimeEntryListItem(entry: TimeEntry) {
     OutlinedCard(onClick = { }) {
         Row(
             modifier = Modifier
-//                .padding(15.dp)
                 .height(IntrinsicSize.Max)
-//                .heightIn(0.dp, 50.dp)
                 .fillMaxWidth(),
-//            horizontalArrangement = Arrangement.SpaceBetween
         ) {
 
             // Image Preview
@@ -85,7 +82,6 @@ fun TimeEntryListItem(entry: TimeEntry) {
             // Entry Times
             EntryDurationDisplay(
                 entry = entry,
-//                modifier = Modifier.weight(1f),
                 onClick = { isOpen = !isOpen })
         }
 
@@ -106,19 +102,12 @@ fun TimeEntryListItem(entry: TimeEntry) {
                 )
 
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 5.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 5.dp),
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
-//                    Text(text = "Start Time:", style = MaterialTheme.typography.bodyMedium)
-//                    Text(
-//                        text = "${entry.startTime.hours} : ${entry.startTime.minutes}",
-//                        style = MaterialTheme.typography.bodyMedium
-//                    )
-//                    Text(text = "Start Time:  ${entry.startTime.hours} : ${entry.startTime.minutes}")
-//                    Text(text = "End Time:  ${entry.endTime.hours} : ${entry.endTime.minutes}")
-
                     Column(
-//                        verticalArrangement = Arrangement.Center,
                         modifier = Modifier.width(IntrinsicSize.Max)
                     ) {
                         Text(
@@ -149,18 +138,6 @@ fun TimeEntryListItem(entry: TimeEntry) {
                         )
                     }
                 }
-
-//                Row(
-//                    modifier = Modifier.fillMaxWidth(),
-//                    horizontalArrangement = Arrangement.SpaceBetween
-//                ) {
-//                    Text(text = "End Time:", style = MaterialTheme.typography.bodyMedium)
-//                    Text(
-//                        text = "${entry.endTime.hours} : ${entry.endTime.minutes}",
-//                        style = MaterialTheme.typography.bodyMedium
-//                    )
-//
-//                }
             }
         }
 
@@ -172,24 +149,9 @@ fun TimeEntryListItem(entry: TimeEntry) {
 private fun EntryImagePreview(image: Bitmap) {
     var isImagePreviewOpen by remember { mutableStateOf(false) }
 
-//    IconButton(
-//        onClick = { isImagePreviewOpen = true },
-//        modifier = Modifier
-////            .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp)
-////            .aspectRatio(1f)
-//            .width(IntrinsicSize.Min)
-////            .scale(1.15f)
-//
-//    ) {
-//        Icon(
-//            imageVector = Icons.Default.Image, contentDescription = "View Image"
-//        )
-//    }
-
     TextButton(
         onClick = { isImagePreviewOpen = true },
         modifier = Modifier
-//            .widthIn(0.dp, 100.dp)
             .width(IntrinsicSize.Max)
             .fillMaxHeight(),
         shape = RoundedCornerShape(0)

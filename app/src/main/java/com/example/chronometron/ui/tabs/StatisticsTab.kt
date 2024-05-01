@@ -29,7 +29,6 @@ import cafe.adriel.voyager.navigator.tab.TabOptions
 
 
 object StatisticsTab : Tab {
-
     override val options: TabOptions
         @Composable
         get() {

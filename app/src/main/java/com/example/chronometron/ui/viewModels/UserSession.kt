@@ -103,7 +103,6 @@ object UserSession : ViewModel() {
     val categories = _categories.asStateFlow()
 
 
-    // Date, entry, categories
     val categoryHours = combine(datesAndEntries, categories) { entries, categories ->
         var categoryHoursMap = mutableMapOf<Category, Hours>()
 
@@ -131,6 +130,7 @@ object UserSession : ViewModel() {
         SharingStarted.WhileSubscribed(5000),
         mapOf<Category, Hours>()
     )
+
 
     private val _minimumGoal = MutableStateFlow<Hours>(FullHours(0, 0))
     val minimumGoal = _minimumGoal.asStateFlow()
@@ -182,6 +182,12 @@ object UserSession : ViewModel() {
 
     }
 
+//    fun fetchData(){
+//        screenModelScope.launch {
+//            //fetch data code
+//        }
+//    }
+
 
     fun onSelectedPeriodChange(fromDate: Date?, toDate: Date?) {
         _selectedPeriod.value = Period(fromDate, toDate)
@@ -223,8 +229,6 @@ object UserSession : ViewModel() {
             category = form.category.state.value!!,
             photograph = form.photograph.state.value
         )
-
-//        timeEntries += newTimeEntry
 
         _timeEntries.update { it + newTimeEntry }
     }

@@ -2,10 +2,7 @@ package com.example.chronometron.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -28,7 +25,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import ch.benlu.composeform.fields.PickerField
 import com.example.chronometron.forms.EntryCreationForm
 import com.example.chronometron.types.Category
 import com.example.chronometron.ui.composables.formFields.DatePicker
@@ -38,20 +34,10 @@ import com.example.chronometron.ui.composables.formFields.TextField
 import com.example.chronometron.ui.composables.formFields.TimeSelector
 import com.example.chronometron.ui.viewModels.UserSession
 import com.example.chronometron.utils.onFormValueChange
-import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TimeEntriesCreationScreen(navigationAction: () -> Unit = {}, onCreate: () -> Unit = {}) {
-    //1.  list of entries
-//    var entries by remember(mutableStateOf<List<TimeEntries>>(getTimeEntries()))
-
-//   // 1.1. loop through entries in a list
-//      value.foreach {
-//          TimesheetListEntry(it)
-//      }
-//
-//    // creation button & daily goal display
 
     var openDropdown by remember { mutableStateOf(false) }
     var form = EntryCreationForm()
@@ -93,12 +79,6 @@ fun TimeEntriesCreationScreen(navigationAction: () -> Unit = {}, onCreate: () ->
                     verticalArrangement = Arrangement.spacedBy(30.dp),
                     modifier = Modifier.verticalScroll(rememberScrollState())
                 ) {
-//                    TextField(
-//                        label = "Description*",
-//                        form = form,
-//                        fieldState = form.description,
-//                    ).Field()
-
                     TextField(
                         value = form.description.state.value,
                         label = "Description",
@@ -114,25 +94,6 @@ fun TimeEntriesCreationScreen(navigationAction: () -> Unit = {}, onCreate: () ->
                         errorText = form.description.errorText,
                         placeholderText = "Add a Description"
                     )
-
-
-//                    TextField(
-//                        label = "Duration",
-//                        form = form,
-//                        fieldState = form.duration
-//                    ).Field()
-
-//                    TimeSelector(
-//                        label = "Duration",
-//                        form = form,
-//                        fieldState = form.duration,
-//                        useSemicolonDivider = true,
-//                    ).Field()
-
-//                    DateField(
-//                        label = "Date*",
-//                        form = form, fieldState = form.date, formatter = ::dateShort
-//                    ).Field()
 
                     DatePicker(
                         label = "Date",
@@ -183,26 +144,11 @@ fun TimeEntriesCreationScreen(navigationAction: () -> Unit = {}, onCreate: () ->
 
                         )
 
-//                    TimeSelector(
-//                        label = "Duration:",
-//                        form = form,
-//                        fieldState = form.duration,
-//                        useSemicolonDivider = true
-//                    ).Field()
-//
-
-//                    PickerField(
-//                        label = "Category*", form = form, fieldState = form.category
-//                    ).Field()
-
-
                     Select<Category?>(
                         label = "Category",
                         value = form.category.state.value,
                         options = form.category.options.toList(),
                         itemFormatter = form.category.optionItemFormatter,
-
-                        //                        value = form.category.state.value,
                         isRequired = true,
                         onSelect = {
                             onFormValueChange(
@@ -233,8 +179,6 @@ fun TimeEntriesCreationScreen(navigationAction: () -> Unit = {}, onCreate: () ->
                         errorText = form.photograph.errorText
                     )
                 }
-
-
             }
         }
     }

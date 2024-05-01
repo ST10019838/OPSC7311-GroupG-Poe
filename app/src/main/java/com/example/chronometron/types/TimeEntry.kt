@@ -14,17 +14,19 @@ data class TimeEntry(
     var duration: Hours,
     var category: Category,
     var photograph: Bitmap?
-) {
+)
 
-    // The following search functionality was adapted from youtube
-    // Author: Philipp Lackner
-    // Link: https://www.youtube.com/watch?v=CfL6Dl2_dAE
-    fun isBetweenSelectablePeriod(fromDate: Date?, toDate: Date?): Boolean {
-        return if (fromDate == null && toDate != null) {
-            date <= toDate
-        } else if (fromDate != null && toDate == null) {
-            fromDate <= date
-        } else fromDate!! <= date && date <= toDate!!
-    }
-}
+//{
+//
+//    // The following search functionality was adapted from youtube
+//    // Author: Philipp Lackner
+//    // Link: https://www.youtube.com/watch?v=CfL6Dl2_dAE
+//    fun isBetweenSelectablePeriod(fromDate: Date?, toDate: Date?): Boolean {
+//        return if (fromDate == null && toDate != null) {
+//            date <= toDate
+//        } else if (fromDate != null && toDate == null) {
+//            fromDate <= date
+//        } else fromDate!! <= date && date <= toDate!!
+//    }
+//}
 

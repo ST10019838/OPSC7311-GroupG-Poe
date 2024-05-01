@@ -1,7 +1,6 @@
 package com.example.chronometron.forms
 
 import android.graphics.Bitmap
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import ch.benlu.composeform.FieldState
 import ch.benlu.composeform.Form
@@ -9,10 +8,10 @@ import ch.benlu.composeform.FormField
 import ch.benlu.composeform.validators.NotEmptyValidator
 import com.chargemap.compose.numberpicker.FullHours
 import com.chargemap.compose.numberpicker.Hours
-import com.example.chronometron.types.Category
 import com.example.chronometron.forms.validators.IsRequiredValidator
 import com.example.chronometron.forms.validators.MaxLengthValidator
 import com.example.chronometron.forms.validators.TimeValidator
+import com.example.chronometron.types.Category
 import com.example.chronometron.ui.viewModels.UserSession
 import java.util.Date
 
@@ -55,23 +54,6 @@ class EntryCreationForm() : Form() {
             )
         )
     )
-
-//    @FormField
-//    val duration = FieldState(
-//        state = mutableStateOf<Hours?>(
-//            FullHours(
-//                startTime.state.value?.hours!! - endTime.state.value?.hours!!,
-//                startTime.state.value?.minutes!! - endTime.state.value?.minutes!!
-//            )
-//        ),
-//        validators = mutableListOf(
-//            IsRequiredValidator(),
-//            TimeValidator(
-//                minTime = { startTime.state.value!! },
-//                errorText = "End time cant be before start time."
-//            )
-//        )
-//    )
 
 
     @FormField

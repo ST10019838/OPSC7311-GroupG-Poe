@@ -29,7 +29,6 @@ import com.example.chronometron.ui.composables.SelectablePeriodSearch
 import com.example.chronometron.ui.viewModels.UserSession
 
 object CategoriesTab : Tab {
-
     override val options: TabOptions
         @Composable
         get() {

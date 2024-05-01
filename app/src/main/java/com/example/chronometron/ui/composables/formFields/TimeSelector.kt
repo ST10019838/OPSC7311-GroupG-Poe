@@ -20,7 +20,6 @@ import com.chargemap.compose.numberpicker.Hours
 import com.chargemap.compose.numberpicker.HoursNumberPicker
 import com.example.chronometron.utils.buildFieldLabel
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TimeSelector(
     useSemicolonDivider: Boolean = false,

@@ -32,7 +32,6 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
-import com.example.chronometron.forms.GoalSettingForm
 import com.example.chronometron.types.Category
 import com.example.chronometron.ui.composables.CategoryChip
 import com.example.chronometron.ui.composables.CollapsibleSection
@@ -42,8 +41,6 @@ import java.util.UUID
 
 
 object CustomiserTab : Tab {
-
-
     override val options: TabOptions
         @Composable
         get() {
@@ -61,13 +58,6 @@ object CustomiserTab : Tab {
 
     @Composable
     override fun Content() {
-
-        //   Daily goal Section
-
-        //   Categories Section
-//
-//   Other customizables
-
         LazyColumn(verticalArrangement = Arrangement.spacedBy(25.dp)) {
             item {
                 Goals()
@@ -82,15 +72,11 @@ object CustomiserTab : Tab {
     }
 }
 
-//@Composable
-
 
 @Composable
 private fun Goals() {
-    val form = GoalSettingForm()
     val minGoal = UserSession.minimumGoal.collectAsState()
     val maxGoal = UserSession.maximumGoal.collectAsState()
-
 
     CollapsibleSection(
         heading = "Daily Goals",
@@ -133,7 +119,7 @@ private fun Categories() {
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                categories.value.forEachIndexed { index, item ->
+                categories.value.forEachIndexed { _, item ->
                     CategoryChip(
                         item.name,
                         modifier = Modifier.padding(horizontal = 5.dp),
@@ -143,11 +129,10 @@ private fun Categories() {
                 }
 
 
-                Button(onClick = {
-//                        categories = categories.plus("text")
-
-                    isDialogOpen = true
-                }, modifier = Modifier.fillMaxWidth()) {
+                Button(
+                    onClick = { isDialogOpen = true },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
                     Text(text = "Add Category")
                 }
             }
@@ -162,15 +147,13 @@ private fun Categories() {
 
         if (isDialogOpen) {
             AlertDialog(
-//            icon = {
-//                Icon(icon, contentDescription = "Example Icon")
-//            },
+                icon = {
+                    Icon(Icons.Default.Category, contentDescription = "Categories")
+                },
                 title = {
                     Text(text = "Create Category")
                 },
                 text = {
-
-
                     OutlinedTextField(
                         value = text,
                         onValueChange = { text = it },
@@ -203,6 +186,5 @@ private fun Categories() {
                 }
             )
         }
-
     }
 }

@@ -27,6 +27,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,13 +37,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.chronometron.ui.composables.SelectablePeriodSearch
 import com.example.chronometron.ui.composables.TimeEntryListItem
-import com.example.chronometron.ui.viewModels.EntryCreationViewModel
 import com.example.chronometron.ui.viewModels.UserSession
 import com.example.chronometron.ui.viewModels.UserSession.onSelectedPeriodChange
 
 @Composable
 fun TimeEntriesScreen() {
-    var viewModel = viewModel<EntryCreationViewModel>()
+    var isDialogOpen by remember { mutableStateOf(false) }
     val datesAndEntries by UserSession.datesAndEntries.collectAsState()
     val selectablePeriod by UserSession.selectedPeriod.collectAsState()
 
@@ -58,10 +60,6 @@ fun TimeEntriesScreen() {
                 .fillMaxHeight()
                 .weight(1f)
         ) {
-//            items(timeEntries){
-//                Text(it.description)
-//            }
-
             items(datesAndEntries.toList()) {
 
                 var totalDateMinuteDuration = 0
@@ -135,12 +133,10 @@ fun TimeEntriesScreen() {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-//                Text("HI")
                 DailyGoalDisplay()
 
                 FloatingActionButton(
-                    onClick = { viewModel.isDialogOpen = true },
-//                modifier = Modifier.align(Alignment.BottomEnd)
+                    onClick = { isDialogOpen = true },
                 ) {
                     Icon(Icons.Default.Add, contentDescription = "Add")
                 }
@@ -152,9 +148,9 @@ fun TimeEntriesScreen() {
     }
 
 
-    if (viewModel.isDialogOpen) {
+    if (isDialogOpen) {
         TimeEntriesCreationScreen(
-            navigationAction = { viewModel.isDialogOpen = false },
+            navigationAction = { isDialogOpen = false },
             onCreate = {})
     }
 }
