@@ -43,11 +43,11 @@ import com.example.chronometron.types.TimeEntry
 import com.example.chronometron.ui.composables.camera.ImagePreview
 
 @Composable
-fun TimeEntryListItem(entry: TimeEntry) {
+fun TimeEntryListItem(entry: TimeEntry, onClick: () -> Unit = {}) {
     var isOpen by rememberSaveable { mutableStateOf(false) }
     val rotation by animateFloatAsState(if (isOpen) 180f else 0f, label = "arrowRotationAnimation")
 
-    OutlinedCard(onClick = { }) {
+    OutlinedCard(onClick = onClick) {
         Row(
             modifier = Modifier
                 .height(IntrinsicSize.Max)

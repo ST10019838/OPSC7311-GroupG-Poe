@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import ch.benlu.composeform.formatters.dateShort
 import com.chargemap.compose.numberpicker.FullHours
 import com.chargemap.compose.numberpicker.Hours
-import com.example.chronometron.forms.EntryCreationForm
 import com.example.chronometron.types.Category
 import com.example.chronometron.types.Period
 import com.example.chronometron.types.TimeEntry
@@ -157,7 +156,7 @@ object UserSession : ViewModel() {
             photograph = null
         )
 
-        _timeEntries.update { it + newTimeEntry }
+        _timeEntries.update { (it + newTimeEntry).toMutableList() }
 
         val startTimeValue2 = FullHours(1, 0)
         val endTimeValue2 = FullHours(2, 0)
@@ -176,9 +175,9 @@ object UserSession : ViewModel() {
             photograph = null
         )
 
-        _timeEntries.update { it + newTimeEntry2 }
-        _timeEntries.update { it + newTimeEntry2 }
-        _timeEntries.update { it + newTimeEntry2 }
+        _timeEntries.update { (it + newTimeEntry2).toMutableList() }
+        _timeEntries.update { (it + newTimeEntry2).toMutableList() }
+        _timeEntries.update { (it + newTimeEntry2).toMutableList() }
 
     }
 
@@ -212,25 +211,33 @@ object UserSession : ViewModel() {
     }
 
 
-    fun addTimeEntry(form: EntryCreationForm) {
-        var startTimeValue = form.startTime.state.value!!
-        var endTimeValue = form.endTime.state.value!!
+    fun addTimeEntry(newEntry: TimeEntry) {
+        _timeEntries.update { (it + newEntry).toMutableList() }
+    }
 
-        var newTimeEntry = TimeEntry(
-            id = UUID.randomUUID(),
-            description = form.description.state.value!!,
-            date = form.date.state.value!!,
-            startTime = startTimeValue,
-            endTime = endTimeValue,
-            duration = FullHours(
-                hours = endTimeValue.hours - startTimeValue.hours,
-                minutes = endTimeValue.minutes - startTimeValue.minutes
-            ),
-            category = form.category.state.value!!,
-            photograph = form.photograph.state.value
-        )
+    fun updateTimeEntry(updatedEntry: TimeEntry) {
+//        _timeEntries.update {
+//            _timeEntries.value.map { entry ->
+//                if (entry.id == updatedEntry.id) updatedEntry
+//                else entry
+//            }.toList()
 
-        _timeEntries.update { it + newTimeEntry }
+//            var newList = _timeEntries.value.toMutableList()
+//            val entryIndex = _timeEntries.value.indexOfFirst { entry -> entry.id == updatedEntry.id }
+//            newList[entryIndex] = updatedEntry
+//
+//            newList
+//        }
+
+        _timeEntries.update {
+            it.toMutableList().apply {
+                this[indexOfFirst { entry -> entry.id == updatedEntry.id }] = updatedEntry
+            }
+        }
+    }
+
+    fun deleteTimeEntry(entry: TimeEntry) {
+        _timeEntries.update { it.minusElement(entry) }
     }
 
 

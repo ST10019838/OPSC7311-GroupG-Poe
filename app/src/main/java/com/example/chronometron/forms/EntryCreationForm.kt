@@ -12,26 +12,31 @@ import com.example.chronometron.forms.validators.IsRequiredValidator
 import com.example.chronometron.forms.validators.MaxLengthValidator
 import com.example.chronometron.forms.validators.TimeValidator
 import com.example.chronometron.types.Category
-import com.example.chronometron.ui.viewModels.UserSession
+import com.example.chronometron.types.TimeEntry
 import java.util.Date
+import java.util.UUID
 
 
-class EntryCreationForm() : Form() {
+class EntryCreationForm(entry: TimeEntry?) : Form() {
     override fun self(): Form {
         return this
     }
 
+    @FormField
+    val id = FieldState(
+        state = mutableStateOf<UUID?>(entry?.id)
+    )
 
     @FormField
     val description = FieldState(
-        state = mutableStateOf<String?>(null),
+        state = mutableStateOf<String?>(entry?.description),
         validators = mutableListOf(IsRequiredValidator(), MaxLengthValidator(100))
     )
 
 
     @FormField
     val date = FieldState(
-        state = mutableStateOf<Date?>(null),
+        state = mutableStateOf<Date?>(entry?.date),
         validators = mutableListOf(
             NotEmptyValidator()
         )
@@ -39,13 +44,13 @@ class EntryCreationForm() : Form() {
 
     @FormField
     val startTime = FieldState(
-        state = mutableStateOf<Hours?>(FullHours(Date().hours, Date().minutes)),
+        state = mutableStateOf<Hours?>(entry?.startTime ?: FullHours(Date().hours, Date().minutes)),
         validators = mutableListOf(IsRequiredValidator())
     )
 
     @FormField
     val endTime = FieldState(
-        state = mutableStateOf<Hours?>(FullHours(Date().hours, Date().minutes)),
+        state = mutableStateOf<Hours?>(entry?.endTime ?: FullHours(Date().hours, Date().minutes)),
         validators = mutableListOf(
             IsRequiredValidator(),
             TimeValidator(
@@ -58,7 +63,7 @@ class EntryCreationForm() : Form() {
 
     @FormField
     val category = FieldState(
-        state = mutableStateOf<Category?>(null),
+        state = mutableStateOf<Category?>(entry?.category),
         optionItemFormatter = { "${it?.name}" },
         validators = mutableListOf(
             NotEmptyValidator()
@@ -67,6 +72,25 @@ class EntryCreationForm() : Form() {
 
     @FormField
     val photograph = FieldState(
-        state = mutableStateOf<Bitmap?>(null)
+        state = mutableStateOf<Bitmap?>(entry?.photograph)
     )
+
+    fun produceEntry(): TimeEntry {
+        var startTimeValue = this.startTime.state.value!!
+        var endTimeValue = this.endTime.state.value!!
+
+        return TimeEntry(
+            id = if (this.id.state.value == null) UUID.randomUUID() else this.id.state.value!!,
+            description = this.description.state.value!!,
+            date = this.date.state.value!!,
+            startTime = startTimeValue,
+            endTime = endTimeValue,
+            duration = FullHours(
+                hours = endTimeValue.hours - startTimeValue.hours,
+                minutes = endTimeValue.minutes - startTimeValue.minutes
+            ),
+            category = this.category.state.value!!,
+            photograph = this.photograph.state.value
+        )
+    }
 }

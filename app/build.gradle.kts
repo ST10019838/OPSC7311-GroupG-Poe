@@ -69,6 +69,7 @@ dependencies {
 
 
     implementation("com.chargemap.compose:numberpicker:1.0.3")
+    implementation(libs.androidx.lifecycle.runtime.compose)
 
 
     testImplementation(libs.junit)

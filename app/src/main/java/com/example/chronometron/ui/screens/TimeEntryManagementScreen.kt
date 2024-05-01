@@ -8,10 +8,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -25,12 +29,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.chronometron.forms.EntryCreationForm
 import com.example.chronometron.types.Category
+import com.example.chronometron.types.TimeEntry
 import com.example.chronometron.ui.composables.CategoryCreationDialog
 import com.example.chronometron.ui.composables.formFields.DatePicker
 import com.example.chronometron.ui.composables.formFields.ImageCapturer
@@ -42,10 +48,40 @@ import com.example.chronometron.utils.onFormValueChange
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TimeEntriesCreationScreen(navigationAction: () -> Unit = {}, onCreate: () -> Unit = {}) {
+fun TimeEntryManagementScreen(
+    navigationAction: () -> Unit = {},
+    entryToManage: TimeEntry? = null
+) {
 
-    var openDropdown by remember { mutableStateOf(false) }
-    var form = EntryCreationForm()
+//    var openDropdown by remember { mutableStateOf(false) }
+    var form = EntryCreationForm(entryToManage)
+    val noEntryToManage = entryToManage == null
+    var isDeleteDialogOpen by remember { mutableStateOf(false) }
+
+    val onCreate = {
+        form.validate(true)
+        if (form.isValid) {
+            UserSession.addTimeEntry(form.produceEntry())
+            navigationAction()
+        }
+    }
+
+    val onUpdate = {
+        form.validate(true)
+        if (form.isValid) {
+            UserSession.updateTimeEntry(form.produceEntry())
+            navigationAction()
+        }
+    }
+
+    val onDelete = {
+        UserSession.deleteTimeEntry(entryToManage!!)
+        navigationAction()
+    }
+
+    val openDeleteDialog = {
+        isDeleteDialogOpen = true
+    }
 
     // The following dialog was taken from stackoverflow.com
     // Author: jns
@@ -64,14 +100,14 @@ fun TimeEntriesCreationScreen(navigationAction: () -> Unit = {}, onCreate: () ->
                     )
                 }
             }, actions = {
-                TextButton(onClick = {
-                    form.validate(true)
-                    if (form.isValid) {
-                        UserSession.addTimeEntry(form)
-                        navigationAction()
-                    }
-                }) {
-                    Text("Create")
+//                TextButton(onClick = onCreate) {
+//                    Text("Create")
+//                }
+
+                TextButton(
+                    onClick = if (noEntryToManage) onCreate else onUpdate,
+                ) {
+                    Text(if (noEntryToManage) "Create" else "Update")
                 }
             })
         }) { innerPadding ->
@@ -82,7 +118,9 @@ fun TimeEntriesCreationScreen(navigationAction: () -> Unit = {}, onCreate: () ->
             ) {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(30.dp),
-                    modifier = Modifier.verticalScroll(rememberScrollState())
+                    modifier = Modifier
+                        .verticalScroll(rememberScrollState())
+                        .padding(vertical = 20.dp)
                 ) {
                     TextField(
                         value = form.description.state.value,
@@ -199,6 +237,53 @@ fun TimeEntriesCreationScreen(navigationAction: () -> Unit = {}, onCreate: () ->
                         hasError = form.photograph.hasError(),
                         errorText = form.photograph.errorText
                     )
+
+                    Button(
+                        onClick = if (noEntryToManage) onCreate else openDeleteDialog,
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (noEntryToManage) Color.Unspecified
+                            else MaterialTheme.colorScheme.error
+                        )
+                    ) {
+                        Text(if (noEntryToManage) "Create Entry" else "Delete Entry")
+                    }
+
+
+                    if (isDeleteDialogOpen) {
+                        AlertDialog(
+                            icon = {
+                                Icon(Icons.Default.Delete, contentDescription = "Delete Entry")
+                            },
+                            title = {
+                                Text(text = "Delete Entry")
+                            },
+                            text = { Text("Are you sure you want to delete this entry? ") },
+                            onDismissRequest = {
+                                isDeleteDialogOpen = false
+                            },
+                            confirmButton = {
+                                TextButton(
+                                    onClick = {
+                                        onDelete()
+                                        isDeleteDialogOpen = false
+                                    }
+                                ) {
+                                    Text("Confirm")
+                                }
+                            },
+                            dismissButton = {
+                                TextButton(
+                                    onClick = {
+                                        isDeleteDialogOpen = false
+                                    }
+                                ) {
+                                    Text("Dismiss")
+                                }
+                            }
+                        )
+                    }
+
                 }
             }
         }

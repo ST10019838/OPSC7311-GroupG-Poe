@@ -1,6 +1,7 @@
 package com.example.chronometron.ui.screens
 
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -34,17 +35,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.chronometron.types.TimeEntry
 import com.example.chronometron.ui.composables.SelectablePeriodSearch
 import com.example.chronometron.ui.composables.TimeEntryListItem
 import com.example.chronometron.ui.viewModels.UserSession
 import com.example.chronometron.ui.viewModels.UserSession.onSelectedPeriodChange
 
+@SuppressLint("UnrememberedMutableState")
 @Composable
 fun TimeEntriesScreen() {
     var isDialogOpen by remember { mutableStateOf(false) }
-    val datesAndEntries by UserSession.datesAndEntries.collectAsState()
-    val selectablePeriod by UserSession.selectedPeriod.collectAsState()
+    val timeEntries by UserSession.timeEntries.collectAsStateWithLifecycle()
+    val datesAndEntries by UserSession.datesAndEntries.collectAsStateWithLifecycle()
+    val selectablePeriod by UserSession.selectedPeriod.collectAsStateWithLifecycle()
+    var entryToManage: TimeEntry? by remember { mutableStateOf(null) }
 
     // Needs to be a column
     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(5.dp)) {
@@ -69,7 +74,7 @@ fun TimeEntriesScreen() {
                 // totals and displaying the records simultaneously, however that did not
                 // seem to work, leaving us with having to iterate over the list twice
                 it.second.forEach { id ->
-                    val entry = UserSession.timeEntries.value[id]
+                    val entry = timeEntries[id]
 
                     totalDateHourDuration += entry.duration.hours
                     totalDateMinuteDuration += entry.duration.minutes
@@ -109,7 +114,11 @@ fun TimeEntriesScreen() {
 
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     it.second.forEach { id ->
-                        TimeEntryListItem(entry = UserSession.timeEntries.value[id])
+                        val entry = timeEntries[id]
+                        TimeEntryListItem(entry = entry, onClick = {
+                            entryToManage = entry
+                            isDialogOpen = true
+                        })
                     }
                 }
             }
@@ -137,7 +146,10 @@ fun TimeEntriesScreen() {
                 DailyGoalDisplay()
 
                 FloatingActionButton(
-                    onClick = { isDialogOpen = true },
+                    onClick = {
+                        entryToManage = null
+                        isDialogOpen = true
+                    },
                 ) {
                     Icon(Icons.Default.Add, contentDescription = "Add")
                 }
@@ -150,9 +162,10 @@ fun TimeEntriesScreen() {
 
 
     if (isDialogOpen) {
-        TimeEntriesCreationScreen(
+        TimeEntryManagementScreen(
             navigationAction = { isDialogOpen = false },
-            onCreate = {})
+            entryToManage = entryToManage
+        )
     }
 }
 
