@@ -30,7 +30,7 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            ChronoMetronTheme(darkTheme = false) {
+            ChronoMetronTheme(darkTheme = true) {
                 TabNavigator(TimeEntriesTab) { tabNavigator ->
                     ScreenLayout(tabNavigator)
                 }

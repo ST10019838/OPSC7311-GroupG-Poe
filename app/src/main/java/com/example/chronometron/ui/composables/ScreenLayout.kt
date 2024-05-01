@@ -8,10 +8,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -33,10 +33,10 @@ fun ScreenLayout(tabNavigator: TabNavigator) {
         topBar =
         {
             TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.primary,
-                ),
+//                colors = TopAppBarDefaults.topAppBarColors(
+//                    containerColor = MaterialTheme.colorScheme.secondary,
+//                    titleContentColor = MaterialTheme.colorScheme.primary,
+//                ),
                 title = {
                     Text(tabNavigator.current.options.title)
                 }
@@ -44,7 +44,7 @@ fun ScreenLayout(tabNavigator: TabNavigator) {
         },
         bottomBar =
         {
-            NavigationBar {
+            NavigationBar() {
                 TabNavigationItem(CustomiserTab)
                 TabNavigationItem(TimeEntriesTab)
                 TabNavigationItem(StatisticsTab)
@@ -87,8 +87,12 @@ private fun RowScope.TabNavigationItem(tab: Tab) {
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.alpha(if (!isSelected) 0.5f else 1f),
                 style = if (isSelected) MaterialTheme.typography.bodyMedium
-                        else MaterialTheme.typography.bodySmall
+                else MaterialTheme.typography.bodySmall
             )
         },
+        colors = NavigationBarItemDefaults.colors(
+            indicatorColor = MaterialTheme.colorScheme.primary,
+            selectedTextColor = MaterialTheme.colorScheme.primary
+        )
     )
 }

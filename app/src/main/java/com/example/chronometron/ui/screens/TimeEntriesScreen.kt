@@ -134,7 +134,8 @@ fun TimeEntriesScreen() {
                     .fillMaxWidth(0.5f)
                     .clip(RoundedCornerShape(100))
                     .align(Alignment.CenterHorizontally),
-                thickness = 2.dp
+                thickness = 1.dp,
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Row(
@@ -150,6 +151,7 @@ fun TimeEntriesScreen() {
                         entryToManage = null
                         isDialogOpen = true
                     },
+                    containerColor = MaterialTheme.colorScheme.primary
                 ) {
                     Icon(Icons.Default.Add, contentDescription = "Add")
                 }

@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -87,7 +88,8 @@ fun SelectablePeriodSearch(
                     .fillMaxWidth(0.5f)
                     .clip(RoundedCornerShape(100))
                     .align(Alignment.CenterHorizontally),
-                thickness = 2.dp
+                thickness = 1.dp,
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
     }
