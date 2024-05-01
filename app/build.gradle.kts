@@ -1,7 +1,8 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
-}
+    id("com.google.gms.google-services")
+    }
 
 android {
     namespace = "com.example.chronometron"
@@ -70,7 +71,7 @@ dependencies {
 
     implementation("com.chargemap.compose:numberpicker:1.0.3")
 
-
+    implementation("com.chargemap.compose:numberpicker:1.0.3")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -110,6 +111,27 @@ dependencies {
 
     implementation("androidx.camera:camera-view:$cameraxVersion")
     implementation("androidx.camera:camera-extensions:$cameraxVersion")
+
+// Firebase and Play Services for authentication and analytics.
+    implementation("com.google.android.gms:play-services-auth:21.1.0")
+    implementation(platform("com.google.firebase:firebase-bom:32.8.1"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.android.material:material:1.11.0")
+    implementation("com.google.android.gms:play-services-identity:18.0.1")
+    implementation("com.google.android.gms:play-services-safetynet:18.0.1")
+
+
+    // Compose Form library for enhanced forms in Compose UI.
+    implementation("com.github.benjamin-luescher:compose-form:0.2.8")
+
+    implementation("androidx.compose.material:material-icons-core:1.6.6")
+    implementation("androidx.compose.material:material-icons-extended:1.6.6")
+    implementation("io.coil-kt:coil-compose:2.1.0")
+    implementation("androidx.navigation:navigation-compose:2.7.7")
+
+    //implementation("androidx.compose.material:material-icons-extended:1.5.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
 }
 
 
