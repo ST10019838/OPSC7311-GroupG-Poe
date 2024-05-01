@@ -59,7 +59,6 @@ class EntryCreationForm() : Form() {
     @FormField
     val category = FieldState(
         state = mutableStateOf<Category?>(null),
-        options = UserSession.categories.value.toMutableList(),
         optionItemFormatter = { "${it?.name}" },
         validators = mutableListOf(
             NotEmptyValidator()

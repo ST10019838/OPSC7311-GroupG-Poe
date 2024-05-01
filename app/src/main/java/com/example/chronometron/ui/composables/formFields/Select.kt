@@ -69,7 +69,8 @@ fun <T> Select(
     visualTransformation: VisualTransformation = VisualTransformation.None,
 
     canCreateIfEmpty: Boolean = false,
-    onCreate: () -> Unit = {}
+    onCreate: () -> Unit = {},
+    creationContent: @Composable () -> Unit = {}
 ) {
 
     var isExpanded by remember { mutableStateOf(false) }
@@ -133,9 +134,10 @@ fun <T> Select(
             onDismissRequest = { isExpanded = false },
             modifier = Modifier.heightIn(0.dp, 200.dp)
         ) {
-//            if(options.isEmpty() && canCreateIfEmpty){
-//
-//            }
+            if(options.isEmpty() && canCreateIfEmpty){
+                onCreate()
+                creationContent()
+            }
 
             options.forEach { option ->
                 Row(

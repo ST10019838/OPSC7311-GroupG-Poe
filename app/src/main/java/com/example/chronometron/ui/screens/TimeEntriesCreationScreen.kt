@@ -2,11 +2,13 @@ package com.example.chronometron.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -16,9 +18,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
@@ -27,6 +31,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.example.chronometron.forms.EntryCreationForm
 import com.example.chronometron.types.Category
+import com.example.chronometron.ui.composables.CategoryCreationDialog
 import com.example.chronometron.ui.composables.formFields.DatePicker
 import com.example.chronometron.ui.composables.formFields.ImageCapturer
 import com.example.chronometron.ui.composables.formFields.Select
@@ -147,7 +152,7 @@ fun TimeEntriesCreationScreen(navigationAction: () -> Unit = {}, onCreate: () ->
                     Select<Category?>(
                         label = "Category",
                         value = form.category.state.value,
-                        options = form.category.options.toList(),
+                        options = UserSession.categories.collectAsState().value,
                         itemFormatter = form.category.optionItemFormatter,
                         isRequired = true,
                         onSelect = {
@@ -159,7 +164,24 @@ fun TimeEntriesCreationScreen(navigationAction: () -> Unit = {}, onCreate: () ->
                         },
                         hasError = form.category.hasError(),
                         errorText = form.category.errorText,
-                        placeholderText = "Select a Category"
+                        placeholderText = "Select a Category",
+                        canCreateIfEmpty = true,
+                        creationContent = {
+                            var isDialogOpen by rememberSaveable { mutableStateOf(false) }
+
+                            Button(
+                                onClick = { isDialogOpen = true },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text("Create Category")
+                            }
+
+                            if (isDialogOpen) {
+                                CategoryCreationDialog(onDismiss = {
+                                    isDialogOpen = false
+                                })
+                            }
+                        }
                     )
 
 

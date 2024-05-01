@@ -34,6 +34,7 @@ import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.example.chronometron.types.Category
 import com.example.chronometron.ui.composables.CategoryChip
+import com.example.chronometron.ui.composables.CategoryCreationDialog
 import com.example.chronometron.ui.composables.CollapsibleSection
 import com.example.chronometron.ui.composables.formFields.TimeSelector
 import com.example.chronometron.ui.viewModels.UserSession
@@ -138,53 +139,11 @@ private fun Categories() {
             }
         }
 
-        var text by remember { mutableStateOf<String>("") }
-
-        fun dismissDialog() {
-            text = ""
-            isDialogOpen = false
-        }
 
         if (isDialogOpen) {
-            AlertDialog(
-                icon = {
-                    Icon(Icons.Default.Category, contentDescription = "Categories")
-                },
-                title = {
-                    Text(text = "Create Category")
-                },
-                text = {
-                    OutlinedTextField(
-                        value = text,
-                        onValueChange = { text = it },
-                        label = { Text("Category Name") }
-                    )
-                },
-                onDismissRequest = {
-                    dismissDialog()
-                },
-                confirmButton = {
-                    Button(
-                        onClick = {
-                            UserSession.addCategory(Category(id = UUID.randomUUID(), name = text))
-                            dismissDialog()
-                        },
-
-                        contentPadding = PaddingValues(horizontal = 40.dp)
-                    ) {
-                        Text("Create")
-                    }
-                },
-                dismissButton = {
-                    TextButton(
-                        onClick = {
-                            dismissDialog()
-                        }
-                    ) {
-                        Text("Cancel")
-                    }
-                }
-            )
+            CategoryCreationDialog(onDismiss = {
+                isDialogOpen = false
+            })
         }
     }
 }
