@@ -56,6 +56,7 @@ fun ImagePreview(
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                     modifier = Modifier.padding(horizontal = 20.dp)
                 ) {
+
                     if (canRemove) {
                         Button(
                             onClick = onRemove!!,
@@ -102,9 +103,7 @@ fun ImagePreview(
 
                         }
                     }
-
                 }
-
             }
         }
     }

@@ -27,7 +27,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
@@ -109,7 +108,7 @@ fun DatePicker(
                     maxLines = 1,
                     modifier = Modifier.horizontalScroll(rememberScrollState())
                 )
-            }
+            },
         )
 
         if (hasError) {

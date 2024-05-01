@@ -89,8 +89,6 @@ object CategoriesTab : Tab {
 
 
         }
-
-
     }
 }
 
@@ -105,7 +103,7 @@ private fun CategoryHoursListItem(item: Pair<Category, Hours>) {
         ) {
             Text(item.first.name)
 
-            Text("${item.second.hours} : ${item.second.minutes}")
+            Text("${item.second.hours}h ${item.second.minutes}m")
         }
     }
 

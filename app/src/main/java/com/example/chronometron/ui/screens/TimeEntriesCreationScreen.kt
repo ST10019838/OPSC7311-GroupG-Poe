@@ -167,7 +167,6 @@ fun TimeEntriesCreationScreen(navigationAction: () -> Unit = {}, onCreate: () ->
                     ImageCapturer(
                         label = "Photograph",
                         value = form.photograph.state.value,
-                        isRequired = true,
                         onChange = {
                             onFormValueChange(
                                 value = it,

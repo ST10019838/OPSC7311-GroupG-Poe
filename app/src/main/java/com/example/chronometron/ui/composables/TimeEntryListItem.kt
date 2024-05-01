@@ -53,8 +53,6 @@ fun TimeEntryListItem(entry: TimeEntry) {
                 .height(IntrinsicSize.Max)
                 .fillMaxWidth(),
         ) {
-
-            // Image Preview
             if (entry.photograph != null) {
                 EntryImagePreview(entry.photograph!!)
 
@@ -68,7 +66,6 @@ fun TimeEntryListItem(entry: TimeEntry) {
             }
 
 
-            // Entry Body
             EntryInformation(entry = entry, modifier = Modifier.weight(1f))
 
             VerticalDivider(
@@ -79,7 +76,7 @@ fun TimeEntryListItem(entry: TimeEntry) {
                 thickness = 1.dp
             )
 
-            // Entry Times
+
             EntryDurationDisplay(
                 entry = entry,
                 onClick = { isOpen = !isOpen })
@@ -87,61 +84,8 @@ fun TimeEntryListItem(entry: TimeEntry) {
 
 
         AnimatedVisibility(visible = isOpen) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 10.dp),
-                verticalArrangement = Arrangement.spacedBy(5.dp)
-            ) {
-                HorizontalDivider(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(100))
-                        .fillMaxWidth(0.5f)
-                        .align(Alignment.CenterHorizontally),
-                    thickness = 1.dp
-                )
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 5.dp),
-                    horizontalArrangement = Arrangement.SpaceAround
-                ) {
-                    Column(
-                        modifier = Modifier.width(IntrinsicSize.Max)
-                    ) {
-                        Text(
-                            text = "Start Time",
-                            style = MaterialTheme.typography.labelMedium,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                        Text(
-                            text = "${entry.startTime.hours} : ${entry.startTime.minutes}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-
-
-                    Column(modifier = Modifier.width(IntrinsicSize.Max)) {
-                        Text(
-                            text = "End Time",
-                            style = MaterialTheme.typography.labelMedium,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                        Text(
-                            text = "${entry.endTime.hours} : ${entry.endTime.minutes}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-                }
-            }
+            EntryTimesDisplay(entry)
         }
-
-
     }
 }
 
@@ -170,7 +114,6 @@ private fun EntryImagePreview(image: Bitmap) {
             })
     }
 }
-
 
 @Composable
 private fun EntryInformation(entry: TimeEntry, modifier: Modifier = Modifier) {
@@ -209,5 +152,61 @@ private fun EntryDurationDisplay(
         shape = RoundedCornerShape(0)
     ) {
         Text(text = "${entry.duration.hours}h ${entry.duration.minutes}m")
+    }
+}
+
+@Composable
+private fun EntryTimesDisplay(entry: TimeEntry) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 10.dp),
+        verticalArrangement = Arrangement.spacedBy(5.dp)
+    ) {
+        HorizontalDivider(
+            modifier = Modifier
+                .clip(RoundedCornerShape(100))
+                .fillMaxWidth(0.5f)
+                .align(Alignment.CenterHorizontally),
+            thickness = 1.dp
+        )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 5.dp),
+            horizontalArrangement = Arrangement.SpaceAround
+        ) {
+            Column(
+                modifier = Modifier.width(IntrinsicSize.Max)
+            ) {
+                Text(
+                    text = "Start Time",
+                    style = MaterialTheme.typography.labelMedium,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Text(
+                    text = "${entry.startTime.hours} : ${entry.startTime.minutes}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
+
+            Column(modifier = Modifier.width(IntrinsicSize.Max)) {
+                Text(
+                    text = "End Time",
+                    style = MaterialTheme.typography.labelMedium,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Text(
+                    text = "${entry.endTime.hours} : ${entry.endTime.minutes}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
     }
 }

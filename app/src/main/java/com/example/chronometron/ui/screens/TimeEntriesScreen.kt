@@ -89,6 +89,7 @@ fun TimeEntriesScreen() {
                         Spacer(Modifier.size(ButtonDefaults.IconSpacing))
 
                         // Make a util function
+                        // For goal adherence
 //                        if (dateDuration.hours >= UserSession.minimumGoal.hours &&
 //                            dateDuration.minutes >= UserSession.minimumGoal.minutes
 //                        ) {

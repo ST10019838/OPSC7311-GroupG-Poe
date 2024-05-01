@@ -8,9 +8,3 @@ data class Category(
     var name: String,
     // var icon
 )
-
-//: PickerValue() {
-//    override fun searchFilter(query: String): Boolean {
-//        return this.name.contains(query)
-//    }
-//}

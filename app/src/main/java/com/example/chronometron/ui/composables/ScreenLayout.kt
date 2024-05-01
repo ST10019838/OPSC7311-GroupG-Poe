@@ -17,9 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import cafe.adriel.voyager.navigator.tab.CurrentTab
 import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
 import cafe.adriel.voyager.navigator.tab.Tab
@@ -87,8 +85,9 @@ private fun RowScope.TabNavigationItem(tab: Tab) {
                 textAlign = TextAlign.Center,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                fontSize = if (isSelected) TextUnit.Unspecified else 10.sp,
-                modifier = Modifier.alpha(if (!isSelected) 0.5f else 1f)
+                modifier = Modifier.alpha(if (!isSelected) 0.5f else 1f),
+                style = if (isSelected) MaterialTheme.typography.bodyMedium
+                        else MaterialTheme.typography.bodySmall
             )
         },
     )

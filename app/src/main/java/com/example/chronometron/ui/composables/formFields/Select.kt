@@ -68,7 +68,9 @@ fun <T> Select(
     focusRequester: FocusRequester = FocusRequester(),
     visualTransformation: VisualTransformation = VisualTransformation.None,
 
-    ) {
+    canCreateIfEmpty: Boolean = false,
+    onCreate: () -> Unit = {}
+) {
 
     var isExpanded by remember { mutableStateOf(false) }
 
@@ -131,50 +133,10 @@ fun <T> Select(
             onDismissRequest = { isExpanded = false },
             modifier = Modifier.heightIn(0.dp, 200.dp)
         ) {
-//            Box(
-//                modifier = Modifier.fillMaxHeight()
-////                    .heightIn(0.dp, 200.dp)
-//            ) {
-//                Text("Search", modifier = Modifier.align(Alignment.TopCenter))
+//            if(options.isEmpty() && canCreateIfEmpty){
+//
+//            }
 
-
-//                if (options.isNotEmpty()) {
-//                    LazyColumn(
-////                        modifier = Modifier
-////                            .heightIn(0.dp, 100.dp)
-////                            .selectableGroup()
-//                    ) {
-//                        items(options) { option ->
-//                            Row(
-//                                Modifier
-//                                    .fillMaxWidth()
-//                                    .height(56.dp)
-//                                    .selectable(
-//                                        selected = (value == option),
-//                                        onClick = { onSelect(option) },
-//                                        role = Role.RadioButton
-//                                    )
-//                                    .padding(horizontal = 16.dp),
-//                                verticalAlignment = Alignment.CenterVertically
-//                            ) {
-//                                RadioButton(
-//                                    selected = (option == value),
-//                                    onClick = null // null recommended for accessibility with screenreaders
-//                                )
-//                                Text(
-//                                    text = itemFormatter?.invoke(option) ?: option.toString(),
-//                                    style = MaterialTheme.typography.bodyLarge,
-//                                    modifier = Modifier.padding(start = 16.dp)
-//                                )
-////                        }
-//                            }
-//                        }
-//                    }
-
-//                Column(
-//                    modifier = Modifier
-//                        .verticalScroll(rememberScrollState())
-//                ) {
             options.forEach { option ->
                 Row(
                     Modifier
@@ -182,7 +144,10 @@ fun <T> Select(
                         .height(56.dp)
                         .selectable(
                             selected = (value == option),
-                            onClick = { onSelect(option) },
+                            onClick = {
+                                onSelect(option)
+                                isExpanded = false
+                            },
                             role = Role.RadioButton
                         )
                         .padding(horizontal = 16.dp),
@@ -199,12 +164,6 @@ fun <T> Select(
                     )
                 }
             }
-
-//                Text("Create New", modifier = Modifier.align(Alignment.BottomCenter))
-//            }
-
-
-//            }
         }
     }
 }

@@ -1,7 +1,6 @@
 package com.example.chronometron.ui.composables.formFields
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -48,7 +47,7 @@ fun TimeSelector(
             ),
         ) {
             HoursNumberPicker(
-                textStyle = TextStyle(color = MaterialTheme.colorScheme.primary),
+                textStyle = TextStyle(color = colorScheme.primary),
                 dividersColor = if (hasError) colorScheme.error else colorScheme.primary,
                 leadingZero = true,
                 value = value ?: FullHours(0, 0),
@@ -85,7 +84,7 @@ fun TimeSelector(
             Text(
                 text = errorText.joinToString("\n"),
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                style = TextStyle.Default.copy(color = MaterialTheme.colorScheme.error)
+                style = TextStyle.Default.copy(color = colorScheme.error)
             )
         }
 
