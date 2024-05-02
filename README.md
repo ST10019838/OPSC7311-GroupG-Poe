@@ -18,19 +18,20 @@ ChronoMetron is an advanced time management application designed for Android, me
 To run the ChronoMetron app, clone this repository and import the project into Android Studio. Ensure you have the latest version of Android Studio and the Kotlin plugin installed.
 
 ```bash
-git clone https://github.com/ST10019838/OPSC7311-GroupG-Poe/tree/v1```
+git clone https://github.com/ST10019838/OPSC7311-GroupG-Poe/tree/v1
+```
 
-##Usage
-- Login/Register: Securely log in or register a new account.
-- Create Categories: Customize categories for different activities.
-- Add Timesheet Entries: Record your time with details like start/end times, date, description, and associated category.
-- Attach Photographs/camera image: Optionally add photos to your entries.
-- Set Goals: Define your daily minimum and maximum work hours.
-- View Reports: Access detailed reports to monitor your productivity.
+## Usage
+- **Login/Register:** Securely log in or register a new account.
+- **Create Categories:** Customize categories for different activities.
+- **Add Timesheet Entries:** Record your time with details like start/end times, date, description, and associated category.
+- **Attach Photographs/camera image:** Optionally add photos to your entries.
+- **Set Goals:** Define your daily minimum and maximum work hours.
+- **View Reports:** Access detailed reports to monitor your productivity.
 
-##Demostration
+## Demostration
 Refer to the demonstration video in the repository to see the app in action, showcasing all functionalities through a simulated environment.
 
-##Contributers - Group-G
+## Contributers - Group-G
 Guillaume Swanevelder (ST10019972)
 Damian Dare (ST10019838)
