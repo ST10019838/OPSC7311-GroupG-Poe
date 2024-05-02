@@ -42,7 +42,7 @@ fun CategoryCreationDialog(onDismiss: () -> Unit = {}) {
         confirmButton = {
             Button(
                 onClick = {
-                    UserSession.addCategory(Category(id = UUID.randomUUID(), name = text))
+                    UserSession.addCategory(Category(id = UUID.randomUUID(),name = text))
                     onDismiss()
                 },
 

@@ -1,5 +1,6 @@
 package com.example.chronometron.ui.viewModels
 
+//import com.example.chronometron.db.LocalDatabase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ch.benlu.composeform.formatters.dateShort
@@ -8,6 +9,7 @@ import com.chargemap.compose.numberpicker.Hours
 import com.example.chronometron.types.Category
 import com.example.chronometron.types.Period
 import com.example.chronometron.types.TimeEntry
+import com.example.chronometron.utils.addFullHours
 import com.example.chronometron.utils.areShortDatesEqual
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -16,7 +18,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import java.util.Date
-import java.util.UUID
+
 
 object UserSession : ViewModel() {
     // The following search functionality was adapted from youtube
@@ -26,6 +28,7 @@ object UserSession : ViewModel() {
     val selectedPeriod = _selectedPeriod.asStateFlow()
 
     private val _timeEntries = MutableStateFlow(listOf<TimeEntry>())
+
     val timeEntries = combine(_timeEntries) { entries ->
         entries[0].sortedByDescending { entry -> entry.date }
     }.stateIn(
@@ -36,14 +39,28 @@ object UserSession : ViewModel() {
 
 
     private val _datesAndEntries = combine(timeEntries) { sortedEntries ->
-        val datesAndEntriesMap = mutableMapOf<String, MutableList<Int>>()
+
+        var datesAndEntriesMap = mutableMapOf<String, Pair<Hours, MutableList<Int>>>()
 
         sortedEntries[0].forEachIndexed { index, entry ->
             val date = dateShort(entry.date)
             if (datesAndEntriesMap.containsKey(date)) {
-                datesAndEntriesMap[date]?.add(index)
+                var totalTime: Hours = FullHours(0, 0)
+                datesAndEntriesMap[date]?.second?.add(index)
+
+                datesAndEntriesMap[date]?.second?.forEach { id ->
+                    totalTime = addFullHours(totalTime, _timeEntries.value[id].duration)
+                }
+
+                datesAndEntriesMap[date] =
+                    Pair(
+                        totalTime,
+                        datesAndEntriesMap[date]?.second!!
+                    )
+
             } else {
-                datesAndEntriesMap[dateShort(entry.date)] = mutableListOf(index)
+                datesAndEntriesMap[dateShort(entry.date)] =
+                    Pair(entry.duration, mutableListOf(index))
             }
         }
 
@@ -51,7 +68,7 @@ object UserSession : ViewModel() {
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),
-        mapOf<String, MutableList<Int>>()
+        mapOf<String, Pair<Hours, MutableList<Int>>>()
     )
 
 
@@ -101,21 +118,31 @@ object UserSession : ViewModel() {
     private val _categories = MutableStateFlow(listOf<Category>())
     val categories = _categories.asStateFlow()
 
+//    private val _categories = db.categories.getCategories().stateIn(
+//        viewModelScope,
+//        SharingStarted.WhileSubscribed(5000),
+//        emptyList()
+//    )
+//
+//    val categories = _categories
 
-    val categoryHours = combine(datesAndEntries, categories) { entries, categories ->
+    val categoryHours = combine(datesAndEntries) {
         var categoryHoursMap = mutableMapOf<Category, Hours>()
 
-        entries.forEach {
-            it.value.forEach { id ->
+        it[0].forEach { item ->
+            item.value.second.forEach { id ->
                 val entry = timeEntries.value[id]
                 val category = entry.category
 
                 if (categoryHoursMap.containsKey(category)) {
-                    categoryHoursMap[category] = FullHours(
-                        hours = categoryHoursMap[category]?.hours?.plus(entry.duration.hours) ?: 0,
-                        minutes = categoryHoursMap[category]?.minutes?.plus(entry.duration.minutes)
-                            ?: 0
-                    )
+                    categoryHoursMap[category] =
+                        addFullHours(categoryHoursMap[category]!!, entry.duration)
+
+//                        FullHours(
+//                        hours = categoryHoursMap[category]?.hours?.plus(entry.duration.hours) ?: 0,
+//                        minutes = categoryHoursMap[category]?.minutes?.plus(entry.duration.minutes)
+//                            ?: 0
+//                    )
                 } else {
                     categoryHoursMap[category] =
                         FullHours(entry.duration.hours, entry.duration.minutes)
@@ -138,47 +165,35 @@ object UserSession : ViewModel() {
     val maximumGoal = _maximumGoal.asStateFlow()
 
 
+//    val totalDailyDuration = combine(_datesAndEntries) {
+//        var totalHours = 0
+//        var totalMinutes = 0
+//
+//        it[0][dateShort(Date())]?.second?.forEach { id ->
+//            totalHours += _timeEntries.value[id].duration.hours
+//            totalHours += _timeEntries.value[id].duration.minutes
+//        }
+//
+////        timeEntries.value.forEach { entry ->
+////            if (dateToUse == dateShort(entry.date)) {
+////
+////            }
+////        }
+//
+//        FullHours(totalHours, totalMinutes)
+//    }.stateIn(
+//        viewModelScope,
+//        SharingStarted.WhileSubscribed(5000),
+//        FullHours(0, 0)
+//    )
+
     init {
-        val startTimeValue = FullHours(1, 0)
-        val endTimeValue = FullHours(2, 0)
-
-        var newTimeEntry = TimeEntry(
-            id = UUID.randomUUID(),
-            description = "This is the long description that will be used",
-            date = Date(2024, 11, 1),
-            startTime = startTimeValue,
-            endTime = endTimeValue,
-            duration = FullHours(
-                hours = endTimeValue.hours - startTimeValue.hours,
-                minutes = endTimeValue.minutes - startTimeValue.minutes
-            ),
-            category = Category(UUID.randomUUID(), "Fun"),
-            photograph = null
-        )
-
-        _timeEntries.update { (it + newTimeEntry).toMutableList() }
-
-        val startTimeValue2 = FullHours(1, 0)
-        val endTimeValue2 = FullHours(2, 0)
-
-        var newTimeEntry2 = TimeEntry(
-            id = UUID.randomUUID(),
-            description = "This is the long description that will be used 2",
-            date = Date(2024, 11, 2),
-            startTime = startTimeValue2,
-            endTime = endTimeValue2,
-            duration = FullHours(
-                hours = endTimeValue2.hours - startTimeValue2.hours,
-                minutes = endTimeValue2.minutes - startTimeValue2.minutes
-            ),
-            category = Category(UUID.randomUUID(), "Fun"),
-            photograph = null
-        )
-
-        _timeEntries.update { (it + newTimeEntry2).toMutableList() }
-        _timeEntries.update { (it + newTimeEntry2).toMutableList() }
-        _timeEntries.update { (it + newTimeEntry2).toMutableList() }
-
+//        viewModelScope.launch {
+////            //fetch data code
+////            _timeEntries =
+//            val other = LocalDatabase.getDatabase(getApplication<Application>().applicationContext)
+//        }
+//        db = LocalDatabase.getDatabase(getApplication())
     }
 
 //    fun fetchData(){
@@ -192,23 +207,26 @@ object UserSession : ViewModel() {
         _selectedPeriod.value = Period(fromDate, toDate)
     }
 
-
-    // *Maybe convert to state
-    fun getTotalDailyDuration(date: Date? = Date(), formattedDate: String? = null): Hours {
-        var totalHours = 0
-        var totalMinutes = 0
-
-        val dateToUse = formattedDate ?: dateShort(date)
-
-        timeEntries.value.forEach { entry ->
-            if (dateToUse == dateShort(entry.date)) {
-                totalHours += entry.duration.hours
-                totalHours += entry.duration.minutes
-            }
-        }
-
-        return FullHours(totalHours, totalMinutes)
-    }
+//    fun getTotalDailyDuration(date: Date? = Date(), formattedDate: String? = null): Hours {
+//        var totalHours = 0
+//        var totalMinutes = 0
+//
+//        val dateToUse = formattedDate ?: dateShort(date)
+//
+//        datesAndEntries.value[dateToUse]?.forEach { id ->
+//            totalHours += _timeEntries.value[id].duration.hours
+//            totalHours += _timeEntries.value[id].duration.minutes
+//        }
+//
+////        timeEntries.value.forEach { entry ->
+////            if (dateToUse == dateShort(entry.date)) {
+////                totalHours += entry.duration.hours
+////                totalHours += entry.duration.minutes
+////            }
+////        }
+//
+//        return FullHours(totalHours, totalMinutes)
+//    }
 
 
     fun addTimeEntry(newEntry: TimeEntry) {
@@ -252,10 +270,22 @@ object UserSession : ViewModel() {
 
     fun addCategory(category: Category) {
         _categories.update { it + category }
+//        viewModelScope.launch {
+        //fetch data code
+//            db.categories.upsertCategory(category)
+//            LocalDatabase.getDatabase(getApplication<Application>().applicationContext).categories.upsertCategory(
+//                category
+//            )
+//        }
     }
 
     fun removeCategory(category: Category) {
         _categories.update { it.minusElement(category) }
+
+//        viewModelScope.launch {
+//            //fetch data code
+//            db.categories.deleteCategory(category)
+//        }
     }
 
 }

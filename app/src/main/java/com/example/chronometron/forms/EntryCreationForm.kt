@@ -55,7 +55,7 @@ class EntryCreationForm(entry: TimeEntry?) : Form() {
             IsRequiredValidator(),
             TimeValidator(
                 minTime = { startTime.state.value!! },
-                errorText = "End time cant be before start time."
+                errorText = "End time can't be less than start time."
             )
         )
     )

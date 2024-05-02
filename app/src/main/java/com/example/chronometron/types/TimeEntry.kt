@@ -1,11 +1,15 @@
 package com.example.chronometron.types
 
 import android.graphics.Bitmap
+//import androidx.room.Entity
+//import androidx.room.PrimaryKey
 import com.chargemap.compose.numberpicker.Hours
 import java.util.Date
 import java.util.UUID
 
+//@Entity()
 data class TimeEntry(
+//    @PrimaryKey(autoGenerate = true)
     var id: UUID,
     var description: String,
     var date: Date,

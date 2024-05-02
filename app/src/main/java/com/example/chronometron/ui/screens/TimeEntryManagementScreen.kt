@@ -52,8 +52,6 @@ fun TimeEntryManagementScreen(
     navigationAction: () -> Unit = {},
     entryToManage: TimeEntry? = null
 ) {
-
-//    var openDropdown by remember { mutableStateOf(false) }
     var form = EntryCreationForm(entryToManage)
     val noEntryToManage = entryToManage == null
     var isDeleteDialogOpen by remember { mutableStateOf(false) }

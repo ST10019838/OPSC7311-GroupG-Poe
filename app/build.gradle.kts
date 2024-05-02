@@ -1,6 +1,9 @@
+
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+//    id("kotlin-kapt")
+//    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -111,8 +114,22 @@ dependencies {
 
     implementation("androidx.camera:camera-view:$cameraxVersion")
     implementation("androidx.camera:camera-extensions:$cameraxVersion")
+
+
+    // Room
+//    val roomVersion = "2.6.1"
+//    implementation("androidx.room:room-ktx:$roomVersion")
+//    kapt("androidx.room:room-compiler:$roomVersion")
+
+
+    //Dagger - Hilt
+//    implementation(libs.hilt.android)
+//    kapt(libs.hilt.android.compiler)
 }
 
+//kapt {
+//    correctErrorTypes = true
+//}
 
 //repositories {
 //    mavenCentral()

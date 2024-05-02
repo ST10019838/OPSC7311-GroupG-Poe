@@ -38,7 +38,7 @@ fun ImagePreview(
     Dialog(
         properties = DialogProperties(usePlatformDefaultWidth = false),
         onDismissRequest = { }) {
-        Surface(color = MaterialTheme.colorScheme.onSurface) {
+        Surface(color = MaterialTheme.colorScheme.surface) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()

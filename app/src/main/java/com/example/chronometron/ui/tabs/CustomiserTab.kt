@@ -33,10 +33,12 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.example.chronometron.types.Category
+import com.example.chronometron.types.Goals
 import com.example.chronometron.ui.composables.CategoryChip
 import com.example.chronometron.ui.composables.CategoryCreationDialog
 import com.example.chronometron.ui.composables.CollapsibleSection
 import com.example.chronometron.ui.composables.formFields.TimeSelector
+import com.example.chronometron.ui.screens.CustomiserScreen
 import com.example.chronometron.ui.viewModels.UserSession
 import java.util.UUID
 
@@ -59,91 +61,7 @@ object CustomiserTab : Tab {
 
     @Composable
     override fun Content() {
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(25.dp)) {
-            item {
-                Goals()
-            }
-
-            item {
-                Categories()
-            }
-        }
-
-
+        CustomiserScreen()
     }
 }
 
-
-@Composable
-private fun Goals() {
-    val minGoal = UserSession.minimumGoal.collectAsState()
-    val maxGoal = UserSession.maximumGoal.collectAsState()
-
-    CollapsibleSection(
-        heading = "Daily Goals",
-        icon = { Icon(Icons.Default.TaskAlt, contentDescription = "Goals") }) {
-        Column(verticalArrangement = Arrangement.spacedBy(35.dp)) {
-            TimeSelector(
-                label = "Minimum Goal",
-                value = minGoal.value,
-                onChange = {
-                    UserSession.updateMinimumGoal(it)
-                }
-            )
-
-            TimeSelector(
-                label = "Maximum Goal",
-                value = maxGoal.value,
-                onChange = {
-                    UserSession.updateMaximumGoal(it)
-                }
-            )
-
-        }
-    }
-}
-
-
-@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
-@Composable
-private fun Categories() {
-    var isDialogOpen by rememberSaveable { mutableStateOf(false) }
-    val categories = UserSession.categories.collectAsState()
-
-    CollapsibleSection(
-        heading = "Categories",
-        icon = { Icon(Icons.Default.Category, contentDescription = "Categories") }) {
-        Column {
-            // Try optimize by making it lazy load items (use ContextualFlowRow)
-            FlowRow(
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                categories.value.forEachIndexed { _, item ->
-                    CategoryChip(
-                        item.name,
-                        modifier = Modifier.padding(horizontal = 5.dp),
-                        confirmationAction = {
-                            UserSession.removeCategory(item)
-                        })
-                }
-
-
-                Button(
-                    onClick = { isDialogOpen = true },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(text = "Add Category")
-                }
-            }
-        }
-
-
-        if (isDialogOpen) {
-            CategoryCreationDialog(onDismiss = {
-                isDialogOpen = false
-            })
-        }
-    }
-}
