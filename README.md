@@ -19,3 +19,18 @@ To run the ChronoMetron app, clone this repository and import the project into A
 
 ```bash
 git clone https://github.com/ST10019838/OPSC7311-GroupG-Poe/tree/v1
+
+##Usage
+- Login/Register: Securely log in or register a new account.
+- Create Categories: Customize categories for different activities.
+- Add Timesheet Entries: Record your time with details like start/end times, date, description, and associated category.
+- Attach Photographs/camera image: Optionally add photos to your entries.
+- Set Goals: Define your daily minimum and maximum work hours.
+- View Reports: Access detailed reports to monitor your productivity.
+
+##Demostration
+Refer to the demonstration video in the repository to see the app in action, showcasing all functionalities through a simulated environment.
+
+##Contributers - Group-G
+Guillaume Swanevelder (ST10019972)
+Damian Dare (ST10019838)
