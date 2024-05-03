@@ -18,7 +18,7 @@ ChronoMetron is an advanced time management application designed for Android, me
 To run the ChronoMetron app, clone this repository and import the project into Android Studio. Ensure you have the latest version of Android Studio and the Kotlin plugin installed.
 
 ```bash
-git clone https://github.com/ST10019838/OPSC7311-GroupG-Poe/tree/v1
+git clone https://github.com/ST10019838/OPSC7311-GroupG-Poe
 ```
 
 ## Usage
