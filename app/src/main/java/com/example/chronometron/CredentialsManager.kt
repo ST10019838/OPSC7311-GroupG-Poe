@@ -6,10 +6,21 @@ package com.example.chronometron
 object CredentialsManager {
     private val credentials = mutableMapOf<String, String>()
 
-    fun addCredential(email: String, password: String) {
+    fun addCredentials(email: String, password: String) {
         // Normalize email to lower case and trim spaces
         val normalizedEmail = email.trim().lowercase()
         credentials[normalizedEmail] = password
+    }
+
+    fun updateCredentials(email: String, password: String): Boolean {
+        // Normalize email to lower case and trim spaces
+        val normalizedEmail = email.trim().lowercase()
+        if(credentials.containsKey(normalizedEmail)){
+            credentials[normalizedEmail] = password
+            return true
+        }
+
+        return false
     }
 
     fun validateCredential(email: String, password: String): Boolean {

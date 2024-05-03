@@ -44,6 +44,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
@@ -57,7 +58,13 @@ import com.example.chronometron.utils.onFormValueChange
 import com.google.firebase.auth.FirebaseAuth
 
 
-class SignUpScreen() : Screen {
+enum class Mode {
+    SignUp, ForgotPassword
+}
+
+data class AccountScreen(
+    val mode: Mode
+) : Screen {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
@@ -71,7 +78,7 @@ class SignUpScreen() : Screen {
                 TopAppBar(
                     title = {
                         Text(
-                            "Sign Up",
+                            if (mode == Mode.SignUp) "Sign Up" else "Forgot Password",
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             style = MaterialTheme.typography.headlineSmall
@@ -131,7 +138,7 @@ class SignUpScreen() : Screen {
                         var passwordVisible by remember { mutableStateOf(false) }
                         TextField(
                             value = form.password.state.value,
-                            label = "Password",
+                            label = if (mode == Mode.SignUp) "Password" else "New Password",
                             isRequired = true,
                             onChange = { value ->
                                 onFormValueChange(
@@ -199,29 +206,49 @@ class SignUpScreen() : Screen {
 
                     Spacer(Modifier.height(20.dp))
 
+                    var actionWasSuccessful by remember { mutableStateOf(true) }
                     Column {
+                        if (!actionWasSuccessful) {
+                            Text(
+                                "Something went wrong, please try again",
+                                color = MaterialTheme.colorScheme.error,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+
                         Button(
                             onClick = {
                                 form.validate(true)
                                 if (form.isValid) {
-                                    CredentialsManager.addCredential(
-                                        email = form.email.state.value!!,
-                                        password = form.password.state.value!!
-                                    )
 
+                                    if (mode == Mode.SignUp) {
+                                        CredentialsManager.addCredentials(
+                                            email = form.email.state.value!!,
+                                            password = form.password.state.value!!
+                                        )
+                                    } else {
+                                        actionWasSuccessful = CredentialsManager.updateCredentials(
+                                            email = form.email.state.value!!,
+                                            password = form.password.state.value!!
+                                        )
+                                    }
+
+                                    if (actionWasSuccessful) {
+                                        Toast.makeText(
+                                            context,
+                                            if (mode == Mode.SignUp) "Sign Up Successful"
+                                            else "Password Reset Successful",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        navigator.pop()
+                                    }
 //                                    navigator.push(LandingScreen())
-                                    Toast.makeText(
-                                        context,
-                                        "Sign Up Successful",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    navigator.pop()
                                 }
 
                             },
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text("Sign Up")
+                            Text(if (mode == Mode.SignUp) "Sign Up" else "Reset Password")
                         }
 
                         TextButton(

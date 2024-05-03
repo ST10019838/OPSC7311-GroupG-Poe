@@ -290,7 +290,7 @@ class LoginScreen(
                     }
 
                     TextButton(
-                        onClick = {}, /*onSignUp*/
+                        onClick = { navigator.push(AccountScreen(mode = Mode.ForgotPassword)) }, /*onSignUp*/
                         modifier = Modifier
                             .fillMaxWidth(),
                     ) {
@@ -301,7 +301,7 @@ class LoginScreen(
                     }
 
                     TextButton(
-                        onClick = { navigator.push(SignUpScreen()) },
+                        onClick = { navigator.push(AccountScreen(mode = Mode.SignUp)) },
                         modifier = Modifier
                             .fillMaxWidth(),
                     ) {

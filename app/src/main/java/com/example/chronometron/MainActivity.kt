@@ -24,7 +24,7 @@ import cafe.adriel.voyager.transitions.SlideTransition
 import com.example.chronometron.ui.composables.ScreenLayout
 import com.example.chronometron.ui.screens.LandingScreen
 import com.example.chronometron.ui.screens.LoginScreen
-import com.example.chronometron.ui.screens.SignUpScreen
+//import com.example.chronometron.ui.screens.SignUpScreen
 import com.example.chronometron.ui.tabs.TimeEntriesTab
 import com.example.chronometron.ui.theme.ChronoMetronTheme
 import com.google.android.gms.auth.api.signin.GoogleSignIn

@@ -157,7 +157,7 @@ private fun takePhoto(
                 }
                 val rotatedBitmap = Bitmap.createBitmap(
                     image.toBitmap(),
-                    0, 0, image.width, image.width, matrix,
+                    0, 0, image.width, image.height, matrix,
                     true
                 )
 

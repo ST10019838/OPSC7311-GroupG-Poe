@@ -78,6 +78,7 @@ fun <T> Select(
     ExposedDropdownMenuBox(
         expanded = isExpanded,
         onExpandedChange = { isExpanded = it },
+        modifier = Modifier.fillMaxWidth()
     ) {
         Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(5.dp)) {
             Text(
@@ -132,7 +133,7 @@ fun <T> Select(
         ExposedDropdownMenu(
             expanded = isExpanded,
             onDismissRequest = { isExpanded = false },
-            modifier = Modifier.heightIn(0.dp, 200.dp)
+            modifier = Modifier.heightIn(0.dp, 200.dp).fillMaxWidth().padding(horizontal = 10.dp)
         ) {
             if(options.isEmpty() && canCreateIfEmpty){
                 onCreate()

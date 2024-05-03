@@ -37,7 +37,7 @@ fun CategoryCreationDialog(onDismiss: () -> Unit = {}) {
         text = {
             TextField(
                 value = form.name.state.value!!,
-                label = "Description",
+                label = "Name",
                 isRequired = true,
                 onChange = {
                     onFormValueChange(
