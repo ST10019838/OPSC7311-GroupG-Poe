@@ -33,8 +33,8 @@ git clone https://github.com/ST10019838/OPSC7311-GroupG-Poe
 Refer to the demonstration video in the repository to see the app in action, showcasing all functionalities through a simulated environment.
 
 ## Contributers - Group-G
-Guillaume Swanevelder (ST10019972)
-Damian Dare (ST10019838)
+- Guillaume Swanevelder (ST10019972)
+- Damian Dare (ST10019838)
 
 ## Dependencies
 
