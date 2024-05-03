@@ -116,6 +116,16 @@ dependencies {
     implementation("androidx.camera:camera-extensions:$cameraxVersion")
 
 
+    // Firebase and Play Services for authentication and analytics.
+    implementation("com.google.android.gms:play-services-auth:21.1.0")
+    implementation(platform("com.google.firebase:firebase-bom:32.8.1"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.android.material:material:1.11.0")
+    implementation("com.google.android.gms:play-services-identity:18.0.1")
+    implementation("com.google.android.gms:play-services-safetynet:18.0.1")
+
+
     // Room
 //    val roomVersion = "2.6.1"
 //    implementation("androidx.room:room-ktx:$roomVersion")

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.InputChip
@@ -55,9 +56,9 @@ fun CategoryChip(
 
     if (openDialog) {
         AlertDialog(
-//            icon = {
-//                Icon(icon, contentDescription = "Example Icon")
-//            },
+            icon = {
+                Icon(Icons.Default.Delete, contentDescription = "Remove Category")
+            },
             title = {
                 Text(text = "Remove Category")
             },

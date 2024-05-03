@@ -3,6 +3,7 @@ package com.example.chronometron.ui.tabs
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -28,6 +29,6 @@ object DailyHoursTab : Tab {
 
     @Composable
     override fun Content() {
-        Text("Coming soon...")
+        Text("Coming soon...", color = MaterialTheme.colorScheme.onSurface)
     }
 }

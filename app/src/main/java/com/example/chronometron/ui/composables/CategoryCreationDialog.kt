@@ -15,14 +15,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.dp
+import com.example.chronometron.forms.CategoryCreationForm
 import com.example.chronometron.types.Category
+import com.example.chronometron.ui.composables.formFields.TextField
 import com.example.chronometron.ui.viewModels.UserSession
+import com.example.chronometron.utils.onFormValueChange
 import java.util.UUID
 
 
 @Composable
 fun CategoryCreationDialog(onDismiss: () -> Unit = {}) {
-    var text by remember { mutableStateOf<String>("") }
+    val form = CategoryCreationForm()
 
     AlertDialog(
         icon = {
@@ -32,18 +35,31 @@ fun CategoryCreationDialog(onDismiss: () -> Unit = {}) {
             Text(text = "Create Category")
         },
         text = {
-            OutlinedTextField(
-                value = text,
-                onValueChange = { text = it },
-                label = { Text("Category Name") }
+            TextField(
+                value = form.name.state.value!!,
+                label = "Description",
+                isRequired = true,
+                onChange = {
+                    onFormValueChange(
+                        value = it,
+                        form = form,
+                        fieldState = form.name
+                    )
+                },
+                hasError = form.name.hasError(),
+                errorText = form.name.errorText,
+                placeholderText = "Add a Name"
             )
         },
         onDismissRequest = onDismiss,
         confirmButton = {
             Button(
                 onClick = {
-                    UserSession.addCategory(Category(id = UUID.randomUUID(),name = text))
-                    onDismiss()
+                    form.validate(true)
+                    if (form.isValid){
+                        UserSession.addCategory(Category(id = UUID.randomUUID(), name = form.name.state.value!!))
+                        onDismiss()
+                    }
                 },
 
                 contentPadding = PaddingValues(horizontal = 40.dp)
