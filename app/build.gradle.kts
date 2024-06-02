@@ -1,9 +1,9 @@
-
 plugins {
-    alias(libs.plugins.androidApplication)
+    id("com.android.application")
     alias(libs.plugins.jetbrainsKotlinAndroid)
-//    id("kotlin-kapt")
-//    id("com.google.dagger.hilt.android")
+    id("com.google.gms.google-services")
+    //    id("kotlin-kapt")
+    //    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -39,10 +39,6 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
-    buildFeatures {
-        compose = true
-    }
-
     buildFeatures {
         compose = true
     }
@@ -117,6 +113,8 @@ dependencies {
 
 
     // Firebase and Play Services for authentication and analytics.
+    implementation(platform("com.google.firebase:firebase-bom:33.1.0"))
+    implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.android.gms:play-services-auth:21.1.0")
     implementation(platform("com.google.firebase:firebase-bom:32.8.1"))
     implementation("com.google.firebase:firebase-analytics")
@@ -127,14 +125,14 @@ dependencies {
 
 
     // Room
-//    val roomVersion = "2.6.1"
-//    implementation("androidx.room:room-ktx:$roomVersion")
-//    kapt("androidx.room:room-compiler:$roomVersion")
+    //    val roomVersion = "2.6.1"
+    //    implementation("androidx.room:room-ktx:$roomVersion")
+    //    kapt("androidx.room:room-compiler:$roomVersion")
 
 
     //Dagger - Hilt
-//    implementation(libs.hilt.android)
-//    kapt(libs.hilt.android.compiler)
+    //    implementation(libs.hilt.android)
+    //    kapt(libs.hilt.android.compiler)
 }
 
 //kapt {

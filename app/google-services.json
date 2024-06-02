@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "600740808013",
+    "project_id": "chronometron-d5978",
+    "storage_bucket": "chronometron-d5978.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:600740808013:android:c3a99c4d59cb60cc76e304",
+        "android_client_info": {
+          "package_name": "com.example.chronometron"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBkn6AmPX2QarNalyJkcrAG8Mgs7KuUV0I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
