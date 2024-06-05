@@ -4,6 +4,7 @@ package com.example.chronometron.ui.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ch.benlu.composeform.formatters.dateShort
+import co.yml.charts.common.model.Point
 import com.chargemap.compose.numberpicker.FullHours
 import com.chargemap.compose.numberpicker.Hours
 import com.example.chronometron.types.Category
@@ -11,6 +12,7 @@ import com.example.chronometron.types.Period
 import com.example.chronometron.types.TimeEntry
 import com.example.chronometron.utils.addFullHours
 import com.example.chronometron.utils.areShortDatesEqual
+import com.example.chronometron.utils.hoursToFloat
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,9 +20,13 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import java.util.Date
+import java.util.UUID
 
 
 object UserSession : ViewModel() {
+    private val _isDarkMode = MutableStateFlow(true)
+    val isDarkMode = _isDarkMode.asStateFlow()
+
     // The following search functionality was adapted from youtube
     // Author: Philipp Lackner
     // Link: https://www.youtube.com/watch?v=CfL6Dl2_dAE
@@ -164,6 +170,40 @@ object UserSession : ViewModel() {
     private val _maximumGoal = MutableStateFlow<Hours>(FullHours(0, 0))
     val maximumGoal = _maximumGoal.asStateFlow()
 
+    val graphData = combine(datesAndEntries) {
+        var pointsData = mutableListOf<Point>()
+
+        it[0].toList().reversed().forEach { item ->
+            // This if allows the graph data to be empty when there are no dates and entries,
+            // allowing for error messages to be displayed
+            if(pointsData.isEmpty()){
+                pointsData += Point(0f, 0f, description = "")
+            }
+
+            pointsData += Point(
+                pointsData.last().x  + 1f,
+                hoursToFloat(item.second.first),
+                description = item.first
+            )
+        }
+
+
+
+        // list needs to be reversed to display dates in order
+//        pointsData = pointsData.reversed().toMutableList()
+
+
+//        if(pointsData.isNotEmpty()){
+//            pointsData.add(0, Point(0f, 0f, description = ""))
+//        }
+
+        pointsData.toList()
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        listOf<Point>()
+    )
+
 
 //    val totalDailyDuration = combine(_datesAndEntries) {
 //        var totalHours = 0
@@ -188,6 +228,30 @@ object UserSession : ViewModel() {
 //    )
 
     init {
+        val newEntry = TimeEntry(
+            id = UUID.randomUUID(),
+            category = Category(id = UUID.randomUUID(), name = "CAT"),
+            date = Date(),
+            description = "",
+            endTime = FullHours(0, 0),
+            duration = FullHours(6, 20),
+            startTime = FullHours(0, 0),
+            photograph = null
+        )
+
+        val newEntry2 = TimeEntry(
+            id = UUID.randomUUID(),
+            category = Category(id = UUID.randomUUID(), name = "CAT"),
+            date = Date(),
+            description = "",
+            endTime = FullHours(0, 0),
+            duration = FullHours(2, 0),
+            startTime = FullHours(0, 0),
+            photograph = null
+        )
+
+        _timeEntries.update { (it + newEntry).toMutableList() }
+//        _timeEntries.update { (it + newEntry).toMutableList() }
 //        viewModelScope.launch {
 ////            //fetch data code
 ////            _timeEntries =
@@ -286,6 +350,10 @@ object UserSession : ViewModel() {
 //            //fetch data code
 //            db.categories.deleteCategory(category)
 //        }
+    }
+
+    fun toggleIsDarkMode(value: Boolean){
+        _isDarkMode.update { value }
     }
 
 }

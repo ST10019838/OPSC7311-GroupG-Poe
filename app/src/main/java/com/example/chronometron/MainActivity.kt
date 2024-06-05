@@ -14,8 +14,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.currentOrThrow
@@ -27,6 +29,7 @@ import com.example.chronometron.ui.screens.LoginScreen
 //import com.example.chronometron.ui.screens.SignUpScreen
 import com.example.chronometron.ui.tabs.TimeEntriesTab
 import com.example.chronometron.ui.theme.ChronoMetronTheme
+import com.example.chronometron.ui.viewModels.UserSession
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -78,20 +81,24 @@ class MainActivity : ComponentActivity() {
             )
         }
 
-        setContent {
-            ChronoMetronTheme(darkTheme = true) {
-//                TabNavigator(TimeEntriesTab) { tabNavigator ->
-//                    ScreenLayout(tabNavigator)
-//                }
 
-                Navigator(LoginScreen(
-//                    onLogin = { email, password -> signInWithEmail(email, password) },
-//                    onGoogleSignIn = { signInWithGoogle() },
-//                    onGithubSignIn = { /* Implement GitHub login if necessary */ },
-//                    onSignUp = { /* navController.navigate("signupScreen") */}
-                )){
-                    SlideTransition(it)
+
+        setContent {
+            val isDarkMode by UserSession.isDarkMode.collectAsStateWithLifecycle()
+
+            ChronoMetronTheme(darkTheme = isDarkMode) {
+                TabNavigator(TimeEntriesTab) { tabNavigator ->
+                    ScreenLayout(tabNavigator)
                 }
+
+//                Navigator(LoginScreen(
+////                    onLogin = { email, password -> signInWithEmail(email, password) },
+////                    onGoogleSignIn = { signInWithGoogle() },
+////                    onGithubSignIn = { /* Implement GitHub login if necessary */ },
+////                    onSignUp = { /* navController.navigate("signupScreen") */}
+//                )){
+//                    SlideTransition(it)
+//                }
             }
         }
     }

@@ -86,7 +86,8 @@ fun <T> Select(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 style = MaterialTheme.typography.labelLarge,
-                modifier = Modifier.padding(start = 10.dp)
+                modifier = Modifier.padding(start = 10.dp),
+                color = MaterialTheme.colorScheme.onSurface
             )
 
 
@@ -124,7 +125,8 @@ fun <T> Select(
                 Text(
                     text = errorText.joinToString("\n"),
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                    style = TextStyle.Default.copy(color = MaterialTheme.colorScheme.error)
+                    style = TextStyle.Default.copy(color = MaterialTheme.colorScheme.error),
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
         }
@@ -163,7 +165,8 @@ fun <T> Select(
                     Text(
                         text = itemFormatter?.invoke(option) ?: option.toString(),
                         style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.padding(start = 16.dp)
+                        modifier = Modifier.padding(start = 16.dp),
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
             }

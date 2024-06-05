@@ -6,14 +6,10 @@ import androidx.compose.material.icons.filled.Category
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.dp
 import com.example.chronometron.forms.CategoryCreationForm
 import com.example.chronometron.types.Category
@@ -29,7 +25,11 @@ fun CategoryCreationDialog(onDismiss: () -> Unit = {}) {
 
     AlertDialog(
         icon = {
-            Icon(Icons.Default.Category, contentDescription = "Categories")
+            Icon(
+                Icons.Default.Category,
+                contentDescription = "Categories",
+                tint = MaterialTheme.colorScheme.primary
+            )
         },
         title = {
             Text(text = "Create Category")
@@ -56,8 +56,13 @@ fun CategoryCreationDialog(onDismiss: () -> Unit = {}) {
             Button(
                 onClick = {
                     form.validate(true)
-                    if (form.isValid){
-                        UserSession.addCategory(Category(id = UUID.randomUUID(), name = form.name.state.value!!))
+                    if (form.isValid) {
+                        UserSession.addCategory(
+                            Category(
+                                id = UUID.randomUUID(),
+                                name = form.name.state.value!!
+                            )
+                        )
                         onDismiss()
                     }
                 },

@@ -75,7 +75,8 @@ fun DatePicker(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.labelLarge,
-            modifier = Modifier.padding(start = 10.dp)
+            modifier = Modifier.padding(start = 10.dp),
+            color = MaterialTheme.colorScheme.onSurface
         )
 
 
@@ -106,7 +107,8 @@ fun DatePicker(
                 Text(
                     text = placeholderText ?: "",
                     maxLines = 1,
-                    modifier = Modifier.horizontalScroll(rememberScrollState())
+                    modifier = Modifier.horizontalScroll(rememberScrollState()),
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             },
         )

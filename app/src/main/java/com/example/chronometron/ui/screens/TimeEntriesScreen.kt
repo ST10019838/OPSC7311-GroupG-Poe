@@ -42,7 +42,6 @@ import com.example.chronometron.types.TimeEntry
 import com.example.chronometron.ui.composables.SelectablePeriodSearch
 import com.example.chronometron.ui.composables.TimeEntryListItem
 import com.example.chronometron.ui.viewModels.UserSession
-import com.example.chronometron.ui.viewModels.UserSession.categoryHours
 import java.util.Date
 
 @SuppressLint("UnrememberedMutableState")
@@ -66,13 +65,15 @@ fun TimeEntriesScreen() {
             Text(
                 "No Time Entries Created",
                 modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurface
             )
-        } else if (datesAndEntries.isEmpty()){
+        } else if (datesAndEntries.isEmpty()) {
             Text(
                 "No time has been recorded during this period",
                 modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
 
@@ -108,10 +109,10 @@ fun TimeEntriesScreen() {
 //                        val dateDuration =
 //                            UserSession.getTotalDailyDuration(formattedDate = it.first)
 
-
-
-
-                        Text(it.first, style = MaterialTheme.typography.titleMedium)
+                        Text(
+                            it.first, style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
                         Spacer(Modifier.size(ButtonDefaults.IconSpacing))
 
                         // Make a util function
@@ -129,7 +130,8 @@ fun TimeEntriesScreen() {
 
                     Text(
                         "${dateHours}h ${dateMinutes}m",
-                        style = MaterialTheme.typography.titleMedium
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
 
@@ -217,18 +219,24 @@ private fun DailyGoalDisplay() {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Daily Goal:", style = MaterialTheme.typography.titleMedium)
+            Text(
+                "Daily Goal:",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
 
             Icon(
                 Icons.Default.TaskAlt,
                 contentDescription = "Goal Stamp",
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier.size(24.dp),
+                tint = MaterialTheme.colorScheme.onSurface
             )
         }
 
         Text(
             "${totalDailyDuration?.hours ?: 0}h ${totalDailyDuration?.minutes ?: 0}m / $goalToDisplay",
-            style = MaterialTheme.typography.titleLarge
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.onSurface
         )
 
     }

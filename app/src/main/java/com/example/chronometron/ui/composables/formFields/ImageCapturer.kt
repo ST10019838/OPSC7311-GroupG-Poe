@@ -53,7 +53,8 @@ fun ImageCapturer(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.labelLarge,
-            modifier = Modifier.padding(start = 8.dp)
+            modifier = Modifier.padding(start = 8.dp),
+            color = MaterialTheme.colorScheme.onSurface
         )
         OutlinedTextField(
             colors = color ?: OutlinedTextFieldDefaults.colors(),

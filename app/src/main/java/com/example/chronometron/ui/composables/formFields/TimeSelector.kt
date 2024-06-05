@@ -37,7 +37,8 @@ fun TimeSelector(
             modifier = Modifier
                 .fillMaxWidth(),
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.labelLarge
+            style = MaterialTheme.typography.labelLarge,
+            color = colorScheme.onSurface
         )
 
         OutlinedCard(
@@ -57,13 +58,15 @@ fun TimeSelector(
                         Text(
                             textAlign = TextAlign.Center,
                             text = ":",
-                            modifier = Modifier.padding(horizontal = 10.dp)
+                            modifier = Modifier.padding(horizontal = 10.dp),
+                            color = colorScheme.onSurface
                         )
                     } else {
                         Text(
                             textAlign = TextAlign.Center,
                             text = "hours",
-                            modifier = Modifier.padding(horizontal = 10.dp)
+                            modifier = Modifier.padding(horizontal = 10.dp),
+                            color = colorScheme.onSurface
                         )
                     }
                 },
@@ -72,7 +75,8 @@ fun TimeSelector(
                         Text(
                             textAlign = TextAlign.Center,
                             text = "minutes",
-                            modifier = Modifier.padding(horizontal = 10.dp)
+                            modifier = Modifier.padding(horizontal = 10.dp),
+                            color = colorScheme.onSurface
                         )
                     }
                 },

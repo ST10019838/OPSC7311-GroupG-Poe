@@ -3,6 +3,7 @@ package com.example.chronometron.ui.tabs
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,6 +17,8 @@ import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,6 +30,8 @@ import cafe.adriel.voyager.navigator.tab.CurrentTab
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabNavigator
 import cafe.adriel.voyager.navigator.tab.TabOptions
+import com.example.chronometron.ui.composables.SelectablePeriodSearch
+import com.example.chronometron.ui.viewModels.UserSession
 
 
 object StatisticsTab : Tab {
@@ -48,6 +53,8 @@ object StatisticsTab : Tab {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     override fun Content() {
+        val selectablePeriod by UserSession.selectedPeriod.collectAsState()
+
         TabNavigator(CategoriesTab) { tabNavigator ->
             Scaffold(
                 bottomBar =
@@ -103,7 +110,23 @@ object StatisticsTab : Tab {
                     Box(
                         modifier = Modifier.padding(it)
                     ) {
-                        CurrentTab()
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            SelectablePeriodSearch(
+                                value = selectablePeriod,
+                                onSelectionChange = {
+                                    UserSession.onSelectedPeriodChange(
+                                        it?.fromDate,
+                                        it?.toDate
+                                    )
+                                },
+                                isOpen = false
+                            )
+
+                            CurrentTab()
+                        }
                     }
                 }
             )

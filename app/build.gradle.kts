@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.chronometron"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -135,6 +135,10 @@ dependencies {
     //Dagger - Hilt
 //    implementation(libs.hilt.android)
 //    kapt(libs.hilt.android.compiler)
+
+
+    // YCharts
+    implementation(libs.ycharts)
 }
 
 //kapt {

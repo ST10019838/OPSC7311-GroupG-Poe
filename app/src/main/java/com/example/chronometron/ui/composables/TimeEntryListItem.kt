@@ -124,16 +124,22 @@ private fun EntryInformation(entry: TimeEntry, modifier: Modifier = Modifier) {
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.width(IntrinsicSize.Max),
             style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface
         )
 
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Icon(
                 imageVector = Icons.Outlined.Category,
                 contentDescription = "Category Tag",
-                modifier = Modifier.size(16.dp)
+                modifier = Modifier.size(16.dp),
+                tint = MaterialTheme.colorScheme.onSurface
             )
             Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-            Text("${entry.category.name}", style = MaterialTheme.typography.bodyMedium)
+            Text(
+                "${entry.category.name}",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
         }
     }
 }
@@ -151,7 +157,10 @@ private fun EntryDurationDisplay(
             .fillMaxHeight(),
         shape = RoundedCornerShape(0)
     ) {
-        Text(text = "${entry.duration.hours}h ${entry.duration.minutes}m")
+        Text(
+            text = "${entry.duration.hours}h ${entry.duration.minutes}m",
+            color = MaterialTheme.colorScheme.onSurface
+        )
     }
 }
 
@@ -183,13 +192,15 @@ private fun EntryTimesDisplay(entry: TimeEntry) {
                 Text(
                     text = "Start Time",
                     style = MaterialTheme.typography.labelMedium,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
                     text = "${entry.startTime.hours} : ${entry.startTime.minutes}",
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
 
@@ -198,13 +209,15 @@ private fun EntryTimesDisplay(entry: TimeEntry) {
                 Text(
                     text = "End Time",
                     style = MaterialTheme.typography.labelMedium,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
                     text = "${entry.endTime.hours} : ${entry.endTime.minutes}",
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
         }

@@ -20,43 +20,30 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.chargemap.compose.numberpicker.Hours
 import com.example.chronometron.types.Category
-import com.example.chronometron.ui.composables.SelectablePeriodSearch
 import com.example.chronometron.ui.viewModels.UserSession
 
 @Composable
 fun CategoryHoursScreen() {
     val categoryHours by UserSession.categoryHours.collectAsState()
-    val selectablePeriod by UserSession.selectedPeriod.collectAsState()
     val timeEntries by UserSession.timeEntries.collectAsState()
-
 
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
-        SelectablePeriodSearch(
-            value = selectablePeriod,
-            onSelectionChange = {
-                UserSession.onSelectedPeriodChange(
-                    it?.fromDate,
-                    it?.toDate
-                )
-            },
-            isOpen = false
-        )
-
-
         if (timeEntries.isEmpty()) {
             Text(
                 "No Time Entries Created",
                 modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurface
             )
-        } else if (categoryHours.isEmpty()){
+        } else if (categoryHours.isEmpty()) {
             Text(
                 "No time has been recorded during this period",
                 modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurface
             )
         } else {
             Row(
@@ -65,9 +52,17 @@ fun CategoryHoursScreen() {
                     .padding(horizontal = 15.dp)
                     .fillMaxWidth()
             ) {
-                Text("Category", style = MaterialTheme.typography.labelLarge)
+                Text(
+                    "Category",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
 
-                Text("Total Time", style = MaterialTheme.typography.labelLarge)
+                Text(
+                    "Total Time",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
             }
         }
 
@@ -94,9 +89,15 @@ private fun CategoryHoursListItem(item: Pair<Category, Hours>) {
                 .padding(15.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(item.first.name)
+            Text(
+                item.first.name,
+                color = MaterialTheme.colorScheme.onSurface
+            )
 
-            Text("${item.second.hours}h ${item.second.minutes}m")
+            Text(
+                "${item.second.hours}h ${item.second.minutes}m",
+                color = MaterialTheme.colorScheme.onSurface
+            )
         }
     }
 

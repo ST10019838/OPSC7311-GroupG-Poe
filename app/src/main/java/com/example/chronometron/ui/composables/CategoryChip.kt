@@ -9,6 +9,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.InputChipDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -35,7 +36,12 @@ fun CategoryChip(
         onClick = {
             openDialog = true
         },
-        label = { Text(category) },
+        label = {
+            Text(
+                category,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        },
         selected = false,
 //        avatar = {
 //            Icon(
@@ -57,7 +63,11 @@ fun CategoryChip(
     if (openDialog) {
         AlertDialog(
             icon = {
-                Icon(Icons.Default.Delete, contentDescription = "Remove Category")
+                Icon(
+                    Icons.Default.Delete,
+                    contentDescription = "Remove Category",
+                    tint = MaterialTheme.colorScheme.primary
+                )
             },
             title = {
                 Text(text = "Remove Category")
