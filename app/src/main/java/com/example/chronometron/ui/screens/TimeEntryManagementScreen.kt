@@ -8,8 +8,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,6 +36,7 @@ import com.example.chronometron.forms.EntryCreationForm
 import com.example.chronometron.types.Category
 import com.example.chronometron.types.TimeEntry
 import com.example.chronometron.ui.composables.CategoryCreationDialog
+import com.example.chronometron.ui.composables.TimeEntryDeletionDialog
 import com.example.chronometron.ui.composables.formFields.DatePicker
 import com.example.chronometron.ui.composables.formFields.ImageCapturer
 import com.example.chronometron.ui.composables.formFields.Select
@@ -249,36 +248,9 @@ fun TimeEntryManagementScreen(
 
 
                     if (isDeleteDialogOpen) {
-                        AlertDialog(
-                            icon = {
-                                Icon(Icons.Default.Delete, contentDescription = "Delete Entry")
-                            },
-                            title = {
-                                Text(text = "Delete Entry")
-                            },
-                            text = { Text("Are you sure you want to delete this entry? ") },
-                            onDismissRequest = {
-                                isDeleteDialogOpen = false
-                            },
-                            confirmButton = {
-                                TextButton(
-                                    onClick = {
-                                        onDelete()
-                                        isDeleteDialogOpen = false
-                                    }
-                                ) {
-                                    Text("Confirm")
-                                }
-                            },
-                            dismissButton = {
-                                TextButton(
-                                    onClick = {
-                                        isDeleteDialogOpen = false
-                                    }
-                                ) {
-                                    Text("Dismiss")
-                                }
-                            }
+                        TimeEntryDeletionDialog(
+                            onDismiss = { isDeleteDialogOpen = false },
+                            onConfirm = onDelete
                         )
                     }
 

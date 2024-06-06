@@ -36,16 +36,13 @@ object UserSession : ViewModel() {
     private val _timeEntries = MutableStateFlow(listOf<TimeEntry>())
 
     val timeEntries = combine(_timeEntries) { entries ->
-        entries[0].sortedByDescending { entry -> entry.date }
+        entries[0].filter { e -> !e.isArchived }.sortedByDescending { entry -> entry.date }
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),
         _timeEntries.value
     )
-
-
     private val _datesAndEntries = combine(timeEntries) { sortedEntries ->
-
         var datesAndEntriesMap = mutableMapOf<String, Pair<Hours, MutableList<Int>>>()
 
         sortedEntries[0].forEachIndexed { index, entry ->
@@ -76,8 +73,6 @@ object UserSession : ViewModel() {
         SharingStarted.WhileSubscribed(5000),
         mapOf<String, Pair<Hours, MutableList<Int>>>()
     )
-
-
     val datesAndEntries =
         selectedPeriod.combine(_datesAndEntries) { selectedPeriod, datesAndEntries ->
             if (selectedPeriod.fromDate == null && selectedPeriod.toDate == null) {
@@ -120,6 +115,260 @@ object UserSession : ViewModel() {
             SharingStarted.WhileSubscribed(5000),
             _datesAndEntries.value
         )
+
+
+    val archivedTimeEntries = combine(_timeEntries) { entries ->
+        entries[0].filter { e -> e.isArchived }.sortedByDescending { entry -> entry.date }
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        _timeEntries.value // Maybe ADD FILTER
+    )
+    private val _archivedDatesAndEntries = combine(archivedTimeEntries) { sortedEntries ->
+        var datesAndEntriesMap = mutableMapOf<String, Pair<Hours, MutableList<Int>>>()
+
+        sortedEntries[0].forEachIndexed { index, entry ->
+            val date = dateShort(entry.date)
+            if (datesAndEntriesMap.containsKey(date)) {
+                var totalTime: Hours = FullHours(0, 0)
+                datesAndEntriesMap[date]?.second?.add(index)
+
+                datesAndEntriesMap[date]?.second?.forEach { id ->
+                    totalTime = addFullHours(totalTime, _timeEntries.value[id].duration)
+                }
+
+                datesAndEntriesMap[date] =
+                    Pair(
+                        totalTime,
+                        datesAndEntriesMap[date]?.second!!
+                    )
+
+            } else {
+                datesAndEntriesMap[dateShort(entry.date)] =
+                    Pair(entry.duration, mutableListOf(index))
+            }
+        }
+
+        datesAndEntriesMap.toMap()
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        mapOf<String, Pair<Hours, MutableList<Int>>>()
+    )
+    val archivedDatesAndEntries =
+        selectedPeriod.combine(_archivedDatesAndEntries) { selectedPeriod, datesAndEntries ->
+            if (selectedPeriod.fromDate == null && selectedPeriod.toDate == null) {
+                datesAndEntries
+            } else {
+                val onlyFromDate = selectedPeriod.fromDate != null && selectedPeriod.toDate == null
+                val onlyToDate = selectedPeriod.fromDate == null && selectedPeriod.toDate != null
+
+                // To explain the complex looking if statement:
+                // - IF "ToDate" is empty: show all dates before or equal to "ToDate"
+                // - IF "FromDate" is empty: show all entries after or equal to "FromDate"
+                // - Otherwise show all entries between (inclusive) the "FromDate" and "ToDate"
+                datesAndEntries.filter { item ->
+                    if (onlyToDate) {
+                        Date(item.key).before(selectedPeriod.toDate) ||
+                                areShortDatesEqual(
+                                    shortDate = item.key,
+                                    date = selectedPeriod.toDate!!
+                                )
+                    } else if (onlyFromDate) {
+                        Date(item.key).after(selectedPeriod.fromDate) ||
+                                areShortDatesEqual(
+                                    shortDate = item.key,
+                                    date = selectedPeriod.fromDate!!
+                                )
+                    } else Date(item.key).after(selectedPeriod.fromDate) &&
+                            Date(item.key).before(selectedPeriod.toDate) ||
+                            areShortDatesEqual(
+                                shortDate = item.key,
+                                date = selectedPeriod.fromDate!!
+                            ) ||
+                            areShortDatesEqual(
+                                shortDate = item.key,
+                                date = selectedPeriod.toDate!!
+                            )
+                }
+            }
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            _archivedDatesAndEntries.value
+        )
+
+
+
+    // OLD ARCHIVING METHOD
+//    private val _timeEntries = MutableStateFlow(listOf<TimeEntry>())
+//
+//    val timeEntries = combine(_timeEntries) { entries ->
+//        entries[0].sortedByDescending { entry -> entry.date }
+//    }.stateIn(
+//        viewModelScope,
+//        SharingStarted.WhileSubscribed(5000),
+//        _timeEntries.value
+//    )
+//
+//
+//    private val _datesAndEntries = combine(timeEntries) { sortedEntries ->
+//        var datesAndEntriesMap = mutableMapOf<String, Pair<Hours, MutableList<Int>>>()
+//
+//        sortedEntries[0].filter {
+//            !it.isArchived
+//        }.forEachIndexed { index, entry ->
+//            val date = dateShort(entry.date)
+//            if (datesAndEntriesMap.containsKey(date)) {
+//                var totalTime: Hours = FullHours(0, 0)
+//                datesAndEntriesMap[date]?.second?.add(index)
+//
+//                datesAndEntriesMap[date]?.second?.forEach { id ->
+//                    totalTime = addFullHours(totalTime, _timeEntries.value[id].duration)
+//                }
+//
+//                datesAndEntriesMap[date] =
+//                    Pair(
+//                        totalTime,
+//                        datesAndEntriesMap[date]?.second!!
+//                    )
+//
+//            } else {
+//                datesAndEntriesMap[dateShort(entry.date)] =
+//                    Pair(entry.duration, mutableListOf(index))
+//            }
+//        }
+//
+//        datesAndEntriesMap.toMap()
+//    }.stateIn(
+//        viewModelScope,
+//        SharingStarted.WhileSubscribed(5000),
+//        mapOf<String, Pair<Hours, MutableList<Int>>>()
+//    )
+//
+//
+//    val datesAndEntries =
+//        selectedPeriod.combine(_datesAndEntries) { selectedPeriod, datesAndEntries ->
+//            if (selectedPeriod.fromDate == null && selectedPeriod.toDate == null) {
+//                datesAndEntries
+//            } else {
+//                val onlyFromDate = selectedPeriod.fromDate != null && selectedPeriod.toDate == null
+//                val onlyToDate = selectedPeriod.fromDate == null && selectedPeriod.toDate != null
+//
+//                // To explain the complex looking if statement:
+//                // - IF "ToDate" is empty: show all dates before or equal to "ToDate"
+//                // - IF "FromDate" is empty: show all entries after or equal to "FromDate"
+//                // - Otherwise show all entries between (inclusive) the "FromDate" and "ToDate"
+//                datesAndEntries.filter { item ->
+//                    if (onlyToDate) {
+//                        Date(item.key).before(selectedPeriod.toDate) ||
+//                                areShortDatesEqual(
+//                                    shortDate = item.key,
+//                                    date = selectedPeriod.toDate!!
+//                                )
+//                    } else if (onlyFromDate) {
+//                        Date(item.key).after(selectedPeriod.fromDate) ||
+//                                areShortDatesEqual(
+//                                    shortDate = item.key,
+//                                    date = selectedPeriod.fromDate!!
+//                                )
+//                    } else Date(item.key).after(selectedPeriod.fromDate) &&
+//                            Date(item.key).before(selectedPeriod.toDate) ||
+//                            areShortDatesEqual(
+//                                shortDate = item.key,
+//                                date = selectedPeriod.fromDate!!
+//                            ) ||
+//                            areShortDatesEqual(
+//                                shortDate = item.key,
+//                                date = selectedPeriod.toDate!!
+//                            )
+//                }
+//            }
+//        }.stateIn(
+//            viewModelScope,
+//            SharingStarted.WhileSubscribed(5000),
+//            _datesAndEntries.value
+//        )
+//
+//
+//    private val _archivedDatesAndEntries = combine(timeEntries) { sortedEntries ->
+//        var datesAndEntriesMap = mutableMapOf<String, Pair<Hours, MutableList<Int>>>()
+//
+//        sortedEntries[0].filter {
+//            it.isArchived
+//        }.forEachIndexed { index, entry ->
+//            val date = dateShort(entry.date)
+//            if (datesAndEntriesMap.containsKey(date)) {
+//                var totalTime: Hours = FullHours(0, 0)
+//                datesAndEntriesMap[date]?.second?.add(index)
+//
+//                datesAndEntriesMap[date]?.second?.forEach { id ->
+//                    totalTime = addFullHours(totalTime, _timeEntries.value[id].duration)
+//                }
+//
+//                datesAndEntriesMap[date] =
+//                    Pair(
+//                        totalTime,
+//                        datesAndEntriesMap[date]?.second!!
+//                    )
+//
+//            } else {
+//                datesAndEntriesMap[dateShort(entry.date)] =
+//                    Pair(entry.duration, mutableListOf(index))
+//            }
+//        }
+//
+//        datesAndEntriesMap.toMap()
+//    }.stateIn(
+//        viewModelScope,
+//        SharingStarted.WhileSubscribed(5000),
+//        mapOf<String, Pair<Hours, MutableList<Int>>>()
+//    )
+//
+//
+//    val archivedDatesAndEntries =
+//        selectedPeriod.combine(_archivedDatesAndEntries) { selectedPeriod, datesAndEntries ->
+//            if (selectedPeriod.fromDate == null && selectedPeriod.toDate == null) {
+//                datesAndEntries
+//            } else {
+//                val onlyFromDate = selectedPeriod.fromDate != null && selectedPeriod.toDate == null
+//                val onlyToDate = selectedPeriod.fromDate == null && selectedPeriod.toDate != null
+//
+//                // To explain the complex looking if statement:
+//                // - IF "ToDate" is empty: show all dates before or equal to "ToDate"
+//                // - IF "FromDate" is empty: show all entries after or equal to "FromDate"
+//                // - Otherwise show all entries between (inclusive) the "FromDate" and "ToDate"
+//                datesAndEntries.filter { item ->
+//                    if (onlyToDate) {
+//                        Date(item.key).before(selectedPeriod.toDate) ||
+//                                areShortDatesEqual(
+//                                    shortDate = item.key,
+//                                    date = selectedPeriod.toDate!!
+//                                )
+//                    } else if (onlyFromDate) {
+//                        Date(item.key).after(selectedPeriod.fromDate) ||
+//                                areShortDatesEqual(
+//                                    shortDate = item.key,
+//                                    date = selectedPeriod.fromDate!!
+//                                )
+//                    } else Date(item.key).after(selectedPeriod.fromDate) &&
+//                            Date(item.key).before(selectedPeriod.toDate) ||
+//                            areShortDatesEqual(
+//                                shortDate = item.key,
+//                                date = selectedPeriod.fromDate!!
+//                            ) ||
+//                            areShortDatesEqual(
+//                                shortDate = item.key,
+//                                date = selectedPeriod.toDate!!
+//                            )
+//                }
+//            }
+//        }.stateIn(
+//            viewModelScope,
+//            SharingStarted.WhileSubscribed(5000),
+//            _archivedDatesAndEntries.value
+//        )
+
 
     private val _categories = MutableStateFlow(listOf<Category>())
     val categories = _categories.asStateFlow()
@@ -176,17 +425,16 @@ object UserSession : ViewModel() {
         it[0].toList().reversed().forEach { item ->
             // This if allows the graph data to be empty when there are no dates and entries,
             // allowing for error messages to be displayed
-            if(pointsData.isEmpty()){
+            if (pointsData.isEmpty()) {
                 pointsData += Point(0f, 0f, description = "")
             }
 
             pointsData += Point(
-                pointsData.last().x  + 1f,
+                pointsData.last().x + 1f,
                 hoursToFloat(item.second.first),
                 description = item.first
             )
         }
-
 
 
         // list needs to be reversed to display dates in order
@@ -236,7 +484,8 @@ object UserSession : ViewModel() {
             endTime = FullHours(0, 0),
             duration = FullHours(6, 20),
             startTime = FullHours(0, 0),
-            photograph = null
+            photograph = null,
+            isArchived = true
         )
 
         val newEntry2 = TimeEntry(
@@ -247,7 +496,8 @@ object UserSession : ViewModel() {
             endTime = FullHours(0, 0),
             duration = FullHours(2, 0),
             startTime = FullHours(0, 0),
-            photograph = null
+            photograph = null,
+            isArchived = true
         )
 
         _timeEntries.update { (it + newEntry).toMutableList() }
@@ -352,7 +602,95 @@ object UserSession : ViewModel() {
 //        }
     }
 
-    fun toggleIsDarkMode(value: Boolean){
+    fun archiveEntry(entry: TimeEntry) {
+//        entry.isArchived = true
+
+//        val entryIndex = _timeEntries.value.indexOf(entry)
+//        _timeEntries.value[entryIndex].isArchived = true
+
+//        _timeEntries.update {
+//            it.map { timeEntry ->
+//                if (timeEntry.id == entry.id) {
+//                    entry
+//                } else {
+//                    timeEntry
+//                }
+//            }
+//        }
+        val updatedEntry = TimeEntry(
+            id = entry.id,
+            description = entry.description,
+            date = entry.date,
+            startTime = entry.startTime,
+            endTime = entry.endTime,
+            duration = entry.duration,
+            category = entry.category,
+            photograph = entry.photograph,
+            isArchived = false
+        )
+
+        deleteTimeEntry(entry)
+        addTimeEntry(updatedEntry)
+
+
+//        _timeEntries.update {
+//            it.toMutableList().apply {
+//                this[indexOfFirst { e -> e.id == entry.id }] = updatedEntry
+//            }
+//        }
+    }
+
+    fun unarchiveEntry(entry: TimeEntry) {
+//        val entryIndex = _timeEntries.value.indexOf(entry)
+
+        val updatedEntry = TimeEntry(
+            id = entry.id,
+            description = entry.description,
+            date = entry.date,
+            startTime = entry.startTime,
+            endTime = entry.endTime,
+            duration = entry.duration,
+            category = entry.category,
+            photograph = entry.photograph,
+            isArchived = false
+        )
+
+        deleteTimeEntry(entry)
+        addTimeEntry(updatedEntry)
+
+//        updatedEntry.isArchived = false
+//        entry.isArchived = false
+
+//        Log.d("IDK", entry.isArchived.toString())
+
+
+//        var newEntriesList = _timeEntries.value.toMutableList()
+//        newEntriesList[entryIndex] = entry
+//
+//
+//        _timeEntries.update { newEntriesList }
+
+        _timeEntries.update {
+            it.toMutableList().apply {
+                this[indexOfFirst { e -> e.id == entry.id }] = updatedEntry
+            }
+        }
+
+
+//        entry.isArchived = false
+//
+//        _timeEntries.update {
+//            it.map { timeEntry ->
+//                if (timeEntry.id == entry.id) {
+//                    entry
+//                } else {
+//                    timeEntry
+//                }
+//            }
+//        }
+    }
+
+    fun toggleIsDarkMode(value: Boolean) {
         _isDarkMode.update { value }
     }
 

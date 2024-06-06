@@ -17,7 +17,8 @@ data class TimeEntry(
     var endTime: Hours,
     var duration: Hours,
     var category: Category,
-    var photograph: Bitmap?
+    var photograph: Bitmap?,
+    var isArchived: Boolean
 )
 
 //{

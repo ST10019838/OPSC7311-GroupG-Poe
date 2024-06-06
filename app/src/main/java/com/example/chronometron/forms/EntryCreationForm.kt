@@ -90,7 +90,8 @@ class EntryCreationForm(entry: TimeEntry?) : Form() {
                 minutes = endTimeValue.minutes - startTimeValue.minutes
             ),
             category = this.category.state.value!!,
-            photograph = this.photograph.state.value
+            photograph = this.photograph.state.value,
+            isArchived = false
         )
     }
 }

@@ -1,6 +1,7 @@
 package com.example.chronometron.ui.tabs
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Archive
 import androidx.compose.material.icons.sharp.AccessTime
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -14,13 +15,13 @@ import com.example.chronometron.ui.screens.TimeEntriesScreen
 import com.example.chronometron.ui.viewModels.UserSession
 
 
-object TimeEntriesTab : Tab {
+object ArchivedTimeEntriesTab : Tab {
 
     override val options: TabOptions
         @Composable
         get() {
-            val title = "Time Entries"
-            val icon = rememberVectorPainter(Icons.Sharp.AccessTime)
+            val title = "Archived Entries"
+            val icon = rememberVectorPainter(Icons.Outlined.Archive)
 
             return remember {
                 TabOptions(
@@ -33,8 +34,8 @@ object TimeEntriesTab : Tab {
 
     @Composable
     override fun Content() {
-        val datesAndEntries by UserSession.datesAndEntries.collectAsStateWithLifecycle()
+        val archivedDatesAndEntries by UserSession.archivedDatesAndEntries.collectAsStateWithLifecycle()
 
-        TimeEntriesScreen(datesAndEntries)
+        TimeEntriesScreen(archivedDatesAndEntries, usingArchive = true)
     }
 }

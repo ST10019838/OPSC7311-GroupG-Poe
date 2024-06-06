@@ -139,6 +139,9 @@ dependencies {
 
     // YCharts
     implementation(libs.ycharts)
+
+    // Reveal Swipe
+    implementation(libs.revealswipe)
 }
 
 //kapt {

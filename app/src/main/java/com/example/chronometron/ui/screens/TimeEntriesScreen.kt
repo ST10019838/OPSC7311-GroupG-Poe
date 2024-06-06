@@ -28,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -38,6 +39,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ch.benlu.composeform.formatters.dateShort
+import com.chargemap.compose.numberpicker.Hours
 import com.example.chronometron.types.TimeEntry
 import com.example.chronometron.ui.composables.SelectablePeriodSearch
 import com.example.chronometron.ui.composables.TimeEntryListItem
@@ -46,12 +48,17 @@ import java.util.Date
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
-fun TimeEntriesScreen() {
+fun TimeEntriesScreen(
+    datesAndEntries: Map<String, Pair<Hours, MutableList<Int>>>,
+    usingArchive: Boolean = false
+) {
     var isDialogOpen by remember { mutableStateOf(false) }
-    val timeEntries by UserSession.timeEntries.collectAsStateWithLifecycle()
-    val datesAndEntries by UserSession.datesAndEntries.collectAsStateWithLifecycle()
+    val timeEntries by if (usingArchive) UserSession.archivedTimeEntries.collectAsStateWithLifecycle()
+    else UserSession.timeEntries.collectAsStateWithLifecycle()
+
     val selectablePeriod by UserSession.selectedPeriod.collectAsStateWithLifecycle()
     var entryToManage: TimeEntry? by remember { mutableStateOf(null) }
+
 
     // Needs to be a column
     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(5.dp)) {
@@ -63,7 +70,7 @@ fun TimeEntriesScreen() {
 
         if (timeEntries.isEmpty()) {
             Text(
-                "No Time Entries Created",
+                if (usingArchive) "No Time Entries Archived" else "No Time Entries Created",
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onSurface
@@ -80,7 +87,7 @@ fun TimeEntriesScreen() {
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(25.dp),
             modifier = Modifier
-                .fillMaxHeight()
+                .fillMaxSize()
                 .weight(1f)
         ) {
             items(datesAndEntries.toList()) {
@@ -135,15 +142,25 @@ fun TimeEntriesScreen() {
                     )
                 }
 
-                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    it.second.second.forEach { id ->
-                        val entry = timeEntries[id]
+//                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+//                it.second.second.first {
+//
+//                    }
+
+                it.second.second.forEach { id ->
+                    val entry = timeEntries[id]
+                    // the following function was adapted from stackoverflow
+                    // Author: chuckj
+                    // Link: https://stackoverflow.com/questions/70186437/use-item-keys-in-non-lazy-column
+                    key(entry.id){
                         TimeEntryListItem(entry = entry, onClick = {
                             entryToManage = entry
                             isDialogOpen = true
                         })
                     }
+
                 }
+//                }
             }
         }
 
@@ -178,7 +195,6 @@ fun TimeEntriesScreen() {
                 ) {
                     Icon(Icons.Default.Add, contentDescription = "Add")
                 }
-
 
             }
         }
@@ -239,6 +255,8 @@ private fun DailyGoalDisplay() {
             color = MaterialTheme.colorScheme.onSurface
         )
 
+
     }
 }
+
 

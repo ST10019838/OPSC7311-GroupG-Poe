@@ -2,7 +2,9 @@ package com.example.chronometron.ui.composables
 
 import android.graphics.Bitmap
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -17,7 +19,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.outlined.Archive
 import androidx.compose.material.icons.outlined.Category
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Unarchive
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -27,66 +32,190 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.chronometron.types.TimeEntry
 import com.example.chronometron.ui.composables.camera.ImagePreview
+import com.example.chronometron.ui.viewModels.UserSession
+import de.charlex.compose.RevealSwipe
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun TimeEntryListItem(entry: TimeEntry, onClick: () -> Unit = {}) {
     var isOpen by rememberSaveable { mutableStateOf(false) }
-    val rotation by animateFloatAsState(if (isOpen) 180f else 0f, label = "arrowRotationAnimation")
+    var isDeleteDialogOpen by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+    var isRemoved by remember { mutableStateOf(false) }
+    var isDeleted by remember { mutableStateOf(false) }
+    var shouldArchive by remember { mutableStateOf(entry.isArchived) }
+    var bleh by remember { mutableStateOf("bleh") }
 
-    OutlinedCard(onClick = onClick) {
-        Row(
-            modifier = Modifier
-                .height(IntrinsicSize.Max)
-                .fillMaxWidth(),
-        ) {
-            if (entry.photograph != null) {
-                EntryImagePreview(entry.photograph!!)
 
-                VerticalDivider(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(100))
-                        .fillMaxHeight(0.5f)
-                        .align(Alignment.CenterVertically),
-                    thickness = 1.dp
+    // The following code was adapted from Youtube
+    // Author: Philipp Lackner
+    // Link: https://www.youtube.com/watch?v=IlI6GgC_j78
+    LaunchedEffect(key1 = isRemoved) {
+        if (isRemoved) {
+            delay(500)
+
+            if (isDeleted) {
+                UserSession.deleteTimeEntry(entry!!)
+            } else if (shouldArchive) {
+                val updatedEntry = TimeEntry(
+                    id = entry.id,
+                    description = entry.description,
+                    date = entry.date,
+                    startTime = entry.startTime,
+                    endTime = entry.endTime,
+                    duration = entry.duration,
+                    category = entry.category,
+                    photograph = entry.photograph,
+                    isArchived = true
                 )
+
+                UserSession.updateTimeEntry(updatedEntry)
+            } else {
+                val updatedEntry = TimeEntry(
+                    id = entry.id,
+                    description = entry.description,
+                    date = entry.date,
+                    startTime = entry.startTime,
+                    endTime = entry.endTime,
+                    duration = entry.duration,
+                    category = entry.category,
+                    photograph = entry.photograph,
+                    isArchived = false
+                )
+
+                UserSession.updateTimeEntry(updatedEntry)
             }
-
-
-            EntryInformation(entry = entry, modifier = Modifier.weight(1f))
-
-            VerticalDivider(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(100))
-                    .fillMaxHeight(0.5f)
-                    .align(Alignment.CenterVertically),
-                thickness = 1.dp
-            )
-
-
-            EntryDurationDisplay(
-                entry = entry,
-                onClick = { isOpen = !isOpen })
-        }
-
-
-        AnimatedVisibility(visible = isOpen) {
-            EntryTimesDisplay(entry)
         }
     }
+
+
+    AnimatedVisibility(
+        visible = !isRemoved,
+        exit = shrinkVertically(
+            animationSpec = tween(durationMillis = 500),
+            shrinkTowards = Alignment.Top
+        ) + fadeOut(
+            animationSpec = tween(durationMillis = 500)
+        )
+    ) {
+        RevealSwipe(
+            coroutineScope = scope,
+            closeOnBackgroundClick = true,
+            modifier = Modifier.padding(vertical = 5.dp),
+            hiddenContentStart = {
+                Icon(
+                    modifier = Modifier.padding(horizontal = 25.dp),
+                    imageVector = Icons.Outlined.Delete,
+                    contentDescription = "Delete"
+                )
+            },
+            backgroundCardStartColor = MaterialTheme.colorScheme.error,
+            hiddenContentEnd = {
+                Icon(
+                    modifier = Modifier.padding(horizontal = 25.dp),
+                    imageVector = if (entry.isArchived) Icons.Outlined.Unarchive else Icons.Outlined.Archive,
+                    contentDescription = "Archive",
+                    tint = Color.White
+                )
+            },
+            onBackgroundStartClick = {
+                // The following code was adapted from Medium
+                // Author: Sagar Malhotra
+                // Link: https://proandroiddev.com/effect-handlers-in-jetpack-compose-a-complete-guide-e9a820d20734
+                scope.launch {
+                    delay(250)
+                    isDeleteDialogOpen = true
+                }
+
+                true
+            },
+            onBackgroundEndClick = {
+                scope.launch {
+                    delay(250)
+                    shouldArchive = !shouldArchive
+                    isRemoved = true
+                }
+
+                true
+            },
+            backgroundCardEndColor = MaterialTheme.colorScheme.primary,
+            backgroundStartActionLabel = "Delete",
+            backgroundEndActionLabel = "Archive",
+        ) {
+
+
+            OutlinedCard(onClick = onClick) {
+                Row(
+                    modifier = Modifier
+                        .height(IntrinsicSize.Max)
+                        .fillMaxWidth(),
+                ) {
+                    if (entry.photograph != null) {
+                        EntryImagePreview(entry.photograph!!)
+
+                        VerticalDivider(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(100))
+                                .fillMaxHeight(0.5f)
+                                .align(Alignment.CenterVertically),
+                            thickness = 1.dp
+                        )
+                    }
+
+
+                    EntryInformation(entry = entry, modifier = Modifier.weight(1f))
+
+                    VerticalDivider(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(100))
+                            .fillMaxHeight(0.5f)
+                            .align(Alignment.CenterVertically),
+                        thickness = 1.dp
+                    )
+
+
+                    EntryDurationDisplay(
+                        entry = entry,
+                        onClick = { isOpen = !isOpen })
+                }
+
+                AnimatedVisibility(visible = isOpen) {
+                    EntryTimesDisplay(entry)
+                }
+            }
+        }
+    }
+
+
+    if (isDeleteDialogOpen) {
+        TimeEntryDeletionDialog(
+            onDismiss = {
+                isDeleteDialogOpen = false
+            },
+            onConfirm = {
+                isDeleted = true
+                isRemoved = true
+            })
+    }
+
 }
 
 @Composable
