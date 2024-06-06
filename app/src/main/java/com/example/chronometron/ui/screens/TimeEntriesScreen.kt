@@ -41,40 +41,41 @@ fun TimeEntriesScreen() {
             isOpen = false
         )
 
-        // Display message if no time entries exist
-        if (timeEntries.isEmpty()) {
-            Text(
-                "No Time Entries Created",
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center
-            )
-        } else if (datesAndEntries.isEmpty()){
-            Text(
-                "No time has been recorded during this period",
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center
-            )
-        }
-
         // LazyColumn for displaying time entries
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(25.dp),
-            modifier = Modifier
-                .fillMaxHeight()
-                .weight(1f)
+            modifier = Modifier.weight(1f)  // This ensures the LazyColumn takes up available space and is scrollable
         ) {
-            items(datesAndEntries.toList()) {
-                val dateHours = it.second.first.hours
-                val dateMinutes = it.second.first.minutes
+            item {
+                // Display message if no time entries exist
+                if (timeEntries.isEmpty()) {
+                    Text(
+                        "No Time Entries Created",
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
+                } else if (datesAndEntries.isEmpty()){
+                    Text(
+                        "No time has been recorded during this period",
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+
+            items(datesAndEntries.toList()) { dateAndEntries ->
+                val dateHours = dateAndEntries.second.first.hours
+                val dateMinutes = dateAndEntries.second.first.minutes
 
                 // Display date and total hours/minutes
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(10.dp), horizontalArrangement = Arrangement.SpaceBetween
+                        .padding(10.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Row {
-                        Text(it.first, style = MaterialTheme.typography.titleMedium)
+                        Text(dateAndEntries.first, style = MaterialTheme.typography.titleMedium)
                         Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                     }
                     Text(
@@ -85,7 +86,7 @@ fun TimeEntriesScreen() {
 
                 // Display individual time entries for the date
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    it.second.second.forEach { id ->
+                    dateAndEntries.second.second.forEach { id ->
                         val entry = timeEntries[id]
                         TimeEntryListItem(entry = entry, onClick = {
                             entryToManage = entry

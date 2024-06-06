@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.TaskAlt
@@ -34,11 +35,12 @@ import com.example.chronometron.utils.onFormValueChange
 
 @Composable
 fun CustomiserScreen() {
+    // LazyColumn allows scrolling of its content when overflow occurs
     LazyColumn(verticalArrangement = Arrangement.spacedBy(25.dp)) {
+        // Each item in LazyColumn can be scrolled independently
         item {
             Goals()
         }
-
         item {
             Categories()
         }
@@ -47,16 +49,20 @@ fun CustomiserScreen() {
 
 @Composable
 private fun Goals() {
+    // Collecting state values from ViewModel
     val minGoal by UserSession.minimumGoal.collectAsStateWithLifecycle()
     val maxGoal by UserSession.maximumGoal.collectAsStateWithLifecycle()
 
+    // Initializing the form with state values
     var form = GoalSetterForm(minimumGoal = minGoal, maximumGoal = maxGoal)
     form.validate(true)
 
+    // Collapsible section for displaying goal settings
     CollapsibleSection(
         heading = "Daily Goals",
         icon = { Icon(Icons.Default.TaskAlt, contentDescription = "Goals") }) {
         Column(verticalArrangement = Arrangement.spacedBy(35.dp)) {
+            // Time selector for minimum goal
             TimeSelector(
                 label = "Minimum Goal",
                 value = form.minGoal.state.value,
@@ -72,6 +78,7 @@ private fun Goals() {
                 errorText = form.minGoal.errorText,
             )
 
+            // Time selector for maximum goal
             TimeSelector(
                 label = "Maximum Goal",
                 value = form.maxGoal.state.value,
@@ -98,10 +105,12 @@ private fun Categories() {
     var isDialogOpen by rememberSaveable { mutableStateOf(false) }
     val categories by UserSession.categories.collectAsState()
 
+    // Collapsible section for displaying categories
     CollapsibleSection(
         heading = "Categories",
         icon = { Icon(Icons.Default.Category, contentDescription = "Categories") }) {
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            // Conditional UI based on the availability of categories
             if (categories.isEmpty()) {
                 Text(
                     "No Categories Created",
@@ -109,6 +118,7 @@ private fun Categories() {
                     textAlign = TextAlign.Center
                 )
             } else {
+                // FlowRow to display categories in a horizontal flow layout
                 FlowRow(
                     horizontalArrangement = Arrangement.Center,
                     modifier = Modifier.fillMaxWidth()
@@ -125,6 +135,7 @@ private fun Categories() {
                 }
             }
 
+            // Button to add a new category
             Button(
                 onClick = { isDialogOpen = true },
                 modifier = Modifier.fillMaxWidth()
@@ -133,11 +144,11 @@ private fun Categories() {
             }
         }
 
+        // Dialog for category creation
         if (isDialogOpen) {
             CategoryCreationDialog(onDismiss = {
                 isDialogOpen = false
             })
         }
     }
-
 }

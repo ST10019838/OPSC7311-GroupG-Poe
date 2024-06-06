@@ -98,10 +98,6 @@ fun TimeEntryManagementScreen(
                     )
                 }
             }, actions = {
-//                TextButton(onClick = onCreate) {
-//                    Text("Create")
-//                }
-
                 TextButton(
                     onClick = if (noEntryToManage) onCreate else onUpdate,
                 ) {
@@ -113,12 +109,11 @@ fun TimeEntryManagementScreen(
                 modifier = Modifier
                     .padding(innerPadding)
                     .padding(horizontal = 25.dp)
+                    .verticalScroll(rememberScrollState())  // Enable vertical scrolling
             ) {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(30.dp),
-                    modifier = Modifier
-                        .verticalScroll(rememberScrollState())
-                        .padding(vertical = 20.dp)
+                    modifier = Modifier.padding(vertical = 20.dp)
                 ) {
                     TextField(
                         value = form.description.state.value,
@@ -182,8 +177,7 @@ fun TimeEntryManagementScreen(
                         },
                         hasError = form.endTime.hasError(),
                         errorText = form.endTime.errorText,
-
-                        )
+                    )
 
                     Select<Category?>(
                         label = "Category",
@@ -220,8 +214,6 @@ fun TimeEntryManagementScreen(
                         }
                     )
 
-
-
                     ImageCapturer(
                         label = "Photograph",
                         value = form.photograph.state.value,
@@ -246,7 +238,6 @@ fun TimeEntryManagementScreen(
                     ) {
                         Text(if (noEntryToManage) "Create Entry" else "Delete Entry")
                     }
-
 
                     if (isDeleteDialogOpen) {
                         AlertDialog(
@@ -281,12 +272,8 @@ fun TimeEntryManagementScreen(
                             }
                         )
                     }
-
                 }
             }
         }
     }
 }
-
-
-
