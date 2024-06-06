@@ -22,7 +22,6 @@ import com.example.chronometron.ui.viewModels.UserSession
 import com.example.chronometron.utils.onFormValueChange
 import java.util.UUID
 
-
 @Composable
 fun CategoryCreationDialog(onDismiss: () -> Unit = {}) {
     val form = CategoryCreationForm()
@@ -57,11 +56,11 @@ fun CategoryCreationDialog(onDismiss: () -> Unit = {}) {
                 onClick = {
                     form.validate(true)
                     if (form.isValid){
-                        UserSession.addCategory(Category(id = UUID.randomUUID(), name = form.name.state.value!!))
+                        val category = Category(name = form.name.state.value!!)
+                        UserSession.addCategory(category)
                         onDismiss()
                     }
                 },
-
                 contentPadding = PaddingValues(horizontal = 40.dp)
             ) {
                 Text("Create")

@@ -45,7 +45,6 @@ fun CustomiserScreen() {
     }
 }
 
-
 @Composable
 private fun Goals() {
     val minGoal by UserSession.minimumGoal.collectAsStateWithLifecycle()
@@ -61,51 +60,27 @@ private fun Goals() {
             TimeSelector(
                 label = "Minimum Goal",
                 value = form.minGoal.state.value,
-//                onChange = {
-//
-//                }
                 onChange = {
                     onFormValueChange(
                         value = it,
                         form = form,
                         fieldState = form.minGoal
                     )
-
-//                    onFormValueChange(
-//                        value = it,
-//                        form = form,
-//                        fieldState = form.maxGoal
-//                    )
                     UserSession.updateMinimumGoal(it)
-//                    form.validate(true)
-
-//                    if (!form.isValid) {
-//                    }
-//                    form.maxGoal.isValid.value = false
-
-
-
                 },
                 hasError = form.minGoal.hasError(),
                 errorText = form.minGoal.errorText,
             )
 
-
-
             TimeSelector(
                 label = "Maximum Goal",
                 value = form.maxGoal.state.value,
-//                onChange = {
-//                    UserSession.updateMaximumGoal(it)
-//                }
                 onChange = {
                     onFormValueChange(
                         value = it,
                         form = form,
                         fieldState = form.maxGoal
                     )
-
-//                    form.validate(true)
                     if (form.isValid) {
                         UserSession.updateMaximumGoal(it)
                     }
@@ -113,11 +88,9 @@ private fun Goals() {
                 hasError = form.maxGoal.hasError(),
                 errorText = form.maxGoal.errorText,
             )
-
         }
     }
 }
-
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -135,33 +108,30 @@ private fun Categories() {
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center
                 )
-            }
-
-            // Try optimize by making it lazy load items (use ContextualFlowRow)
-            FlowRow(
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                categories.forEachIndexed { _, item ->
-                    CategoryChip(
-                        item.name,
-                        modifier = Modifier.padding(horizontal = 5.dp),
-                        confirmationAction = {
-                            UserSession.removeCategory(item)
-                        })
-                }
-
-
-                Button(
-                    onClick = { isDialogOpen = true },
+            } else {
+                FlowRow(
+                    horizontalArrangement = Arrangement.Center,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(text = "Add Category")
+                    categories.forEach { category ->
+                        CategoryChip(
+                            category.name.orEmpty(),
+                            modifier = Modifier.padding(horizontal = 5.dp),
+                            confirmationAction = {
+                                UserSession.removeCategory(category)
+                            }
+                        )
+                    }
                 }
             }
-        }
 
+            Button(
+                onClick = { isDialogOpen = true },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = "Add Category")
+            }
+        }
 
         if (isDialogOpen) {
             CategoryCreationDialog(onDismiss = {
@@ -169,4 +139,5 @@ private fun Categories() {
             })
         }
     }
+
 }

@@ -1,12 +1,6 @@
 package com.example.chronometron.ui.screens
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
@@ -23,17 +17,24 @@ import com.example.chronometron.types.Category
 import com.example.chronometron.ui.composables.SelectablePeriodSearch
 import com.example.chronometron.ui.viewModels.UserSession
 
+/**
+ * Composable function to display the category hours screen.
+ * This screen shows a list of categories and the total time spent on each category
+ * within a selected period.
+ */
 @Composable
 fun CategoryHoursScreen() {
+    // Collecting state values from UserSession ViewModel
     val categoryHours by UserSession.categoryHours.collectAsState()
     val selectablePeriod by UserSession.selectedPeriod.collectAsState()
     val timeEntries by UserSession.timeEntries.collectAsState()
 
-
+    // Main container for the screen
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
+        // Period selection component
         SelectablePeriodSearch(
             value = selectablePeriod,
             onSelectionChange = {
@@ -45,20 +46,23 @@ fun CategoryHoursScreen() {
             isOpen = false
         )
 
-
+        // Conditional UI based on the availability of time entries and category hours
         if (timeEntries.isEmpty()) {
+            // Display message if no time entries are created
             Text(
                 "No Time Entries Created",
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center
             )
-        } else if (categoryHours.isEmpty()){
+        } else if (categoryHours.isEmpty()) {
+            // Display message if no time is recorded in the selected period
             Text(
                 "No time has been recorded during this period",
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center
             )
         } else {
+            // Display headers for the categories and total time
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
@@ -66,25 +70,29 @@ fun CategoryHoursScreen() {
                     .fillMaxWidth()
             ) {
                 Text("Category", style = MaterialTheme.typography.labelLarge)
-
                 Text("Total Time", style = MaterialTheme.typography.labelLarge)
             }
-        }
 
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(20.dp),
-            modifier = Modifier
-                .fillMaxHeight()
-                .weight(1f)
-        ) {
-
-            items(categoryHours.toList()) {
-                CategoryHoursListItem(it)
+            // List of category hours
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(20.dp),
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(1f)
+            ) {
+                // Displaying each category and its total time
+                items(categoryHours.toList()) {
+                    CategoryHoursListItem(it)
+                }
             }
         }
     }
 }
 
+/*
+* Composable function to display a single item in the category hours list.
+* @param item A pair containing a Category and the total Hours spent on that category.
+*/
 @Composable
 private fun CategoryHoursListItem(item: Pair<Category, Hours>) {
     OutlinedCard {
@@ -94,11 +102,10 @@ private fun CategoryHoursListItem(item: Pair<Category, Hours>) {
                 .padding(15.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(item.first.name)
-
+            // Display category name
+            Text(item.first.name ?: "Unknown Category")
+            // Display total time in hours and minutes
             Text("${item.second.hours}h ${item.second.minutes}m")
         }
     }
-
 }
-

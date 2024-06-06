@@ -1,16 +1,10 @@
 package com.example.chronometron.types
 
-//import androidx.room.Entity
-//import androidx.room.PrimaryKey
-import ch.benlu.composeform.fields.PickerValue
 import java.util.UUID
 
-//@Entity()
 data class Category(
-
-    var id: UUID,
-    var name: String,
-    // var icon
-//    @PrimaryKey(autoGenerate = true)
-
-)
+    var id: String = UUID.randomUUID().toString(),
+    var name: String? = null
+) {
+    constructor() : this(UUID.randomUUID().toString(), null)
+}

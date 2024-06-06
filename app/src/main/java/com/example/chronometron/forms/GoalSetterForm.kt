@@ -8,7 +8,6 @@ import com.chargemap.compose.numberpicker.FullHours
 import com.chargemap.compose.numberpicker.Hours
 import com.example.chronometron.forms.validators.IsRequiredValidator
 import com.example.chronometron.forms.validators.TimeValidator
-import java.util.Date
 
 class GoalSetterForm(minimumGoal: Hours, maximumGoal: Hours): Form() {
     override fun self(): Form {
@@ -18,7 +17,7 @@ class GoalSetterForm(minimumGoal: Hours, maximumGoal: Hours): Form() {
     @FormField
     val minGoal = FieldState(
         state = mutableStateOf<Hours?>(minimumGoal),
-//        validators = mutableListOf(IsRequiredValidator())
+        validators = mutableListOf(IsRequiredValidator())
     )
 
     @FormField

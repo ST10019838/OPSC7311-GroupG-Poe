@@ -1,34 +1,37 @@
 package com.example.chronometron.ui.viewModels
 
-//import com.example.chronometron.db.LocalDatabase
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ch.benlu.composeform.formatters.dateShort
 import com.chargemap.compose.numberpicker.FullHours
 import com.chargemap.compose.numberpicker.Hours
-import com.example.chronometron.types.Category
-import com.example.chronometron.types.Period
-import com.example.chronometron.types.TimeEntry
+import com.example.chronometron.types.*
 import com.example.chronometron.utils.addFullHours
 import com.example.chronometron.utils.areShortDatesEqual
+import com.google.firebase.database.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import java.util.Date
-
+import java.util.UUID
 
 object UserSession : ViewModel() {
-    // The following search functionality was adapted from youtube
-    // Author: Philipp Lackner
-    // Link: https://www.youtube.com/watch?v=CfL6Dl2_dAE
+    private const val TAG = "UserSession"
+
+    // Reference to Firebase Realtime Database
+    private val db: DatabaseReference = FirebaseDatabase.getInstance().reference
+
+    // Selected period state
     private val _selectedPeriod = MutableStateFlow(Period())
     val selectedPeriod = _selectedPeriod.asStateFlow()
 
+    // Time entries state
     private val _timeEntries = MutableStateFlow(listOf<TimeEntry>())
-
     val timeEntries = combine(_timeEntries) { entries ->
         entries[0].sortedByDescending { entry -> entry.date }
     }.stateIn(
@@ -37,33 +40,22 @@ object UserSession : ViewModel() {
         _timeEntries.value
     )
 
-
+    // Dates and entries mapping
     private val _datesAndEntries = combine(timeEntries) { sortedEntries ->
-
-        var datesAndEntriesMap = mutableMapOf<String, Pair<Hours, MutableList<Int>>>()
-
+        val datesAndEntriesMap = mutableMapOf<String, Pair<Hours, MutableList<Int>>>()
         sortedEntries[0].forEachIndexed { index, entry ->
             val date = dateShort(entry.date)
             if (datesAndEntriesMap.containsKey(date)) {
                 var totalTime: Hours = FullHours(0, 0)
                 datesAndEntriesMap[date]?.second?.add(index)
-
                 datesAndEntriesMap[date]?.second?.forEach { id ->
-                    totalTime = addFullHours(totalTime, _timeEntries.value[id].duration)
+                    totalTime = addFullHours(totalTime, _timeEntries.value[id].duration.toFullHours())
                 }
-
-                datesAndEntriesMap[date] =
-                    Pair(
-                        totalTime,
-                        datesAndEntriesMap[date]?.second!!
-                    )
-
+                datesAndEntriesMap[date] = Pair(totalTime, datesAndEntriesMap[date]?.second!!)
             } else {
-                datesAndEntriesMap[dateShort(entry.date)] =
-                    Pair(entry.duration, mutableListOf(index))
+                datesAndEntriesMap[dateShort(entry.date)] = Pair(entry.duration.toFullHours(), mutableListOf(index))
             }
         }
-
         datesAndEntriesMap.toMap()
     }.stateIn(
         viewModelScope,
@@ -71,85 +63,50 @@ object UserSession : ViewModel() {
         mapOf<String, Pair<Hours, MutableList<Int>>>()
     )
 
-
-    val datesAndEntries =
-        selectedPeriod.combine(_datesAndEntries) { selectedPeriod, datesAndEntries ->
-            if (selectedPeriod.fromDate == null && selectedPeriod.toDate == null) {
-                datesAndEntries
-            } else {
-                val onlyFromDate = selectedPeriod.fromDate != null && selectedPeriod.toDate == null
-                val onlyToDate = selectedPeriod.fromDate == null && selectedPeriod.toDate != null
-
-                // To explain the complex looking if statement:
-                // - IF "ToDate" is empty: show all dates before or equal to "ToDate"
-                // - IF "FromDate" is empty: show all entries after or equal to "FromDate"
-                // - Otherwise show all entries between (inclusive) the "FromDate" and "ToDate"
-                datesAndEntries.filter { item ->
-                    if (onlyToDate) {
+    // Filtered dates and entries based on selected period
+    val datesAndEntries = selectedPeriod.combine(_datesAndEntries) { selectedPeriod, datesAndEntries ->
+        if (selectedPeriod.fromDate == null && selectedPeriod.toDate == null) {
+            datesAndEntries
+        } else {
+            val onlyFromDate = selectedPeriod.fromDate != null && selectedPeriod.toDate == null
+            val onlyToDate = selectedPeriod.fromDate == null && selectedPeriod.toDate != null
+            datesAndEntries.filter { item ->
+                if (onlyToDate) {
+                    Date(item.key).before(selectedPeriod.toDate) ||
+                            areShortDatesEqual(shortDate = item.key, date = selectedPeriod.toDate!!)
+                } else if (onlyFromDate) {
+                    Date(item.key).after(selectedPeriod.fromDate) ||
+                            areShortDatesEqual(shortDate = item.key, date = selectedPeriod.fromDate!!)
+                } else Date(item.key).after(selectedPeriod.fromDate) &&
                         Date(item.key).before(selectedPeriod.toDate) ||
-                                areShortDatesEqual(
-                                    shortDate = item.key,
-                                    date = selectedPeriod.toDate!!
-                                )
-                    } else if (onlyFromDate) {
-                        Date(item.key).after(selectedPeriod.fromDate) ||
-                                areShortDatesEqual(
-                                    shortDate = item.key,
-                                    date = selectedPeriod.fromDate!!
-                                )
-                    } else Date(item.key).after(selectedPeriod.fromDate) &&
-                            Date(item.key).before(selectedPeriod.toDate) ||
-                            areShortDatesEqual(
-                                shortDate = item.key,
-                                date = selectedPeriod.fromDate!!
-                            ) ||
-                            areShortDatesEqual(
-                                shortDate = item.key,
-                                date = selectedPeriod.toDate!!
-                            )
-                }
+                        areShortDatesEqual(shortDate = item.key, date = selectedPeriod.fromDate!!) ||
+                        areShortDatesEqual(shortDate = item.key, date = selectedPeriod.toDate!!)
             }
-        }.stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5000),
-            _datesAndEntries.value
-        )
+        }
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        _datesAndEntries.value
+    )
 
+    // Categories state
     private val _categories = MutableStateFlow(listOf<Category>())
     val categories = _categories.asStateFlow()
 
-//    private val _categories = db.categories.getCategories().stateIn(
-//        viewModelScope,
-//        SharingStarted.WhileSubscribed(5000),
-//        emptyList()
-//    )
-//
-//    val categories = _categories
-
+    // Category hours calculation
     val categoryHours = combine(datesAndEntries) {
-        var categoryHoursMap = mutableMapOf<Category, Hours>()
-
+        val categoryHoursMap = mutableMapOf<Category, Hours>()
         it[0].forEach { item ->
             item.value.second.forEach { id ->
                 val entry = timeEntries.value[id]
                 val category = entry.category
-
                 if (categoryHoursMap.containsKey(category)) {
-                    categoryHoursMap[category] =
-                        addFullHours(categoryHoursMap[category]!!, entry.duration)
-
-//                        FullHours(
-//                        hours = categoryHoursMap[category]?.hours?.plus(entry.duration.hours) ?: 0,
-//                        minutes = categoryHoursMap[category]?.minutes?.plus(entry.duration.minutes)
-//                            ?: 0
-//                    )
+                    categoryHoursMap[category] = addFullHours(categoryHoursMap[category]!!, entry.duration.toFullHours())
                 } else {
-                    categoryHoursMap[category] =
-                        FullHours(entry.duration.hours, entry.duration.minutes)
+                    categoryHoursMap[category] = FullHours(entry.duration.hours, entry.duration.minutes)
                 }
             }
         }
-
         categoryHoursMap.toMap()
     }.stateIn(
         viewModelScope,
@@ -157,135 +114,182 @@ object UserSession : ViewModel() {
         mapOf<Category, Hours>()
     )
 
-
+    // Minimum and maximum goal state
     private val _minimumGoal = MutableStateFlow<Hours>(FullHours(0, 0))
     val minimumGoal = _minimumGoal.asStateFlow()
 
     private val _maximumGoal = MutableStateFlow<Hours>(FullHours(0, 0))
     val maximumGoal = _maximumGoal.asStateFlow()
 
-
-//    val totalDailyDuration = combine(_datesAndEntries) {
-//        var totalHours = 0
-//        var totalMinutes = 0
-//
-//        it[0][dateShort(Date())]?.second?.forEach { id ->
-//            totalHours += _timeEntries.value[id].duration.hours
-//            totalHours += _timeEntries.value[id].duration.minutes
-//        }
-//
-////        timeEntries.value.forEach { entry ->
-////            if (dateToUse == dateShort(entry.date)) {
-////
-////            }
-////        }
-//
-//        FullHours(totalHours, totalMinutes)
-//    }.stateIn(
-//        viewModelScope,
-//        SharingStarted.WhileSubscribed(5000),
-//        FullHours(0, 0)
-//    )
+    // Goals state
+    private val _goals = MutableStateFlow<Goals?>(null)
+    val goals = _goals.asStateFlow()
 
     init {
-//        viewModelScope.launch {
-////            //fetch data code
-////            _timeEntries =
-//            val other = LocalDatabase.getDatabase(getApplication<Application>().applicationContext)
-//        }
-//        db = LocalDatabase.getDatabase(getApplication())
+        // Fetch initial data from Firebase Realtime Database
+        fetchCategories()
+        fetchTimeEntries()
+        fetchGoals()
     }
 
-//    fun fetchData(){
-//        screenModelScope.launch {
-//            //fetch data code
-//        }
-//    }
+    // Fetch categories from Firebase Realtime Database
+    private fun fetchCategories() {
+        db.child("categories").addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val categoriesList = mutableListOf<Category>()
+                if (!snapshot.exists()) {
+                    // If no categories exist, create a default category
+                    val defaultCategory = Category(
+                        id = UUID.randomUUID().toString(),
+                        name = "Default"
+                    )
+                    addCategory(defaultCategory)
+                    categoriesList.add(defaultCategory)
+                } else {
+                    snapshot.children.forEach { child ->
+                        val id = child.child("id").getValue(String::class.java) ?: UUID.randomUUID().toString()
+                        val name = child.child("name").getValue(String::class.java) ?: "Unnamed Category"
+                        Log.d(TAG, "Category ID: $id, Name: $name")
+                        val category = Category(id = id, name = name)
+                        categoriesList.add(category)
+                    }
+                }
+                _categories.value = categoriesList
+            }
 
+            override fun onCancelled(error: DatabaseError) {
+                Log.e(TAG, "Error fetching categories", error.toException())
+            }
+        })
+    }
 
+    // Fetch time entries from Firebase Realtime Database
+    private fun fetchTimeEntries() {
+        db.child("timeEntries").addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val timeEntriesList = snapshot.children.map { it.getValue(TimeEntry::class.java)!! }
+                _timeEntries.value = timeEntriesList
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e(TAG, "Error fetching TimeEntries", error.toException())
+            }
+        })
+    }
+
+    // Fetch goals from Firebase Realtime Database
+    private fun fetchGoals() {
+        db.child("goals").addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val goals = snapshot.getValue(Goals::class.java)
+                _goals.value = goals
+                goals?.let {
+                    _minimumGoal.value = it.minimumHours.toFullHours()
+                    _maximumGoal.value = it.maximumHours.toFullHours()
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e(TAG, "Error fetching goals", error.toException())
+            }
+        })
+    }
+
+    // Update selected period
     fun onSelectedPeriodChange(fromDate: Date?, toDate: Date?) {
         _selectedPeriod.value = Period(fromDate, toDate)
     }
 
-//    fun getTotalDailyDuration(date: Date? = Date(), formattedDate: String? = null): Hours {
-//        var totalHours = 0
-//        var totalMinutes = 0
-//
-//        val dateToUse = formattedDate ?: dateShort(date)
-//
-//        datesAndEntries.value[dateToUse]?.forEach { id ->
-//            totalHours += _timeEntries.value[id].duration.hours
-//            totalHours += _timeEntries.value[id].duration.minutes
-//        }
-//
-////        timeEntries.value.forEach { entry ->
-////            if (dateToUse == dateShort(entry.date)) {
-////                totalHours += entry.duration.hours
-////                totalHours += entry.duration.minutes
-////            }
-////        }
-//
-//        return FullHours(totalHours, totalMinutes)
-//    }
-
-
+    // Add new time entry to Firebase Realtime Database
     fun addTimeEntry(newEntry: TimeEntry) {
         _timeEntries.update { (it + newEntry).toMutableList() }
+        db.child("timeEntries").push().setValue(newEntry)
+            .addOnSuccessListener {
+                Log.d(TAG, "Time entry added successfully")
+            }
+            .addOnFailureListener { exception ->
+                Log.e(TAG, "Error adding Time Entry", exception)
+            }
     }
 
+    // Update existing time entry in Firebase Realtime Database
     fun updateTimeEntry(updatedEntry: TimeEntry) {
-//        _timeEntries.update {
-//            _timeEntries.value.map { entry ->
-//                if (entry.id == updatedEntry.id) updatedEntry
-//                else entry
-//            }.toList()
-
-//            var newList = _timeEntries.value.toMutableList()
-//            val entryIndex = _timeEntries.value.indexOfFirst { entry -> entry.id == updatedEntry.id }
-//            newList[entryIndex] = updatedEntry
-//
-//            newList
-//        }
-
         _timeEntries.update {
             it.toMutableList().apply {
                 this[indexOfFirst { entry -> entry.id == updatedEntry.id }] = updatedEntry
             }
         }
+        db.child("timeEntries").child(updatedEntry.id).setValue(updatedEntry)
+            .addOnSuccessListener {
+                Log.d(TAG, "Time entry updated successfully")
+            }
+            .addOnFailureListener { exception ->
+                Log.e(TAG, "Error updating Time Entry", exception)
+            }
     }
 
+    // Delete time entry from Firebase Realtime Database
     fun deleteTimeEntry(entry: TimeEntry) {
         _timeEntries.update { it.minusElement(entry) }
+        db.child("timeEntries").child(entry.id).removeValue()
+            .addOnSuccessListener {
+                Log.d(TAG, "Time entry deleted successfully")
+            }
+            .addOnFailureListener { exception ->
+                Log.e(TAG, "Error deleting Time Entry", exception)
+            }
     }
 
-
+    // Update minimum goal
     fun updateMinimumGoal(goal: Hours) {
         _minimumGoal.update { goal }
+        db.child("goals/minimumHours").setValue(SerializableHours.fromFullHours(goal))
+            .addOnSuccessListener {
+                Log.d(TAG, "Minimum goal updated successfully")
+            }
+            .addOnFailureListener { exception ->
+                Log.e(TAG, "Error updating minimum goal", exception)
+            }
     }
 
+    // Update maximum goal
     fun updateMaximumGoal(goal: Hours) {
         _maximumGoal.update { goal }
+        db.child("goals/maximumHours").setValue(SerializableHours.fromFullHours(goal))
+            .addOnSuccessListener {
+                Log.d(TAG, "Maximum goal updated successfully")
+            }
+            .addOnFailureListener { exception ->
+                Log.e(TAG, "Error updating maximum goal", exception)
+            }
     }
 
-
+    // Add new category to Firebase Realtime Database
     fun addCategory(category: Category) {
-        _categories.update { it + category }
-//        viewModelScope.launch {
-        //fetch data code
-//            db.categories.upsertCategory(category)
-//            LocalDatabase.getDatabase(getApplication<Application>().applicationContext).categories.upsertCategory(
-//                category
-//            )
-//        }
+        Log.d(TAG, "Category object before adding: $category")
+        db.child("categories").push().setValue(category)
+            .addOnSuccessListener {
+                Log.d(TAG, "Category added successfully")
+                _categories.update { it + category }
+            }
+            .addOnFailureListener { exception ->
+                Log.e(TAG, "Error adding category", exception)
+            }
     }
 
+    // Remove category from Firebase Realtime Database
     fun removeCategory(category: Category) {
+        Log.d(TAG, "Deleting category with ID: ${category.id}")
+
+        // Update local state to remove the category
         _categories.update { it.minusElement(category) }
 
-//        viewModelScope.launch {
-//            //fetch data code
-//            db.categories.deleteCategory(category)
-//        }
+        db.child("categories").child(category.id).removeValue()
+            .addOnSuccessListener {
+                Log.d(TAG, "Successfully removed category from database: ${category.id}")
+            }
+            .addOnFailureListener { exception ->
+                Log.e(TAG, "Failed to remove category from database with ID: ${category.id}", exception)
+            }
     }
-
 }
