@@ -45,6 +45,7 @@ import com.example.chronometron.ui.composables.formFields.TextField
 import com.example.chronometron.ui.composables.formFields.TimeSelector
 import com.example.chronometron.ui.viewModels.UserSession
 import com.example.chronometron.utils.onFormValueChange
+import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,10 +53,12 @@ fun TimeEntryManagementScreen(
     navigationAction: () -> Unit = {},
     entryToManage: TimeEntry? = null
 ) {
+    // Initialize form with the entry to manage or create a new one
     var form = EntryCreationForm(entryToManage)
     val noEntryToManage = entryToManage == null
     var isDeleteDialogOpen by remember { mutableStateOf(false) }
 
+    // Function to handle the creation of a new entry
     val onCreate = {
         form.validate(true)
         if (form.isValid) {
@@ -64,14 +67,18 @@ fun TimeEntryManagementScreen(
         }
     }
 
+    // Function to handle the update of an existing entry
     val onUpdate = {
         form.validate(true)
         if (form.isValid) {
-            UserSession.updateTimeEntry(form.produceEntry())
+            // Ensure the ID of the entry to manage is used for the update
+            val entry = form.produceEntry().copy(id = entryToManage?.id ?: UUID.randomUUID().toString())
+            UserSession.updateTimeEntry(entry)
             navigationAction()
         }
     }
 
+    // Function to handle the deletion of an existing entry
     val onDelete = {
         UserSession.deleteTimeEntry(entryToManage!!)
         navigationAction()
@@ -81,26 +88,17 @@ fun TimeEntryManagementScreen(
         isDeleteDialogOpen = true
     }
 
-    // The following dialog was taken from stackoverflow.com
-    // Author: jns
-    // Link: https://stackoverflow.com/questions/65243956/jetpack-compose-fullscreen-dialog
+    // Fullscreen dialog for entry creation and management
     Dialog(properties = DialogProperties(usePlatformDefaultWidth = false), onDismissRequest = { }) {
         Scaffold(topBar = {
             TopAppBar(title = {
-                Text(
-                    "Entry Creation", maxLines = 1, overflow = TextOverflow.Ellipsis
-                )
+                Text("Entry Creation", maxLines = 1, overflow = TextOverflow.Ellipsis)
             }, navigationIcon = {
                 IconButton(onClick = navigationAction) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Arrow Back"
-                    )
+                    Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Arrow Back")
                 }
             }, actions = {
-                TextButton(
-                    onClick = if (noEntryToManage) onCreate else onUpdate,
-                ) {
+                TextButton(onClick = if (noEntryToManage) onCreate else onUpdate) {
                     Text(if (noEntryToManage) "Create" else "Update")
                 }
             })
@@ -115,70 +113,59 @@ fun TimeEntryManagementScreen(
                     verticalArrangement = Arrangement.spacedBy(30.dp),
                     modifier = Modifier.padding(vertical = 20.dp)
                 ) {
+                    // Description field
                     TextField(
                         value = form.description.state.value,
                         label = "Description",
                         isRequired = true,
                         onChange = {
-                            onFormValueChange(
-                                value = it,
-                                form = form,
-                                fieldState = form.description
-                            )
+                            onFormValueChange(value = it, form = form, fieldState = form.description)
                         },
                         hasError = form.description.hasError(),
                         errorText = form.description.errorText,
                         placeholderText = "Add a Description"
                     )
 
+                    // Date picker field
                     DatePicker(
                         label = "Date",
                         value = form.date.state.value,
                         isRequired = true,
                         onConfirm = {
-                            onFormValueChange(
-                                value = it,
-                                form = form,
-                                fieldState = form.date
-                            )
+                            onFormValueChange(value = it, form = form, fieldState = form.date)
                         },
                         hasError = form.date.hasError(),
                         errorText = form.date.errorText,
                         placeholderText = "Select a Date"
                     )
 
+                    // Start time selector
                     TimeSelector(
                         label = "Start Time",
                         value = form.startTime.state.value,
                         useSemicolonDivider = true,
                         isRequired = true,
                         onChange = {
-                            onFormValueChange(
-                                value = it,
-                                form = form,
-                                fieldState = form.startTime
-                            )
+                            onFormValueChange(value = it, form = form, fieldState = form.startTime)
                         },
                         hasError = form.startTime.hasError(),
                         errorText = form.startTime.errorText,
                     )
 
+                    // End time selector
                     TimeSelector(
                         label = "End Time",
                         value = form.endTime.state.value,
                         useSemicolonDivider = true,
                         isRequired = true,
                         onChange = {
-                            onFormValueChange(
-                                value = it,
-                                form = form,
-                                fieldState = form.endTime
-                            )
+                            onFormValueChange(value = it, form = form, fieldState = form.endTime)
                         },
                         hasError = form.endTime.hasError(),
                         errorText = form.endTime.errorText,
                     )
 
+                    // Category selection
                     Select<Category?>(
                         label = "Category",
                         value = form.category.state.value,
@@ -186,11 +173,7 @@ fun TimeEntryManagementScreen(
                         itemFormatter = form.category.optionItemFormatter,
                         isRequired = true,
                         onSelect = {
-                            onFormValueChange(
-                                value = it,
-                                form = form,
-                                fieldState = form.category
-                            )
+                            onFormValueChange(value = it, form = form, fieldState = form.category)
                         },
                         hasError = form.category.hasError(),
                         errorText = form.category.errorText,
@@ -199,46 +182,39 @@ fun TimeEntryManagementScreen(
                         creationContent = {
                             var isDialogOpen by rememberSaveable { mutableStateOf(false) }
 
-                            Button(
-                                onClick = { isDialogOpen = true },
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
+                            Button(onClick = { isDialogOpen = true }, modifier = Modifier.fillMaxWidth()) {
                                 Text("Create Category")
                             }
 
                             if (isDialogOpen) {
-                                CategoryCreationDialog(onDismiss = {
-                                    isDialogOpen = false
-                                })
+                                CategoryCreationDialog(onDismiss = { isDialogOpen = false })
                             }
                         }
                     )
 
+                    // Photograph capture field
                     ImageCapturer(
                         label = "Photograph",
                         value = form.photograph.state.value,
                         onChange = {
-                            onFormValueChange(
-                                value = it,
-                                form = form,
-                                fieldState = form.photograph
-                            )
+                            onFormValueChange(value = it, form = form, fieldState = form.photograph)
                         },
                         hasError = form.photograph.hasError(),
                         errorText = form.photograph.errorText
                     )
 
+                    // Button for creating or deleting an entry
                     Button(
                         onClick = if (noEntryToManage) onCreate else openDeleteDialog,
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = if (noEntryToManage) Color.Unspecified
-                            else MaterialTheme.colorScheme.error
+                            containerColor = if (noEntryToManage) Color.Unspecified else MaterialTheme.colorScheme.error
                         )
                     ) {
                         Text(if (noEntryToManage) "Create Entry" else "Delete Entry")
                     }
 
+                    // Delete confirmation dialog
                     if (isDeleteDialogOpen) {
                         AlertDialog(
                             icon = {
@@ -247,26 +223,22 @@ fun TimeEntryManagementScreen(
                             title = {
                                 Text(text = "Delete Entry")
                             },
-                            text = { Text("Are you sure you want to delete this entry? ") },
+                            text = { Text("Are you sure you want to delete this entry?") },
                             onDismissRequest = {
                                 isDeleteDialogOpen = false
                             },
                             confirmButton = {
-                                TextButton(
-                                    onClick = {
-                                        onDelete()
-                                        isDeleteDialogOpen = false
-                                    }
-                                ) {
+                                TextButton(onClick = {
+                                    onDelete()
+                                    isDeleteDialogOpen = false
+                                }) {
                                     Text("Confirm")
                                 }
                             },
                             dismissButton = {
-                                TextButton(
-                                    onClick = {
-                                        isDeleteDialogOpen = false
-                                    }
-                                ) {
+                                TextButton(onClick = {
+                                    isDeleteDialogOpen = false
+                                }) {
                                     Text("Dismiss")
                                 }
                             }

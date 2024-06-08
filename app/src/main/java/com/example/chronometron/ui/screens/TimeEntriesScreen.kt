@@ -17,6 +17,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ch.benlu.composeform.formatters.dateShort
+import com.chargemap.compose.numberpicker.Hours
 import com.example.chronometron.types.TimeEntry
 import com.example.chronometron.ui.composables.SelectablePeriodSearch
 import com.example.chronometron.ui.composables.TimeEntryListItem
@@ -25,10 +26,14 @@ import java.util.Date
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
-fun TimeEntriesScreen() {
+fun TimeEntriesScreen(usingArchive: Boolean = false) {
     var isDialogOpen by remember { mutableStateOf(false) }
-    val timeEntries by UserSession.timeEntries.collectAsStateWithLifecycle()
-    val datesAndEntries by UserSession.datesAndEntries.collectAsStateWithLifecycle()
+    val timeEntries by if (usingArchive) UserSession.archivedTimeEntries.collectAsStateWithLifecycle()
+    else UserSession.timeEntries.collectAsStateWithLifecycle()
+
+    val datesAndEntries by if (usingArchive) UserSession.archivedDatesAndEntries.collectAsStateWithLifecycle()
+    else UserSession.datesAndEntries.collectAsStateWithLifecycle()
+
     val selectablePeriod by UserSession.selectedPeriod.collectAsStateWithLifecycle()
     var entryToManage: TimeEntry? by remember { mutableStateOf(null) }
 
@@ -50,11 +55,11 @@ fun TimeEntriesScreen() {
                 // Display message if no time entries exist
                 if (timeEntries.isEmpty()) {
                     Text(
-                        "No Time Entries Created",
+                        if (usingArchive) "No Time Entries Archived" else "No Time Entries Created",
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center
                     )
-                } else if (datesAndEntries.isEmpty()){
+                } else if (datesAndEntries.isEmpty()) {
                     Text(
                         "No time has been recorded during this period",
                         modifier = Modifier.fillMaxWidth(),
@@ -88,10 +93,15 @@ fun TimeEntriesScreen() {
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     dateAndEntries.second.second.forEach { id ->
                         val entry = timeEntries[id]
-                        TimeEntryListItem(entry = entry, onClick = {
-                            entryToManage = entry
-                            isDialogOpen = true
-                        })
+                        // the following function was adapted from stackoverflow
+                        // Author: chuckj
+                        // Link: https://stackoverflow.com/questions/70186437/use-item-keys-in-non-lazy-column
+                        key(entry.id) {
+                            TimeEntryListItem(entry = entry, onClick = {
+                                entryToManage = entry
+                                isDialogOpen = true
+                            })
+                        }
                     }
                 }
             }

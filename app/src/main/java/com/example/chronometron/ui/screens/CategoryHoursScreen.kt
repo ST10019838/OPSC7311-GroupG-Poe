@@ -1,6 +1,12 @@
 package com.example.chronometron.ui.screens
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
@@ -52,14 +58,16 @@ fun CategoryHoursScreen() {
             Text(
                 "No Time Entries Created",
                 modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurface
             )
         } else if (categoryHours.isEmpty()) {
             // Display message if no time is recorded in the selected period
             Text(
                 "No time has been recorded during this period",
                 modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurface
             )
         } else {
             // Display headers for the categories and total time
@@ -69,8 +77,17 @@ fun CategoryHoursScreen() {
                     .padding(horizontal = 15.dp)
                     .fillMaxWidth()
             ) {
-                Text("Category", style = MaterialTheme.typography.labelLarge)
-                Text("Total Time", style = MaterialTheme.typography.labelLarge)
+                Text(
+                    "Category",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+
+                Text(
+                    "Total Time",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
             }
 
             // List of category hours
@@ -89,10 +106,10 @@ fun CategoryHoursScreen() {
     }
 }
 
-/*
-* Composable function to display a single item in the category hours list.
-* @param item A pair containing a Category and the total Hours spent on that category.
-*/
+/**
+ * Composable function to display a single item in the category hours list.
+ * @param item A pair containing a Category and the total Hours spent on that category.
+ */
 @Composable
 private fun CategoryHoursListItem(item: Pair<Category, Hours>) {
     OutlinedCard {
@@ -102,10 +119,17 @@ private fun CategoryHoursListItem(item: Pair<Category, Hours>) {
                 .padding(15.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            // Display category name
-            Text(item.first.name ?: "Unknown Category")
+            // Display category name with safe call and fallback to a default value
+            Text(
+                item.first.name ?: "Unknown Category",
+                color = MaterialTheme.colorScheme.onSurface
+            )
+
             // Display total time in hours and minutes
-            Text("${item.second.hours}h ${item.second.minutes}m")
+            Text(
+                "${item.second.hours}h ${item.second.minutes}m",
+                color = MaterialTheme.colorScheme.onSurface
+            )
         }
     }
 }

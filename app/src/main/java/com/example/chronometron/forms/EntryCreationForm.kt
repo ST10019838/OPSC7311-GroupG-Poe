@@ -17,32 +17,40 @@ import com.example.chronometron.types.TimeEntry
 import java.util.Date
 import java.util.UUID
 
+/**
+ * A form class for creating or editing a time entry.
+ * @param entry The TimeEntry object to edit or null for a new entry.
+ */
 class EntryCreationForm(entry: TimeEntry?) : Form() {
+
+    /**
+     * Method to return the current form instance.
+     */
     override fun self(): Form {
         return this
     }
 
     @FormField
     val id = FieldState(
-        state = mutableStateOf<String?>(entry?.id)  // Updated to String type
+        state = mutableStateOf<String?>(entry?.id ?: UUID.randomUUID().toString())  // Use String type for id
     )
 
     @FormField
     val description = FieldState(
         state = mutableStateOf<String?>(entry?.description),
-        validators = mutableListOf(IsRequiredValidator(), MaxLengthValidator(100))
+        validators = mutableListOf(IsRequiredValidator(), MaxLengthValidator(100))  // Ensure description is required and within max length
     )
 
     @FormField
     val date = FieldState(
         state = mutableStateOf<Date?>(entry?.date),
-        validators = mutableListOf(NotEmptyValidator())
+        validators = mutableListOf(NotEmptyValidator())  // Ensure date is not empty
     )
 
     @FormField
     val startTime = FieldState(
         state = mutableStateOf<Hours?>(entry?.startTime?.toFullHours() ?: FullHours(Date().hours, Date().minutes)),
-        validators = mutableListOf(IsRequiredValidator())
+        validators = mutableListOf(IsRequiredValidator())  // Ensure start time is required
     )
 
     @FormField
@@ -53,15 +61,15 @@ class EntryCreationForm(entry: TimeEntry?) : Form() {
             TimeValidator(
                 minTime = { startTime.state.value!! },
                 errorText = "End time can't be less than start time."
-            )
+            )  // Ensure end time is after start time
         )
     )
 
     @FormField
     val category = FieldState(
         state = mutableStateOf<Category?>(entry?.category),
-        optionItemFormatter = { "${it?.name}" },
-        validators = mutableListOf(NotEmptyValidator())
+        optionItemFormatter = { it?.name ?: "" },
+        validators = mutableListOf(NotEmptyValidator())  // Ensure category is not empty
     )
 
     @FormField
@@ -69,24 +77,29 @@ class EntryCreationForm(entry: TimeEntry?) : Form() {
         state = mutableStateOf<Bitmap?>(entry?.photograph)
     )
 
+    /**
+     * Produce a TimeEntry object from the current form state.
+     * @return A TimeEntry object with the form data.
+     */
     fun produceEntry(): TimeEntry {
         val startTimeValue = this.startTime.state.value!!
         val endTimeValue = this.endTime.state.value!!
 
         return TimeEntry(
-            id = this.id.state.value ?: UUID.randomUUID().toString(),  // Generate a UUID string if null
-            description = this.description.state.value!!,
-            date = this.date.state.value!!,
-            startTime = SerializableHours.fromFullHours(startTimeValue),
-            endTime = SerializableHours.fromFullHours(endTimeValue),
+            id = this.id.state.value!!,  // Use the existing ID or generate a new one
+            description = this.description.state.value!!,  // Description from the form state
+            date = this.date.state.value!!,  // Date from the form state
+            startTime = SerializableHours.fromFullHours(startTimeValue),  // Convert start time to SerializableHours
+            endTime = SerializableHours.fromFullHours(endTimeValue),  // Convert end time to SerializableHours
             duration = SerializableHours.fromFullHours(
                 FullHours(
                     hours = endTimeValue.hours - startTimeValue.hours,
                     minutes = endTimeValue.minutes - startTimeValue.minutes
                 )
-            ),
-            category = this.category.state.value!!,
-            photograph = this.photograph.state.value
+            ),  // Calculate duration
+            category = this.category.state.value!!,  // Category from the form state
+            photograph = this.photograph.state.value,  // Photograph from the form state
+            isArchived = false  //archive state
         )
     }
 }

@@ -10,12 +10,7 @@ import com.example.chronometron.types.*
 import com.example.chronometron.utils.addFullHours
 import com.example.chronometron.utils.areShortDatesEqual
 import com.google.firebase.database.*
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.Date
 import java.util.UUID
@@ -26,6 +21,10 @@ object UserSession : ViewModel() {
     // Reference to Firebase Realtime Database
     private val db: DatabaseReference = FirebaseDatabase.getInstance().reference
 
+    // Dark mode state
+    private val _isDarkMode = MutableStateFlow(true)
+    val isDarkMode = _isDarkMode.asStateFlow()
+
     // Selected period state
     private val _selectedPeriod = MutableStateFlow(Period())
     val selectedPeriod = _selectedPeriod.asStateFlow()
@@ -33,7 +32,7 @@ object UserSession : ViewModel() {
     // Time entries state
     private val _timeEntries = MutableStateFlow(listOf<TimeEntry>())
     val timeEntries = combine(_timeEntries) { entries ->
-        entries[0].sortedByDescending { entry -> entry.date }
+        entries[0].filter { e -> !e.isArchived }.sortedByDescending { entry -> entry.date }
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),
@@ -70,6 +69,11 @@ object UserSession : ViewModel() {
         } else {
             val onlyFromDate = selectedPeriod.fromDate != null && selectedPeriod.toDate == null
             val onlyToDate = selectedPeriod.fromDate == null && selectedPeriod.toDate != null
+
+            // To explain the complex looking if statement:
+            // - IF "ToDate" is empty: show all dates before or equal to "ToDate"
+            // - IF "FromDate" is empty: show all entries after or equal to "FromDate"
+            // - Otherwise show all entries between (inclusive) the "FromDate" and "ToDate"
             datesAndEntries.filter { item ->
                 if (onlyToDate) {
                     Date(item.key).before(selectedPeriod.toDate) ||
@@ -87,6 +91,69 @@ object UserSession : ViewModel() {
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),
         _datesAndEntries.value
+    )
+
+    // Archived time entries state
+    val archivedTimeEntries = combine(_timeEntries) { entries ->
+        entries[0].filter { e -> e.isArchived }.sortedByDescending { entry -> entry.date }
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        _timeEntries.value
+    )
+
+    // Archived dates and entries mapping
+    private val _archivedDatesAndEntries = combine(archivedTimeEntries) { sortedEntries ->
+        val datesAndEntriesMap = mutableMapOf<String, Pair<Hours, MutableList<Int>>>()
+        sortedEntries[0].forEachIndexed { index, entry ->
+            val date = dateShort(entry.date)
+            if (datesAndEntriesMap.containsKey(date)) {
+                var totalTime: Hours = FullHours(0, 0)
+                datesAndEntriesMap[date]?.second?.add(index)
+                datesAndEntriesMap[date]?.second?.forEach { id ->
+                    totalTime = addFullHours(totalTime, _timeEntries.value[id].duration.toFullHours())
+                }
+                datesAndEntriesMap[date] = Pair(totalTime, datesAndEntriesMap[date]?.second!!)
+            } else {
+                datesAndEntriesMap[dateShort(entry.date)] = Pair(entry.duration.toFullHours(), mutableListOf(index))
+            }
+        }
+        datesAndEntriesMap.toMap()
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        mapOf<String, Pair<Hours, MutableList<Int>>>()
+    )
+
+    // Filtered archived dates and entries based on selected period
+    val archivedDatesAndEntries = selectedPeriod.combine(_archivedDatesAndEntries) { selectedPeriod, datesAndEntries ->
+        if (selectedPeriod.fromDate == null && selectedPeriod.toDate == null) {
+            datesAndEntries
+        } else {
+            val onlyFromDate = selectedPeriod.fromDate != null && selectedPeriod.toDate == null
+            val onlyToDate = selectedPeriod.fromDate == null && selectedPeriod.toDate != null
+
+            // To explain the complex looking if statement:
+            // - IF "ToDate" is empty: show all dates before or equal to "ToDate"
+            // - IF "FromDate" is empty: show all entries after or equal to "FromDate"
+            // - Otherwise show all entries between (inclusive) the "FromDate" and "ToDate"
+            datesAndEntries.filter { item ->
+                if (onlyToDate) {
+                    Date(item.key).before(selectedPeriod.toDate) ||
+                            areShortDatesEqual(shortDate = item.key, date = selectedPeriod.toDate!!)
+                } else if (onlyFromDate) {
+                    Date(item.key).after(selectedPeriod.fromDate) ||
+                            areShortDatesEqual(shortDate = item.key, date = selectedPeriod.fromDate!!)
+                } else Date(item.key).after(selectedPeriod.fromDate) &&
+                        Date(item.key).before(selectedPeriod.toDate) ||
+                        areShortDatesEqual(shortDate = item.key, date = selectedPeriod.fromDate!!) ||
+                        areShortDatesEqual(shortDate = item.key, date = selectedPeriod.toDate!!)
+            }
+        }
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        _archivedDatesAndEntries.value
     )
 
     // Categories state
@@ -130,6 +197,21 @@ object UserSession : ViewModel() {
         fetchCategories()
         fetchTimeEntries()
         fetchGoals()
+
+        // Example of adding an entry for testing purposes
+        val newEntry = TimeEntry(
+            id = UUID.randomUUID().toString(),
+            category = Category(id = UUID.randomUUID().toString(), name = "CAT"),
+            date = Date(),
+            description = "",
+            endTime = SerializableHours(0, 0),
+            duration = SerializableHours(6, 20),
+            startTime = SerializableHours(0, 0),
+            photograph = null,
+            isArchived = true
+        )
+
+        _timeEntries.update { (it + newEntry).toMutableList() }
     }
 
     // Fetch categories from Firebase Realtime Database
@@ -203,7 +285,7 @@ object UserSession : ViewModel() {
     // Add new time entry to Firebase Realtime Database
     fun addTimeEntry(newEntry: TimeEntry) {
         _timeEntries.update { (it + newEntry).toMutableList() }
-        db.child("timeEntries").push().setValue(newEntry)
+        db.child("timeEntries").child(newEntry.id).setValue(newEntry)
             .addOnSuccessListener {
                 Log.d(TAG, "Time entry added successfully")
             }
@@ -216,7 +298,10 @@ object UserSession : ViewModel() {
     fun updateTimeEntry(updatedEntry: TimeEntry) {
         _timeEntries.update {
             it.toMutableList().apply {
-                this[indexOfFirst { entry -> entry.id == updatedEntry.id }] = updatedEntry
+                val index = indexOfFirst { entry -> entry.id == updatedEntry.id }
+                if (index != -1) {
+                    this[index] = updatedEntry
+                }
             }
         }
         db.child("timeEntries").child(updatedEntry.id).setValue(updatedEntry)
@@ -291,5 +376,44 @@ object UserSession : ViewModel() {
             .addOnFailureListener { exception ->
                 Log.e(TAG, "Failed to remove category from database with ID: ${category.id}", exception)
             }
+    }
+
+    // Toggle dark mode
+    fun toggleIsDarkMode(value: Boolean) {
+        _isDarkMode.update { value }
+    }
+
+    // Archive a time entry
+    fun archiveEntry(entry: TimeEntry) {
+        val updatedEntry = TimeEntry(
+            id = entry.id,
+            description = entry.description,
+            date = entry.date,
+            startTime = entry.startTime,
+            endTime = entry.endTime,
+            duration = entry.duration,
+            category = entry.category,
+            photograph = entry.photograph,
+            isArchived = true
+        )
+        deleteTimeEntry(entry)
+        addTimeEntry(updatedEntry)
+    }
+
+    // Unarchive a time entry
+    fun unarchiveEntry(entry: TimeEntry) {
+        val updatedEntry = TimeEntry(
+            id = entry.id,
+            description = entry.description,
+            date = entry.date,
+            startTime = entry.startTime,
+            endTime = entry.endTime,
+            duration = entry.duration,
+            category = entry.category,
+            photograph = entry.photograph,
+            isArchived = false
+        )
+        deleteTimeEntry(entry)
+        addTimeEntry(updatedEntry)
     }
 }

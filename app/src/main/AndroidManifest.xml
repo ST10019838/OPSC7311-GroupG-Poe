@@ -2,32 +2,36 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Feature for camera hardware, not required for all devices -->
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
+
+    <!-- Permission to use the camera -->
     <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:name=".MyApp"
-        android:allowBackup="true"
-        android:dataExtractionRules="@xml/data_extraction_rules"
-        android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
-        android:theme="@style/Theme.ChronoMetron"
-        tools:targetApi="31">
-        <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.ChronoMetron">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-    </application>
+    android:allowBackup="true"
+    android:dataExtractionRules="@xml/data_extraction_rules"
+    android:fullBackupContent="@xml/backup_rules"
+    android:icon="@mipmap/ic_launcher"
+    android:label="@string/app_name"
+    android:roundIcon="@mipmap/ic_launcher_round"
+    android:supportsRtl="true"
+    android:theme="@style/Theme.ChronoMetron"
+    tools:targetApi="31">
 
-</manifest>
+    <!-- Main activity declaration -->
+    <activity
+        android:name=".MainActivity"
+        android:exported="true"
+    android:label="@string/app_name"
+    android:theme="@style/Theme.ChronoMetron">
+    <intent-filter>
+        <action android:name="android.intent.action.MAIN" /> <!-- Main entry point of the app -->
+        <category android:name="android.intent.category.LAUNCHER" /> <!-- Launches the app from the home screen -->
+    </intent-filter>
+</activity>
+    </application>
+    </manifest>

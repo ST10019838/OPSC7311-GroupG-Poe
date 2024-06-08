@@ -1,35 +1,36 @@
-// Apply necessary plugins for the Android application
 plugins {
-    id("com.android.application") // Android application plugin
-    alias(libs.plugins.jetbrainsKotlinAndroid) // Kotlin Android plugin using alias from version catalog
-    id("com.google.gms.google-services") // Google services plugin for Firebase integration
+    // Apply Android application plugin
+    id("com.android.application")
+    // Apply Kotlin Android plugin using alias from version catalog
+    alias(libs.plugins.jetbrainsKotlinAndroid)
+    // Apply Google services plugin for Firebase integration
+    id("com.google.gms.google-services")
     // Uncomment if you need Dagger Hilt for dependency injection
     // id("kotlin-kapt")
     // id("com.google.dagger.hilt.android")
 }
 
 android {
-    // Application namespace
+    // Define the namespace of the application
     namespace = "com.example.chronometron"
-    // Compile SDK version
+    // Set the compile SDK version
     compileSdk = 34
 
     defaultConfig {
-        // Application ID
+        // Define the application ID
         applicationId = "com.example.chronometron"
         // Minimum supported SDK version
         minSdk = 24
         // Target SDK version
         targetSdk = 34
-        // Application version code
+        // Define version code and version name of the application
         versionCode = 1
-        // Application version name
         versionName = "1.0"
 
-        // Test instrumentation runner
+        // Define the test instrumentation runner
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
-            // Use support library for vector drawables
+            // Enable support library for vector drawables
             useSupportLibrary = true
         }
     }
@@ -39,7 +40,7 @@ android {
         release {
             // Disable code shrinking, obfuscation, and optimization for release build
             isMinifyEnabled = false
-            // ProGuard configuration files
+            // Define ProGuard configuration files
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -47,13 +48,13 @@ android {
         }
     }
     compileOptions {
-        // Java source compatibility version
+        // Set Java source compatibility version
         sourceCompatibility = JavaVersion.VERSION_1_8
-        // Java target compatibility version
+        // Set Java target compatibility version
         targetCompatibility = JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        // Kotlin JVM target version
+        // Set Kotlin JVM target version
         jvmTarget = "1.8"
     }
     buildFeatures {
@@ -61,7 +62,7 @@ android {
         compose = true
     }
     composeOptions {
-        // Kotlin compiler extension version for Jetpack Compose
+        // Define Kotlin compiler extension version for Jetpack Compose
         kotlinCompilerExtensionVersion = "1.5.1"
     }
     packaging {
@@ -88,7 +89,6 @@ dependencies {
     // Additional libraries
     implementation("com.chargemap.compose:numberpicker:1.0.3") // Number picker for Jetpack Compose
     implementation(libs.androidx.lifecycle.runtime.compose)
-    implementation(libs.firebase.firestore.ktx) // Lifecycle runtime integration for Jetpack Compose
 
     // Test dependencies
     testImplementation(libs.junit) // JUnit for unit testing
