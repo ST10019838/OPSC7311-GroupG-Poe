@@ -9,9 +9,8 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
-import com.example.chronometron.ui.screens.LoginScreen
 import com.example.chronometron.ui.screens.TimeEntriesScreen
-import com.example.chronometron.ui.viewModels.UserSession
+import com.example.chronometron.ui.viewModels.SessionState
 
 
 object TimeEntriesTab : Tab {
@@ -33,7 +32,7 @@ object TimeEntriesTab : Tab {
 
     @Composable
     override fun Content() {
-        val datesAndEntries by UserSession.datesAndEntries.collectAsStateWithLifecycle()
+        val datesAndEntries by SessionState.datesAndEntries.collectAsStateWithLifecycle()
 
         TimeEntriesScreen(datesAndEntries)
     }

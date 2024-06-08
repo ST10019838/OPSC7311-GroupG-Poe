@@ -30,12 +30,19 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ch.benlu.composeform.FieldState
+import com.chargemap.compose.numberpicker.FullHours
+import com.example.chronometron.api.removeCategory
+import com.example.chronometron.api.toggleDarkMode
+import com.example.chronometron.api.updateMaximumGoal
+import com.example.chronometron.api.updateMinimumGoal
 import com.example.chronometron.forms.GoalSetterForm
+import com.example.chronometron.types.FirebaseHours
 import com.example.chronometron.ui.composables.CategoryChip
 import com.example.chronometron.ui.composables.CategoryCreationDialog
 import com.example.chronometron.ui.composables.CollapsibleSection
 import com.example.chronometron.ui.composables.formFields.TimeSelector
-import com.example.chronometron.ui.viewModels.UserSession
+import com.example.chronometron.ui.viewModels.SessionState
 import com.example.chronometron.utils.onFormValueChange
 
 @Composable
@@ -58,10 +65,10 @@ fun CustomiserScreen() {
 
 @Composable
 private fun Goals() {
-    val minGoal by UserSession.minimumGoal.collectAsStateWithLifecycle()
-    val maxGoal by UserSession.maximumGoal.collectAsStateWithLifecycle()
+    val minGoal by SessionState.minimumGoal.collectAsStateWithLifecycle()
+    val maxGoal by SessionState.maximumGoal.collectAsStateWithLifecycle()
 
-    var form = GoalSetterForm(minimumGoal = minGoal, maximumGoal = maxGoal)
+    val form = GoalSetterForm(minimumGoal = minGoal, maximumGoal = maxGoal)
     form.validate(true)
 
     CollapsibleSection(
@@ -76,7 +83,7 @@ private fun Goals() {
 //                }
                 onChange = {
                     onFormValueChange(
-                        value = it,
+                        value = FirebaseHours(it.hours, it.minutes),
                         form = form,
                         fieldState = form.minGoal
                     )
@@ -86,7 +93,7 @@ private fun Goals() {
 //                        form = form,
 //                        fieldState = form.maxGoal
 //                    )
-                    UserSession.updateMinimumGoal(it)
+                   updateMinimumGoal(it)
 //                    form.validate(true)
 
 //                    if (!form.isValid) {
@@ -109,14 +116,14 @@ private fun Goals() {
 //                }
                 onChange = {
                     onFormValueChange(
-                        value = it,
+                        value = FirebaseHours(it.hours, it.minutes),
                         form = form,
                         fieldState = form.maxGoal
                     )
 
 //                    form.validate(true)
                     if (form.isValid) {
-                        UserSession.updateMaximumGoal(it)
+                        updateMaximumGoal(it)
                     }
                 },
                 hasError = form.maxGoal.hasError(),
@@ -128,11 +135,13 @@ private fun Goals() {
 }
 
 
+
+
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 private fun Categories() {
     var isDialogOpen by rememberSaveable { mutableStateOf(false) }
-    val categories by UserSession.categories.collectAsStateWithLifecycle()
+    val categories by SessionState.categories.collectAsStateWithLifecycle()
 
     CollapsibleSection(
         heading = "Categories",
@@ -155,10 +164,10 @@ private fun Categories() {
             ) {
                 categories.forEachIndexed { _, item ->
                     CategoryChip(
-                        item.name,
+                        item.name!!,
                         modifier = Modifier.padding(horizontal = 5.dp),
                         confirmationAction = {
-                            UserSession.removeCategory(item)
+                            removeCategory(item)
                         })
                 }
 
@@ -184,7 +193,7 @@ private fun Categories() {
 
 @Composable
 private fun Colours() {
-    val isDarkMode by UserSession.isDarkMode.collectAsStateWithLifecycle()
+    val isDarkMode by SessionState.isDarkMode.collectAsStateWithLifecycle()
 
     CollapsibleSection(
         heading = "Theme",
@@ -204,7 +213,7 @@ private fun Colours() {
             Switch(
                 modifier = Modifier.semantics { contentDescription = "Demo" },
                 checked = isDarkMode,
-                onCheckedChange = { UserSession.toggleIsDarkMode(it) })
+                onCheckedChange = { toggleDarkMode(it) })
         }
 
     }

@@ -35,13 +35,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import co.yml.charts.common.model.Point
 import com.chargemap.compose.numberpicker.Hours
+import com.example.chronometron.types.FirebaseHours
 import com.example.chronometron.types.Rating
 import com.example.chronometron.utils.hoursToFloat
 
 @Composable
 fun GoalAdherenceRating(
-    minimumGoal: Hours,
-    maximumGoal: Hours,
+    minimumGoal: FirebaseHours,
+    maximumGoal: FirebaseHours,
     graphData: List<Point>
 ) {
     val rating = CalculateAdherenceRating(minimumGoal, maximumGoal, graphData)
@@ -222,8 +223,8 @@ private fun RatingDetails(onDismiss: () -> Unit) {
 
 
 private fun CalculateAdherenceRating(
-    minimumGoal: Hours,
-    maximumGoal: Hours,
+    minimumGoal: FirebaseHours,
+    maximumGoal: FirebaseHours,
     graphData: List<Point>
 ): Rating {
     // the minus one is for the initial point starting at 0,0

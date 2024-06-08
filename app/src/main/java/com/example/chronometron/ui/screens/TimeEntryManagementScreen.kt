@@ -32,8 +32,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.example.chronometron.api.addTimeEntry
+import com.example.chronometron.api.deleteTimeEntry
+import com.example.chronometron.api.updateTimeEntry
 import com.example.chronometron.forms.EntryCreationForm
 import com.example.chronometron.types.Category
+import com.example.chronometron.types.FirebaseHours
 import com.example.chronometron.types.TimeEntry
 import com.example.chronometron.ui.composables.CategoryCreationDialog
 import com.example.chronometron.ui.composables.TimeEntryDeletionDialog
@@ -42,7 +46,7 @@ import com.example.chronometron.ui.composables.formFields.ImageCapturer
 import com.example.chronometron.ui.composables.formFields.Select
 import com.example.chronometron.ui.composables.formFields.TextField
 import com.example.chronometron.ui.composables.formFields.TimeSelector
-import com.example.chronometron.ui.viewModels.UserSession
+import com.example.chronometron.ui.viewModels.SessionState
 import com.example.chronometron.utils.onFormValueChange
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -58,7 +62,7 @@ fun TimeEntryManagementScreen(
     val onCreate = {
         form.validate(true)
         if (form.isValid) {
-            UserSession.addTimeEntry(form.produceEntry())
+            addTimeEntry(form.produceEntry())
             navigationAction()
         }
     }
@@ -66,13 +70,13 @@ fun TimeEntryManagementScreen(
     val onUpdate = {
         form.validate(true)
         if (form.isValid) {
-            UserSession.updateTimeEntry(form.produceEntry())
+            updateTimeEntry(form.produceEntry(isAlreadyArchived = entryToManage?.isArchived ?: false))
             navigationAction()
         }
     }
 
     val onDelete = {
-        UserSession.deleteTimeEntry(entryToManage!!)
+        deleteTimeEntry(entryToManage!!)
         navigationAction()
     }
 
@@ -151,6 +155,7 @@ fun TimeEntryManagementScreen(
                         placeholderText = "Select a Date"
                     )
 
+
                     TimeSelector(
                         label = "Start Time",
                         value = form.startTime.state.value,
@@ -158,7 +163,7 @@ fun TimeEntryManagementScreen(
                         isRequired = true,
                         onChange = {
                             onFormValueChange(
-                                value = it,
+                                value = FirebaseHours(it.hours, it.minutes),
                                 form = form,
                                 fieldState = form.startTime
                             )
@@ -174,7 +179,7 @@ fun TimeEntryManagementScreen(
                         isRequired = true,
                         onChange = {
                             onFormValueChange(
-                                value = it,
+                                value = FirebaseHours(it.hours, it.minutes),
                                 form = form,
                                 fieldState = form.endTime
                             )
@@ -187,7 +192,7 @@ fun TimeEntryManagementScreen(
                     Select<Category?>(
                         label = "Category",
                         value = form.category.state.value,
-                        options = UserSession.categories.collectAsState().value,
+                        options = SessionState.categories.collectAsState().value,
                         itemFormatter = form.category.optionItemFormatter,
                         isRequired = true,
                         onSelect = {

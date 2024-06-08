@@ -7,9 +7,8 @@ import java.util.UUID
 
 //@Entity()
 data class Category(
-
-    var id: UUID,
-    var name: String,
+    var id: String? = "",
+    var name: String? = "",
     // var icon
 //    @PrimaryKey(autoGenerate = true)
 

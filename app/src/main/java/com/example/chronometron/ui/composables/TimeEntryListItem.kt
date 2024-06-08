@@ -47,9 +47,14 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.example.chronometron.api.archiveEntry
+import com.example.chronometron.api.deleteTimeEntry
+import com.example.chronometron.api.unarchiveEntry
+import com.example.chronometron.api.updateTimeEntry
 import com.example.chronometron.types.TimeEntry
 import com.example.chronometron.ui.composables.camera.ImagePreview
-import com.example.chronometron.ui.viewModels.UserSession
+import com.example.chronometron.ui.viewModels.SessionState
+import com.example.chronometron.utils.StringtoBitmap
 import de.charlex.compose.RevealSwipe
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -73,35 +78,11 @@ fun TimeEntryListItem(entry: TimeEntry, onClick: () -> Unit = {}) {
             delay(500)
 
             if (isDeleted) {
-                UserSession.deleteTimeEntry(entry!!)
+                deleteTimeEntry(entry!!)
             } else if (shouldArchive) {
-                val updatedEntry = TimeEntry(
-                    id = entry.id,
-                    description = entry.description,
-                    date = entry.date,
-                    startTime = entry.startTime,
-                    endTime = entry.endTime,
-                    duration = entry.duration,
-                    category = entry.category,
-                    photograph = entry.photograph,
-                    isArchived = true
-                )
-
-                UserSession.updateTimeEntry(updatedEntry)
+                archiveEntry(entry)
             } else {
-                val updatedEntry = TimeEntry(
-                    id = entry.id,
-                    description = entry.description,
-                    date = entry.date,
-                    startTime = entry.startTime,
-                    endTime = entry.endTime,
-                    duration = entry.duration,
-                    category = entry.category,
-                    photograph = entry.photograph,
-                    isArchived = false
-                )
-
-                UserSession.updateTimeEntry(updatedEntry)
+                unarchiveEntry(entry)
             }
         }
     }
@@ -169,7 +150,7 @@ fun TimeEntryListItem(entry: TimeEntry, onClick: () -> Unit = {}) {
                         .fillMaxWidth(),
                 ) {
                     if (entry.photograph != null) {
-                        EntryImagePreview(entry.photograph!!)
+                        EntryImagePreview(StringtoBitmap(entry.photograph!!))
 
                         VerticalDivider(
                             modifier = Modifier
@@ -287,7 +268,7 @@ private fun EntryDurationDisplay(
         shape = RoundedCornerShape(0)
     ) {
         Text(
-            text = "${entry.duration.hours}h ${entry.duration.minutes}m",
+            text = "${entry.duration!!.hours}h ${entry.duration!!.minutes}m",
             color = MaterialTheme.colorScheme.onSurface
         )
     }
@@ -325,7 +306,7 @@ private fun EntryTimesDisplay(entry: TimeEntry) {
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
-                    text = "${entry.startTime.hours} : ${entry.startTime.minutes}",
+                    text = "${entry.startTime!!.hours} : ${entry.startTime!!.minutes}",
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth(),
@@ -342,7 +323,7 @@ private fun EntryTimesDisplay(entry: TimeEntry) {
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
-                    text = "${entry.endTime.hours} : ${entry.endTime.minutes}",
+                    text = "${entry.endTime!!.hours} : ${entry.endTime!!.minutes}",
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth(),

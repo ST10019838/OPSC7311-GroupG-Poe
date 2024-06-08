@@ -6,15 +6,16 @@ import ch.benlu.composeform.FieldState
 import ch.benlu.composeform.Form
 import ch.benlu.composeform.FormField
 import ch.benlu.composeform.validators.NotEmptyValidator
-import com.chargemap.compose.numberpicker.FullHours
-import com.chargemap.compose.numberpicker.Hours
+import co.yml.charts.common.extensions.isNotNull
 import com.example.chronometron.forms.validators.IsRequiredValidator
 import com.example.chronometron.forms.validators.MaxLengthValidator
 import com.example.chronometron.forms.validators.TimeValidator
 import com.example.chronometron.types.Category
+import com.example.chronometron.types.FirebaseHours
 import com.example.chronometron.types.TimeEntry
+import com.example.chronometron.utils.BitmaptoString
+import com.example.chronometron.utils.StringtoBitmap
 import java.util.Date
-import java.util.UUID
 
 
 class EntryCreationForm(entry: TimeEntry?) : Form() {
@@ -24,7 +25,7 @@ class EntryCreationForm(entry: TimeEntry?) : Form() {
 
     @FormField
     val id = FieldState(
-        state = mutableStateOf<UUID?>(entry?.id)
+        state = mutableStateOf<String?>(entry?.id)
     )
 
     @FormField
@@ -44,17 +45,27 @@ class EntryCreationForm(entry: TimeEntry?) : Form() {
 
     @FormField
     val startTime = FieldState(
-        state = mutableStateOf<Hours?>(entry?.startTime ?: FullHours(Date().hours, Date().minutes)),
+        state = mutableStateOf<FirebaseHours>(
+            entry?.startTime ?: FirebaseHours(
+                Date().hours,
+                Date().minutes
+            )
+        ),
         validators = mutableListOf(IsRequiredValidator())
     )
 
     @FormField
     val endTime = FieldState(
-        state = mutableStateOf<Hours?>(entry?.endTime ?: FullHours(Date().hours, Date().minutes)),
+        state = mutableStateOf<FirebaseHours>(
+            entry?.endTime ?: FirebaseHours(
+                Date().hours,
+                Date().minutes
+            )
+        ),
         validators = mutableListOf(
             IsRequiredValidator(),
             TimeValidator(
-                minTime = { startTime.state.value!! },
+                minTime = { startTime.state.value },
                 errorText = "End time can't be less than start time."
             )
         )
@@ -72,26 +83,27 @@ class EntryCreationForm(entry: TimeEntry?) : Form() {
 
     @FormField
     val photograph = FieldState(
-        state = mutableStateOf<Bitmap?>(entry?.photograph)
+        state = mutableStateOf<Bitmap?>(if (entry?.photograph.isNotNull()) StringtoBitmap(entry?.photograph!!) else null)
     )
 
-    fun produceEntry(): TimeEntry {
-        var startTimeValue = this.startTime.state.value!!
-        var endTimeValue = this.endTime.state.value!!
+    fun produceEntry(isAlreadyArchived: Boolean = false): TimeEntry {
+        var startTimeValue = this.startTime.state.value
+        var endTimeValue = this.endTime.state.value
 
         return TimeEntry(
-            id = if (this.id.state.value == null) UUID.randomUUID() else this.id.state.value!!,
+            id = if (this.id.state.value == null) "" else this.id.state.value!!,
             description = this.description.state.value!!,
             date = this.date.state.value!!,
             startTime = startTimeValue,
             endTime = endTimeValue,
-            duration = FullHours(
-                hours = endTimeValue.hours - startTimeValue.hours,
-                minutes = endTimeValue.minutes - startTimeValue.minutes
+            duration = FirebaseHours(
+                hours = endTimeValue.hours!! - startTimeValue.hours!!,
+                minutes = endTimeValue.minutes!! - startTimeValue.minutes!!
             ),
             category = this.category.state.value!!,
-            photograph = this.photograph.state.value,
-            isArchived = false
+            photograph = if (this.photograph.state.value.isNotNull())
+                BitmaptoString(this.photograph.state.value!!) else null,
+            isArchived = isAlreadyArchived
         )
     }
 }

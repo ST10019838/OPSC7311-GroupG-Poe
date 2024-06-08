@@ -11,10 +11,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
+import com.example.chronometron.api.addCategory
 import com.example.chronometron.forms.CategoryCreationForm
 import com.example.chronometron.types.Category
 import com.example.chronometron.ui.composables.formFields.TextField
-import com.example.chronometron.ui.viewModels.UserSession
+import com.example.chronometron.ui.viewModels.SessionState
 import com.example.chronometron.utils.onFormValueChange
 import java.util.UUID
 
@@ -57,9 +58,9 @@ fun CategoryCreationDialog(onDismiss: () -> Unit = {}) {
                 onClick = {
                     form.validate(true)
                     if (form.isValid) {
-                        UserSession.addCategory(
+                        addCategory(
                             Category(
-                                id = UUID.randomUUID(),
+                                id = "",
                                 name = form.name.state.value!!
                             )
                         )

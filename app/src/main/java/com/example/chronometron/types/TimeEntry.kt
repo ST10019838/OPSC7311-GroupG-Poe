@@ -1,6 +1,7 @@
 package com.example.chronometron.types
 
 import android.graphics.Bitmap
+import com.chargemap.compose.numberpicker.FullHours
 //import androidx.room.Entity
 //import androidx.room.PrimaryKey
 import com.chargemap.compose.numberpicker.Hours
@@ -10,15 +11,15 @@ import java.util.UUID
 //@Entity()
 data class TimeEntry(
 //    @PrimaryKey(autoGenerate = true)
-    var id: UUID,
-    var description: String,
-    var date: Date,
-    var startTime: Hours,
-    var endTime: Hours,
-    var duration: Hours,
-    var category: Category,
-    var photograph: Bitmap?,
-    var isArchived: Boolean
+    var id: String = "",
+    var description: String = "",
+    var date: Date = Date(),
+    var startTime: FirebaseHours? = null,
+    var endTime: FirebaseHours? = null,
+    var duration: FirebaseHours? = null,
+    var category: Category = Category(),
+    var photograph: String? = null,
+    var isArchived: Boolean = false
 )
 
 //{

@@ -44,13 +44,14 @@ import co.yml.charts.ui.linechart.model.SelectionHighlightPopUp
 import co.yml.charts.ui.linechart.model.ShadowUnderLine
 import com.chargemap.compose.numberpicker.FullHours
 import com.chargemap.compose.numberpicker.Hours
+import com.example.chronometron.types.FirebaseHours
 import com.example.chronometron.utils.hoursToFloat
 
 @Composable
 fun DailyHoursGraph(
     graphData: List<Point>,
-    minimumGoal: Hours? = null,
-    maximumGoal: Hours? = null
+    minimumGoal: FirebaseHours? = null,
+    maximumGoal: FirebaseHours? = null
 ) {
     val steps = 4
 

@@ -8,6 +8,7 @@ import co.yml.charts.common.model.Point
 import com.chargemap.compose.numberpicker.FullHours
 import com.chargemap.compose.numberpicker.Hours
 import com.example.chronometron.types.Category
+import com.example.chronometron.types.FirebaseHours
 import com.example.chronometron.types.Period
 import com.example.chronometron.types.TimeEntry
 import com.example.chronometron.utils.addFullHours
@@ -23,7 +24,8 @@ import java.util.Date
 import java.util.UUID
 
 
-object UserSession : ViewModel() {
+object SessionState : ViewModel() {
+
     private val _isDarkMode = MutableStateFlow(true)
     val isDarkMode = _isDarkMode.asStateFlow()
 
@@ -36,23 +38,23 @@ object UserSession : ViewModel() {
     private val _timeEntries = MutableStateFlow(listOf<TimeEntry>())
 
     val timeEntries = combine(_timeEntries) { entries ->
-        entries[0].filter { e -> !e.isArchived }.sortedByDescending { entry -> entry.date }
+        entries[0].sortedByDescending { entry -> entry.date }
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),
         _timeEntries.value
     )
     private val _datesAndEntries = combine(timeEntries) { sortedEntries ->
-        var datesAndEntriesMap = mutableMapOf<String, Pair<Hours, MutableList<Int>>>()
+        var datesAndEntriesMap = mutableMapOf<String, Pair<FirebaseHours, MutableList<Int>>>()
 
         sortedEntries[0].forEachIndexed { index, entry ->
             val date = dateShort(entry.date)
             if (datesAndEntriesMap.containsKey(date)) {
-                var totalTime: Hours = FullHours(0, 0)
+                var totalTime: FirebaseHours = FirebaseHours(0, 0)
                 datesAndEntriesMap[date]?.second?.add(index)
 
                 datesAndEntriesMap[date]?.second?.forEach { id ->
-                    totalTime = addFullHours(totalTime, _timeEntries.value[id].duration)
+                    totalTime = addFullHours(totalTime, _timeEntries.value[id].duration!!)
                 }
 
                 datesAndEntriesMap[date] =
@@ -63,7 +65,7 @@ object UserSession : ViewModel() {
 
             } else {
                 datesAndEntriesMap[dateShort(entry.date)] =
-                    Pair(entry.duration, mutableListOf(index))
+                    Pair(entry.duration!!, mutableListOf(index))
             }
         }
 
@@ -71,7 +73,7 @@ object UserSession : ViewModel() {
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),
-        mapOf<String, Pair<Hours, MutableList<Int>>>()
+        mapOf<String, Pair<FirebaseHours, MutableList<Int>>>()
     )
     val datesAndEntries =
         selectedPeriod.combine(_datesAndEntries) { selectedPeriod, datesAndEntries ->
@@ -117,24 +119,27 @@ object UserSession : ViewModel() {
         )
 
 
-    val archivedTimeEntries = combine(_timeEntries) { entries ->
-        entries[0].filter { e -> e.isArchived }.sortedByDescending { entry -> entry.date }
+
+    private val _archivedTimeEntries = MutableStateFlow(listOf<TimeEntry>())
+
+    val archivedTimeEntries = combine(_archivedTimeEntries) { entries ->
+        entries[0].sortedByDescending { entry -> entry.date }
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),
-        _timeEntries.value // Maybe ADD FILTER
+        _archivedTimeEntries.value // Maybe ADD FILTER
     )
     private val _archivedDatesAndEntries = combine(archivedTimeEntries) { sortedEntries ->
-        var datesAndEntriesMap = mutableMapOf<String, Pair<Hours, MutableList<Int>>>()
+        var datesAndEntriesMap = mutableMapOf<String, Pair<FirebaseHours, MutableList<Int>>>()
 
         sortedEntries[0].forEachIndexed { index, entry ->
             val date = dateShort(entry.date)
             if (datesAndEntriesMap.containsKey(date)) {
-                var totalTime: Hours = FullHours(0, 0)
+                var totalTime: FirebaseHours = FirebaseHours(0, 0)
                 datesAndEntriesMap[date]?.second?.add(index)
 
                 datesAndEntriesMap[date]?.second?.forEach { id ->
-                    totalTime = addFullHours(totalTime, _timeEntries.value[id].duration)
+                    totalTime = addFullHours(totalTime, _timeEntries.value[id].duration!!)
                 }
 
                 datesAndEntriesMap[date] =
@@ -145,7 +150,7 @@ object UserSession : ViewModel() {
 
             } else {
                 datesAndEntriesMap[dateShort(entry.date)] =
-                    Pair(entry.duration, mutableListOf(index))
+                    Pair(entry.duration!!, mutableListOf(index))
             }
         }
 
@@ -153,7 +158,7 @@ object UserSession : ViewModel() {
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),
-        mapOf<String, Pair<Hours, MutableList<Int>>>()
+        mapOf<String, Pair<FirebaseHours, MutableList<Int>>>()
     )
     val archivedDatesAndEntries =
         selectedPeriod.combine(_archivedDatesAndEntries) { selectedPeriod, datesAndEntries ->
@@ -382,7 +387,7 @@ object UserSession : ViewModel() {
 //    val categories = _categories
 
     val categoryHours = combine(datesAndEntries) {
-        var categoryHoursMap = mutableMapOf<Category, Hours>()
+        var categoryHoursMap = mutableMapOf<Category, FirebaseHours>()
 
         it[0].forEach { item ->
             item.value.second.forEach { id ->
@@ -391,7 +396,7 @@ object UserSession : ViewModel() {
 
                 if (categoryHoursMap.containsKey(category)) {
                     categoryHoursMap[category] =
-                        addFullHours(categoryHoursMap[category]!!, entry.duration)
+                        addFullHours(categoryHoursMap[category]!!, entry.duration!!)
 
 //                        FullHours(
 //                        hours = categoryHoursMap[category]?.hours?.plus(entry.duration.hours) ?: 0,
@@ -400,7 +405,7 @@ object UserSession : ViewModel() {
 //                    )
                 } else {
                     categoryHoursMap[category] =
-                        FullHours(entry.duration.hours, entry.duration.minutes)
+                        FirebaseHours(entry.duration!!.hours, entry.duration!!.minutes)
                 }
             }
         }
@@ -409,14 +414,14 @@ object UserSession : ViewModel() {
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),
-        mapOf<Category, Hours>()
+        mapOf<Category, FirebaseHours>()
     )
 
 
-    private val _minimumGoal = MutableStateFlow<Hours>(FullHours(0, 0))
+    private val _minimumGoal = MutableStateFlow<FirebaseHours>(FirebaseHours(0, 0))
     val minimumGoal = _minimumGoal.asStateFlow()
 
-    private val _maximumGoal = MutableStateFlow<Hours>(FullHours(0, 0))
+    private val _maximumGoal = MutableStateFlow<FirebaseHours>(FirebaseHours(0, 0))
     val maximumGoal = _maximumGoal.asStateFlow()
 
     val graphData = combine(datesAndEntries) {
@@ -476,31 +481,31 @@ object UserSession : ViewModel() {
 //    )
 
     init {
-        val newEntry = TimeEntry(
-            id = UUID.randomUUID(),
-            category = Category(id = UUID.randomUUID(), name = "CAT"),
-            date = Date(),
-            description = "",
-            endTime = FullHours(0, 0),
-            duration = FullHours(6, 20),
-            startTime = FullHours(0, 0),
-            photograph = null,
-            isArchived = true
-        )
+//        val newEntry = TimeEntry(
+//            id = "",
+//            category = Category(id ="", name = "CAT"),
+//            date = Date(),
+//            description = "",
+//            endTime = FullHours(0, 0),
+//            duration = FullHours(6, 20),
+//            startTime = FullHours(0, 0),
+//            photograph = null,
+//            isArchived = true
+//        )
+//
+//        val newEntry2 = TimeEntry(
+//            id = "",
+//            category = Category(id = "", name = "CAT"),
+//            date = Date(),
+//            description = "",
+//            endTime = FullHours(0, 0),
+//            duration = FullHours(2, 0),
+//            startTime = FullHours(0, 0),
+//            photograph = null,
+//            isArchived = true
+//        )
 
-        val newEntry2 = TimeEntry(
-            id = UUID.randomUUID(),
-            category = Category(id = UUID.randomUUID(), name = "CAT"),
-            date = Date(),
-            description = "",
-            endTime = FullHours(0, 0),
-            duration = FullHours(2, 0),
-            startTime = FullHours(0, 0),
-            photograph = null,
-            isArchived = true
-        )
-
-        _timeEntries.update { (it + newEntry).toMutableList() }
+//        _timeEntries.update { (it + newEntry).toMutableList() }
 //        _timeEntries.update { (it + newEntry).toMutableList() }
 //        viewModelScope.launch {
 ////            //fetch data code
@@ -543,155 +548,62 @@ object UserSession : ViewModel() {
 //    }
 
 
-    fun addTimeEntry(newEntry: TimeEntry) {
-        _timeEntries.update { (it + newEntry).toMutableList() }
-    }
-
-    fun updateTimeEntry(updatedEntry: TimeEntry) {
-//        _timeEntries.update {
-//            _timeEntries.value.map { entry ->
-//                if (entry.id == updatedEntry.id) updatedEntry
-//                else entry
-//            }.toList()
-
-//            var newList = _timeEntries.value.toMutableList()
-//            val entryIndex = _timeEntries.value.indexOfFirst { entry -> entry.id == updatedEntry.id }
-//            newList[entryIndex] = updatedEntry
+//    fun addTimeEntry(newEntry: TimeEntry) {
+//        _timeEntries.update { (it + newEntry).toMutableList() }
+//    }
 //
-//            newList
-//        }
-
-        _timeEntries.update {
-            it.toMutableList().apply {
-                this[indexOfFirst { entry -> entry.id == updatedEntry.id }] = updatedEntry
-            }
-        }
-    }
-
-    fun deleteTimeEntry(entry: TimeEntry) {
-        _timeEntries.update { it.minusElement(entry) }
-    }
-
-
-    fun updateMinimumGoal(goal: Hours) {
-        _minimumGoal.update { goal }
-    }
-
-    fun updateMaximumGoal(goal: Hours) {
-        _maximumGoal.update { goal }
-    }
-
-
-    fun addCategory(category: Category) {
-        _categories.update { it + category }
-//        viewModelScope.launch {
-        //fetch data code
-//            db.categories.upsertCategory(category)
-//            LocalDatabase.getDatabase(getApplication<Application>().applicationContext).categories.upsertCategory(
-//                category
-//            )
-//        }
-    }
-
-    fun removeCategory(category: Category) {
-        _categories.update { it.minusElement(category) }
-
-//        viewModelScope.launch {
-//            //fetch data code
-//            db.categories.deleteCategory(category)
-//        }
-    }
-
-    fun archiveEntry(entry: TimeEntry) {
-//        entry.isArchived = true
-
-//        val entryIndex = _timeEntries.value.indexOf(entry)
-//        _timeEntries.value[entryIndex].isArchived = true
-
-//        _timeEntries.update {
-//            it.map { timeEntry ->
-//                if (timeEntry.id == entry.id) {
-//                    entry
-//                } else {
-//                    timeEntry
-//                }
-//            }
-//        }
-        val updatedEntry = TimeEntry(
-            id = entry.id,
-            description = entry.description,
-            date = entry.date,
-            startTime = entry.startTime,
-            endTime = entry.endTime,
-            duration = entry.duration,
-            category = entry.category,
-            photograph = entry.photograph,
-            isArchived = false
-        )
-
-        deleteTimeEntry(entry)
-        addTimeEntry(updatedEntry)
-
-
+//    fun updateTimeEntry(updatedEntry: TimeEntry) {
+////        _timeEntries.update {
+////            _timeEntries.value.map { entry ->
+////                if (entry.id == updatedEntry.id) updatedEntry
+////                else entry
+////            }.toList()
+//
+////            var newList = _timeEntries.value.toMutableList()
+////            val entryIndex = _timeEntries.value.indexOfFirst { entry -> entry.id == updatedEntry.id }
+////            newList[entryIndex] = updatedEntry
+////
+////            newList
+////        }
+//
 //        _timeEntries.update {
 //            it.toMutableList().apply {
-//                this[indexOfFirst { e -> e.id == entry.id }] = updatedEntry
+//                this[indexOfFirst { entry -> entry.id == updatedEntry.id }] = updatedEntry
 //            }
 //        }
+//    }
+//
+//    fun deleteTimeEntry(entry: TimeEntry) {
+//        _timeEntries.update { it.minusElement(entry) }
+//    }
+
+    fun setTimeEntries(entries: List<TimeEntry>){
+        _timeEntries.update { entries }
     }
 
-    fun unarchiveEntry(entry: TimeEntry) {
-//        val entryIndex = _timeEntries.value.indexOf(entry)
-
-        val updatedEntry = TimeEntry(
-            id = entry.id,
-            description = entry.description,
-            date = entry.date,
-            startTime = entry.startTime,
-            endTime = entry.endTime,
-            duration = entry.duration,
-            category = entry.category,
-            photograph = entry.photograph,
-            isArchived = false
-        )
-
-        deleteTimeEntry(entry)
-        addTimeEntry(updatedEntry)
-
-//        updatedEntry.isArchived = false
-//        entry.isArchived = false
-
-//        Log.d("IDK", entry.isArchived.toString())
-
-
-//        var newEntriesList = _timeEntries.value.toMutableList()
-//        newEntriesList[entryIndex] = entry
-//
-//
-//        _timeEntries.update { newEntriesList }
-
-        _timeEntries.update {
-            it.toMutableList().apply {
-                this[indexOfFirst { e -> e.id == entry.id }] = updatedEntry
-            }
-        }
-
-
-//        entry.isArchived = false
-//
-//        _timeEntries.update {
-//            it.map { timeEntry ->
-//                if (timeEntry.id == entry.id) {
-//                    entry
-//                } else {
-//                    timeEntry
-//                }
-//            }
-//        }
+    fun setArchivedTimeEntries(entries: List<TimeEntry>){
+        _archivedTimeEntries.update { entries }
     }
 
-    fun toggleIsDarkMode(value: Boolean) {
+
+
+
+
+    fun setMinimumGoal(goals: FirebaseHours){
+        _minimumGoal.update { goals }
+    }
+    fun setMaximumGoal(goals: FirebaseHours){
+        _maximumGoal.update { goals }
+    }
+
+
+
+
+    fun setCategories(categories: List<Category>) {
+        _categories.update { categories }
+    }
+
+    fun setIsDarkMode(value: Boolean) {
         _isDarkMode.update { value }
     }
-
 }

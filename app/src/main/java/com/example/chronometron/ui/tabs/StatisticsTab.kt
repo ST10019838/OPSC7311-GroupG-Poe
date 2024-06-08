@@ -31,7 +31,7 @@ import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabNavigator
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.example.chronometron.ui.composables.SelectablePeriodSearch
-import com.example.chronometron.ui.viewModels.UserSession
+import com.example.chronometron.ui.viewModels.SessionState
 
 
 object StatisticsTab : Tab {
@@ -53,7 +53,7 @@ object StatisticsTab : Tab {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     override fun Content() {
-        val selectablePeriod by UserSession.selectedPeriod.collectAsState()
+        val selectablePeriod by SessionState.selectedPeriod.collectAsState()
 
         TabNavigator(CategoriesTab) { tabNavigator ->
             Scaffold(
@@ -117,7 +117,7 @@ object StatisticsTab : Tab {
                             SelectablePeriodSearch(
                                 value = selectablePeriod,
                                 onSelectionChange = {
-                                    UserSession.onSelectedPeriodChange(
+                                    SessionState.onSelectedPeriodChange(
                                         it?.fromDate,
                                         it?.toDate
                                     )

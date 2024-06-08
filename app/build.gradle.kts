@@ -2,6 +2,7 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    alias(libs.plugins.googleGmsGoogleServices)
 //    id("kotlin-kapt")
 //    id("com.google.dagger.hilt.android")
 }
@@ -73,6 +74,7 @@ dependencies {
 
     implementation("com.chargemap.compose:numberpicker:1.0.3")
     implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.firebase.database)
 
 
     testImplementation(libs.junit)

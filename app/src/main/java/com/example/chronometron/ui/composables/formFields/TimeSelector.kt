@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.chargemap.compose.numberpicker.FullHours
 import com.chargemap.compose.numberpicker.Hours
 import com.chargemap.compose.numberpicker.HoursNumberPicker
+import com.example.chronometron.types.FirebaseHours
 import com.example.chronometron.utils.buildFieldLabel
 
 @Composable
@@ -24,7 +25,7 @@ fun TimeSelector(
     useSemicolonDivider: Boolean = false,
     label: String,
     isRequired: Boolean = false,
-    value: Hours?,
+    value: FirebaseHours?,
     onChange: (Hours) -> Unit = {},
     hasError: Boolean = false,
     errorText: MutableList<String> = mutableListOf(),
@@ -51,7 +52,7 @@ fun TimeSelector(
                 textStyle = TextStyle(color = colorScheme.primary),
                 dividersColor = if (hasError) colorScheme.error else colorScheme.primary,
                 leadingZero = true,
-                value = value ?: FullHours(0, 0),
+                value = FullHours(value?.hours ?: 0, value?.minutes ?: 0 ),
                 onValueChange = onChange,
                 hoursDivider = {
                     if (useSemicolonDivider) {

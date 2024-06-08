@@ -20,12 +20,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.chargemap.compose.numberpicker.Hours
 import com.example.chronometron.types.Category
-import com.example.chronometron.ui.viewModels.UserSession
+import com.example.chronometron.types.FirebaseHours
+import com.example.chronometron.ui.viewModels.SessionState
 
 @Composable
 fun CategoryHoursScreen() {
-    val categoryHours by UserSession.categoryHours.collectAsState()
-    val timeEntries by UserSession.timeEntries.collectAsState()
+    val categoryHours by SessionState.categoryHours.collectAsState()
+    val timeEntries by SessionState.timeEntries.collectAsState()
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -81,7 +82,7 @@ fun CategoryHoursScreen() {
 }
 
 @Composable
-private fun CategoryHoursListItem(item: Pair<Category, Hours>) {
+private fun CategoryHoursListItem(item: Pair<Category, FirebaseHours>) {
     OutlinedCard {
         Row(
             modifier = Modifier
@@ -90,7 +91,7 @@ private fun CategoryHoursListItem(item: Pair<Category, Hours>) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                item.first.name,
+                item.first.name!!,
                 color = MaterialTheme.colorScheme.onSurface
             )
 

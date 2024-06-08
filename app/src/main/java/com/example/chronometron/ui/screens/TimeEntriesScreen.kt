@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -40,23 +39,24 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ch.benlu.composeform.formatters.dateShort
 import com.chargemap.compose.numberpicker.Hours
+import com.example.chronometron.types.FirebaseHours
 import com.example.chronometron.types.TimeEntry
 import com.example.chronometron.ui.composables.SelectablePeriodSearch
 import com.example.chronometron.ui.composables.TimeEntryListItem
-import com.example.chronometron.ui.viewModels.UserSession
+import com.example.chronometron.ui.viewModels.SessionState
 import java.util.Date
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
 fun TimeEntriesScreen(
-    datesAndEntries: Map<String, Pair<Hours, MutableList<Int>>>,
+    datesAndEntries: Map<String, Pair<FirebaseHours, MutableList<Int>>>,
     usingArchive: Boolean = false
 ) {
     var isDialogOpen by remember { mutableStateOf(false) }
-    val timeEntries by if (usingArchive) UserSession.archivedTimeEntries.collectAsStateWithLifecycle()
-    else UserSession.timeEntries.collectAsStateWithLifecycle()
+    val timeEntries by if (usingArchive) SessionState.archivedTimeEntries.collectAsStateWithLifecycle()
+    else SessionState.timeEntries.collectAsStateWithLifecycle()
 
-    val selectablePeriod by UserSession.selectedPeriod.collectAsStateWithLifecycle()
+    val selectablePeriod by SessionState.selectedPeriod.collectAsStateWithLifecycle()
     var entryToManage: TimeEntry? by remember { mutableStateOf(null) }
 
 
@@ -64,7 +64,7 @@ fun TimeEntriesScreen(
     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(5.dp)) {
         SelectablePeriodSearch(
             value = selectablePeriod,
-            onSelectionChange = { UserSession.onSelectedPeriodChange(it?.fromDate, it?.toDate) },
+            onSelectionChange = { SessionState.onSelectedPeriodChange(it?.fromDate, it?.toDate) },
             isOpen = false
         )
 
@@ -212,14 +212,14 @@ fun TimeEntriesScreen(
 
 @Composable
 private fun DailyGoalDisplay() {
-    val datesAndEntries by UserSession.datesAndEntries.collectAsState()
-    val minimumDailyGoal by UserSession.minimumGoal.collectAsState()
-    val maximumDailyGoal by UserSession.maximumGoal.collectAsState()
+    val datesAndEntries by SessionState.datesAndEntries.collectAsState()
+    val minimumDailyGoal by SessionState.minimumGoal.collectAsState()
+    val maximumDailyGoal by SessionState.maximumGoal.collectAsState()
     val totalDailyDuration = datesAndEntries[dateShort(Date())]?.first
 
     var goalToDisplay =
-        if ((totalDailyDuration?.hours ?: 0) >= minimumDailyGoal.hours &&
-            (totalDailyDuration?.minutes ?: 0) >= minimumDailyGoal.minutes
+        if ((totalDailyDuration?.hours ?: 0) >= minimumDailyGoal.hours!! &&
+            (totalDailyDuration?.minutes ?: 0) >= minimumDailyGoal.minutes!!
         ) {
             "${maximumDailyGoal.hours}h ${maximumDailyGoal.minutes}m"
         } else {

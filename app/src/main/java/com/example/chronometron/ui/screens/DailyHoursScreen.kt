@@ -16,15 +16,15 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.chronometron.ui.composables.DailyHoursGraph
 import com.example.chronometron.ui.composables.GoalAdherenceRating
-import com.example.chronometron.ui.viewModels.UserSession
+import com.example.chronometron.ui.viewModels.SessionState
 import com.example.chronometron.utils.hoursToFloat
 
 @Composable
 fun DailyHoursScreen(){
-    val timeEntries by UserSession.timeEntries.collectAsStateWithLifecycle()
-    val graphData by UserSession.graphData.collectAsStateWithLifecycle()
-    val minimumGoal by UserSession.minimumGoal.collectAsStateWithLifecycle()
-    val maximumGoal by UserSession.maximumGoal.collectAsStateWithLifecycle()
+    val timeEntries by SessionState.timeEntries.collectAsStateWithLifecycle()
+    val graphData by SessionState.graphData.collectAsStateWithLifecycle()
+    val minimumGoal by SessionState.minimumGoal.collectAsStateWithLifecycle()
+    val maximumGoal by SessionState.maximumGoal.collectAsStateWithLifecycle()
 
 
     if (timeEntries.isEmpty()) {

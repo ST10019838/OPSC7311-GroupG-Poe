@@ -5,37 +5,38 @@ package com.example.chronometron
 //import com.example.chronometron.ui.viewModels.TestViewModel
 //import dagger.hilt.android.AndroidEntryPoint
 //import dagger.hilt.android.HiltAndroidApp
+//import com.example.chronometron.ui.screens.SignUpScreen
+//import com.example.chronometron.db.Database.database
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material.Button
+import androidx.compose.material.Text
 import androidx.compose.runtime.getValue
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import cafe.adriel.voyager.navigator.LocalNavigator
-import cafe.adriel.voyager.navigator.Navigator
-import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.TabNavigator
-import cafe.adriel.voyager.transitions.SlideTransition
+import com.chargemap.compose.numberpicker.FullHours
+import com.example.chronometron.api.addCategory
+import com.example.chronometron.api.archiveEntry
+import com.example.chronometron.api.removeCategory
+import com.example.chronometron.api.toggleDarkMode
+import com.example.chronometron.api.unarchiveEntry
+import com.example.chronometron.api.updateMaximumGoal
+import com.example.chronometron.api.updateMinimumGoal
+import com.example.chronometron.api.updateTimeEntry
+import com.example.chronometron.types.Category
+import com.example.chronometron.types.TimeEntry
 import com.example.chronometron.ui.composables.ScreenLayout
-import com.example.chronometron.ui.screens.LandingScreen
-import com.example.chronometron.ui.screens.LoginScreen
-//import com.example.chronometron.ui.screens.SignUpScreen
 import com.example.chronometron.ui.tabs.TimeEntriesTab
 import com.example.chronometron.ui.theme.ChronoMetronTheme
-import com.example.chronometron.ui.viewModels.UserSession
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.FirebaseAuth
+import com.example.chronometron.ui.viewModels.SessionState
+import java.util.Date
+import java.util.UUID
 
 //@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -82,9 +83,8 @@ class MainActivity : ComponentActivity() {
         }
 
 
-
         setContent {
-            val isDarkMode by UserSession.isDarkMode.collectAsStateWithLifecycle()
+            val isDarkMode by SessionState.isDarkMode.collectAsStateWithLifecycle()
 
             ChronoMetronTheme(darkTheme = isDarkMode) {
                 TabNavigator(TimeEntriesTab) { tabNavigator ->
@@ -118,8 +118,6 @@ class MainActivity : ComponentActivity() {
             Manifest.permission.CAMERA
         )
     }
-
-
 
 
 //    private fun signInWithGoogle() {
@@ -160,6 +158,11 @@ class MainActivity : ComponentActivity() {
 //        val navigator = LocalNavigator.currentOrThrow
 //        navigator.push(SignUpScreen())
 //    }
+}
+
+data class User(val username: String? = null, val email: String? = null) {
+    // Null default values create a no-argument default constructor, which is needed
+    // for deserialization from a DataSnapshot.
 }
 
 

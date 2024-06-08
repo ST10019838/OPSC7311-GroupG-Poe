@@ -16,6 +16,8 @@ lifecycleRuntimeCompose = "2.7.0"
 materialIconsExtended = "1.6.7"
 revealswipe = "2.0.0-beta01"
 ycharts = "2.1.0"
+googleGmsGoogleServices = "4.4.2"
+firebaseDatabase = "21.0.0"
 
 [libraries]
 androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "cameraxVersion" }
@@ -48,8 +50,10 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3",
 androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycleRuntimeCompose" }
 revealswipe = { module = "de.charlex.compose:revealswipe", version.ref = "revealswipe" }
 ycharts = { module = "co.yml:ycharts", version.ref = "ycharts" }
+firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+googleGmsGoogleServices = { id = "com.google.gms.google-services", version.ref = "googleGmsGoogleServices" }
 
