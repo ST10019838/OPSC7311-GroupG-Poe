@@ -1,8 +1,8 @@
 package com.example.chronometron.api
 
 import com.chargemap.compose.numberpicker.Hours
-import com.example.chronometron.db.Database.maximumGoal
-import com.example.chronometron.db.Database.minimumGoal
+import com.example.chronometron.Firebase.Database.maximumGoal
+import com.example.chronometron.Firebase.Database.minimumGoal
 
 
 fun updateMinimumGoal(goal: Hours) {

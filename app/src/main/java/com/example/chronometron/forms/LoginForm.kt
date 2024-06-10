@@ -30,7 +30,6 @@ class LoginForm : Form() {
         state = mutableStateOf<String?>(""),
         validators = mutableListOf(
             IsRequiredValidator(),
-            MinLengthValidator(8)
         )
     )
 }

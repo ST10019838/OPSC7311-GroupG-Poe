@@ -100,7 +100,7 @@ fun TextField(
                 text = errorText.joinToString("\n"),
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                 style = TextStyle.Default.copy(color = MaterialTheme.colorScheme.error),
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.error
             )
         }
     }

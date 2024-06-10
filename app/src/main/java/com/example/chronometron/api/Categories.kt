@@ -1,6 +1,6 @@
 package com.example.chronometron.api
 
-import com.example.chronometron.db.Database.categories
+import com.example.chronometron.Firebase.Database.categories
 import com.example.chronometron.types.Category
 
 

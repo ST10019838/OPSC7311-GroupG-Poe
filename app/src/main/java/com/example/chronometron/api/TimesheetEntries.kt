@@ -1,8 +1,7 @@
 package com.example.chronometron.api
 
-import com.example.chronometron.db.Database
-import com.example.chronometron.db.Database.archivedEntries
-import com.example.chronometron.db.Database.unarchivedEntries
+import com.example.chronometron.Firebase.Database.archivedEntries
+import com.example.chronometron.Firebase.Database.unarchivedEntries
 import com.example.chronometron.types.TimeEntry
 
 

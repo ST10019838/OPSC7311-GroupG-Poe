@@ -9,8 +9,9 @@ import ch.benlu.composeform.validators.IsEqualValidator
 import ch.benlu.composeform.validators.MinLengthValidator
 import com.example.chronometron.forms.validators.IsRequiredValidator
 import com.example.chronometron.forms.validators.MaxLengthValidator
+import com.example.chronometron.ui.screens.Mode
 
-class SignUpForm : Form() {
+class AccountManagementForm(mode: Mode) : Form() {
     override fun self(): Form {
         return this
     }
@@ -28,16 +29,18 @@ class SignUpForm : Form() {
     @FormField
     val password = FieldState(
         state = mutableStateOf<String?>(""),
-        validators = mutableListOf(IsRequiredValidator(), MinLengthValidator(8))
+        validators = if (mode == Mode.SignUp) mutableListOf(
+            IsRequiredValidator(),
+        ) else mutableListOf()
     )
 
     @FormField
     val passwordConfirmation = FieldState(
         state = mutableStateOf<String?>(""),
-        validators = mutableListOf(
-            IsRequiredValidator(),
-            MaxLengthValidator(100),
-            IsEqualValidator({ password.state.value }, errorText = "Passwords don't match")
-        )
+        validators = if (mode == Mode.SignUp)
+            mutableListOf(
+                IsRequiredValidator(),
+                IsEqualValidator({ password.state.value }, errorText = "Passwords don't match")
+            ) else mutableListOf()
     )
 }

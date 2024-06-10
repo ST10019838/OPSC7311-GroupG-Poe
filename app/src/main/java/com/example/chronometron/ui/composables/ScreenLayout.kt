@@ -1,6 +1,7 @@
 package com.example.chronometron.ui.composables
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -51,23 +52,28 @@ fun ScreenLayout(tabNavigator: TabNavigator) {
                     val isArchivedPage = currentPage == "Archived Entries"
                     val isEntriesPage = currentPage == "Time Entries"
 
-                    if (isArchivedPage || isEntriesPage) {
-                        IconToggleButton(
-                            checked = isArchivedPage,
-                            onCheckedChange = {
-                                tabNavigator.current =
-                                    if (isArchivedPage) TimeEntriesTab else ArchivedTimeEntriesTab
-                            },
-                            colors = IconButtonDefaults.iconToggleButtonColors(
-                                checkedContainerColor = MaterialTheme.colorScheme.primary,
-                                checkedContentColor = MaterialTheme.colorScheme.onSurface)
-                        ) {
-                            Icon(
-                                if (isArchivedPage) Icons.Outlined.Unarchive else Icons.Outlined.Archive,
-                                contentDescription = "Archive"
-                            )
+                    Row{
+                        if (isArchivedPage || isEntriesPage) {
+                            IconToggleButton(
+                                checked = isArchivedPage,
+                                onCheckedChange = {
+                                    tabNavigator.current =
+                                        if (isArchivedPage) TimeEntriesTab else ArchivedTimeEntriesTab
+                                },
+                                colors = IconButtonDefaults.iconToggleButtonColors(
+                                    checkedContainerColor = MaterialTheme.colorScheme.primary,
+                                    checkedContentColor = MaterialTheme.colorScheme.onSurface)
+                            ) {
+                                Icon(
+                                    if (isArchivedPage) Icons.Outlined.Unarchive else Icons.Outlined.Archive,
+                                    contentDescription = "Archive"
+                                )
+                            }
                         }
+
+                        AccountAvatar()
                     }
+
                 }
             )
         },

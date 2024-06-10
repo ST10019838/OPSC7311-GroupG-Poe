@@ -33,7 +33,6 @@ package com.example.chronometron.ui.screens
 
 //Colours and layout
 //import androidx.compose.material.MaterialTheme
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -53,6 +52,7 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -65,6 +65,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -78,11 +79,13 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import com.example.chronometron.CredentialsManager
+import com.example.chronometron.Firebase.Authentication.signIn
 import com.example.chronometron.R
 import com.example.chronometron.forms.LoginForm
 import com.example.chronometron.ui.composables.formFields.TextField
 import com.example.chronometron.utils.onFormValueChange
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 class LoginScreen(
@@ -181,7 +184,9 @@ class LoginScreen(
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
-                            "or", style = MaterialTheme.typography.titleMedium
+                            "or",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         HorizontalDivider(
                             modifier = Modifier
@@ -244,48 +249,59 @@ class LoginScreen(
                     )
                 }
 
-                var areCredentialsValid by remember { mutableStateOf(true) }
-
+                var isLoading by remember { mutableStateOf(false) }
+                var showErrorMessage by remember { mutableStateOf(false) }
+                val scope = rememberCoroutineScope()
 
                 Column(verticalArrangement = Arrangement.spacedBy(0.dp)) {
-                    if (!areCredentialsValid) {
+                    if (showErrorMessage) {
                         Text(
                             "Incorrect Email or Password",
                             color = MaterialTheme.colorScheme.error,
                             modifier = Modifier.fillMaxWidth(),
-                            textAlign = TextAlign.Center
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.bodyMedium,
                         )
                     }
 
                     Button(
+                        enabled = !isLoading,
                         onClick = {
-//                            onLogin(
-//                                form.email.state.value!!,
-//                                form.password.state.value!!
-//                            )
+                            isLoading = true
+
                             form.validate(true)
 
                             if (form.isValid) {
-                                areCredentialsValid = CredentialsManager.validateCredential(
+                                signIn(
                                     email = form.email.state.value!!,
-                                    password = form.password.state.value!!
+                                    password = form.password.state.value!!,
+                                    navigator = navigator,
+                                    showErrorMessage = {
+                                        showErrorMessage = true
+                                    }
                                 )
-
-                                if (areCredentialsValid) {
-                                    Toast.makeText(
-                                        context,
-                                        "Log In Successful",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    navigator.push(LandingScreen())
-                                }
                             }
 
+                            scope.launch {
+                                delay(750)
+                                isLoading = false
+                            }
                         },
 //                        onClick = { navigator.push(LandingScreen()) },
                         modifier = Modifier
                             .fillMaxWidth(),
                     ) {
+
+                        if (isLoading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(20.dp),
+                                strokeWidth = 2.dp,
+                                color = MaterialTheme.colorScheme.secondary,
+                                trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                            )
+                            Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                        }
+
                         Text("Login")
                     }
 

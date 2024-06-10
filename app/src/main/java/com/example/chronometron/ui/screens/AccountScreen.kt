@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -25,6 +26,8 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -37,9 +40,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -50,12 +55,15 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import com.example.chronometron.CredentialsManager
+import com.example.chronometron.Firebase.Authentication.createAccount
+import com.example.chronometron.Firebase.Authentication.resetPassword
 import com.example.chronometron.R
-import com.example.chronometron.forms.SignUpForm
+import com.example.chronometron.forms.AccountManagementForm
 import com.example.chronometron.ui.composables.formFields.TextField
 import com.example.chronometron.utils.onFormValueChange
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 enum class Mode {
@@ -71,7 +79,7 @@ data class AccountScreen(
     override fun Content() {
         val context = LocalContext.current
         val navigator = LocalNavigator.currentOrThrow
-        val form = SignUpForm()
+        val form = AccountManagementForm(mode)
 
         Scaffold(
             topBar = {
@@ -103,7 +111,9 @@ data class AccountScreen(
                         .padding(it)
                         .verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.SpaceAround
+                    verticalArrangement =
+                    if (mode == Mode.SignUp) Arrangement.SpaceAround
+                    else Arrangement.spacedBy(15.dp)
                 )
                 {
                     Column(
@@ -136,118 +146,150 @@ data class AccountScreen(
                         )
 
                         var passwordVisible by remember { mutableStateOf(false) }
-                        TextField(
-                            value = form.password.state.value,
-                            label = if (mode == Mode.SignUp) "Password" else "New Password",
-                            isRequired = true,
-                            onChange = { value ->
-                                onFormValueChange(
-                                    value = value,
-                                    form = form,
-                                    fieldState = form.password
-                                )
-                            },
-                            hasError = form.password.hasError(),
-                            errorText = form.password.errorText,
-                            placeholderText = "Password",
-                            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                            trailingIcon = {
-                                val image = if (passwordVisible)
-                                    Icons.Filled.Visibility
-                                else Icons.Filled.VisibilityOff
 
-                                // Please provide localized description for accessibility services
-                                val description =
-                                    if (passwordVisible) "Hide password" else "Show password"
+                        if (mode == Mode.SignUp) {
+                            TextField(
+                                value = form.password.state.value,
+                                label = "Password",
+                                isRequired = true,
+                                onChange = { value ->
+                                    onFormValueChange(
+                                        value = value,
+                                        form = form,
+                                        fieldState = form.password
+                                    )
+                                },
+                                hasError = form.password.hasError(),
+                                errorText = form.password.errorText,
+                                placeholderText = "Password",
+                                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                                trailingIcon = {
+                                    val image = if (passwordVisible)
+                                        Icons.Filled.Visibility
+                                    else Icons.Filled.VisibilityOff
 
-                                IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                                    Icon(imageVector = image, description)
+                                    // Please provide localized description for accessibility services
+                                    val description =
+                                        if (passwordVisible) "Hide password" else "Show password"
+
+                                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                        Icon(imageVector = image, description)
+                                    }
                                 }
-                            }
-                        )
+                            )
 
-                        TextField(
-                            value = form.passwordConfirmation.state.value,
-                            label = "Confirm Password",
-                            isRequired = true,
-                            onChange = { value ->
-                                onFormValueChange(
-                                    value = value,
-                                    form = form,
-                                    fieldState = form.passwordConfirmation
-                                )
-                            },
-                            hasError = form.passwordConfirmation.hasError(),
-                            errorText = form.passwordConfirmation.errorText,
-                            placeholderText = "Password",
-                            visualTransformation =
-                            if (passwordVisible) VisualTransformation.None
-                            else PasswordVisualTransformation(),
-                            trailingIcon = {
-                                val image = if (passwordVisible)
-                                    Icons.Filled.Visibility
-                                else Icons.Filled.VisibilityOff
+                            TextField(
+                                value = form.passwordConfirmation.state.value,
+                                label = "Confirm Password",
+                                isRequired = true,
+                                onChange = { value ->
+                                    onFormValueChange(
+                                        value = value,
+                                        form = form,
+                                        fieldState = form.passwordConfirmation
+                                    )
+                                },
+                                hasError = form.passwordConfirmation.hasError(),
+                                errorText = form.passwordConfirmation.errorText,
+                                placeholderText = "Password",
+                                visualTransformation =
+                                if (passwordVisible) VisualTransformation.None
+                                else PasswordVisualTransformation(),
+                                trailingIcon = {
+                                    val image = if (passwordVisible)
+                                        Icons.Filled.Visibility
+                                    else Icons.Filled.VisibilityOff
 
-                                // Please provide localized description for accessibility services
-                                val description =
-                                    if (passwordVisible) "Hide password" else "Show password"
+                                    // Please provide localized description for accessibility services
+                                    val description =
+                                        if (passwordVisible) "Hide password" else "Show password"
 
-                                IconButton(onClick = {
-                                    passwordVisible = !passwordVisible
-                                }) {
-                                    Icon(imageVector = image, description)
+                                    IconButton(onClick = {
+                                        passwordVisible = !passwordVisible
+                                    }) {
+                                        Icon(imageVector = image, description)
+                                    }
                                 }
-                            }
-                        )
-
+                            )
+                        }
 
                     }
 
-
                     Spacer(Modifier.height(20.dp))
 
-                    var actionWasSuccessful by remember { mutableStateOf(true) }
+                    var isLoading by remember { mutableStateOf(false) }
+                    var showErrorMessage by remember { mutableStateOf(false) }
+                    var showSuccessMessage by remember { mutableStateOf(false) }
+                    val scope = rememberCoroutineScope()
+
                     Column {
-                        if (!actionWasSuccessful) {
+                        if (showErrorMessage) {
                             Text(
                                 "Something went wrong, please try again",
                                 color = MaterialTheme.colorScheme.error,
-                                textAlign = TextAlign.Center
+                                modifier = Modifier.fillMaxWidth(),
+                                textAlign = TextAlign.Center,
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
+                        } else if (showSuccessMessage) {
+                            Text(
+                                "Password reset email sent!",
+                                color = Color.Green,
+                                modifier = Modifier.fillMaxWidth(),
+                                textAlign = TextAlign.Center,
+                                style = MaterialTheme.typography.bodyMedium,
                             )
                         }
 
                         Button(
+                            enabled = !isLoading,
                             onClick = {
-                                form.validate(true)
-                                if (form.isValid) {
+                                isLoading = true
 
+                                form.validate(true)
+
+                                if (form.isValid) {
                                     if (mode == Mode.SignUp) {
-                                        CredentialsManager.addCredentials(
+                                        createAccount(
                                             email = form.email.state.value!!,
-                                            password = form.password.state.value!!
+                                            password = form.password.state.value!!,
+                                            navigator = navigator,
+                                            showErrorMessage = {
+                                                showErrorMessage = true
+                                            }
                                         )
                                     } else {
-                                        actionWasSuccessful = CredentialsManager.updateCredentials(
+                                        resetPassword(
                                             email = form.email.state.value!!,
-                                            password = form.password.state.value!!
+                                            navigator = navigator,
+                                            showErrorMessage = {
+                                                showErrorMessage = true
+                                            },
+                                            showSuccessMessage = {
+                                                showSuccessMessage = true
+                                            }
                                         )
                                     }
+                                }
 
-                                    if (actionWasSuccessful) {
-                                        Toast.makeText(
-                                            context,
-                                            if (mode == Mode.SignUp) "Sign Up Successful"
-                                            else "Password Reset Successful",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                        navigator.pop()
-                                    }
-//                                    navigator.push(LandingScreen())
+                                scope.launch {
+                                    delay(750)
+                                    isLoading = false
                                 }
 
                             },
                             modifier = Modifier.fillMaxWidth()
                         ) {
+                            if (isLoading) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(20.dp),
+                                    strokeWidth = 2.dp,
+                                    color = MaterialTheme.colorScheme.secondary,
+                                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                                )
+                                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                            }
+
                             Text(if (mode == Mode.SignUp) "Sign Up" else "Reset Password")
                         }
 
@@ -260,35 +302,5 @@ data class AccountScreen(
                     }
                 }
             })
-    }
-}
-
-
-/**
- * Function to handle user creation
- * It includes navigation to the main screen upon successful signup.
- */
-fun createUser(
-    email: String,
-    password: String,
-    auth: FirebaseAuth,
-    context: android.content.Context,
-//    navController: NavController
-) {
-    if (email.isNotEmpty() && password.isNotEmpty()) {
-        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                Toast.makeText(context, "Signup successful! Please log in.", Toast.LENGTH_SHORT)
-                    .show()
-//                navController.navigate("loginScreen")  // Navigate to login screen upon success
-            } else {
-                task.exception?.message?.let { errorMessage ->
-                    Toast.makeText(context, "Signup failed: $errorMessage", Toast.LENGTH_LONG)
-                        .show()
-                }
-            }
-        }
-    } else {
-        Toast.makeText(context, "Email and password cannot be empty", Toast.LENGTH_SHORT).show()
     }
 }

@@ -144,6 +144,17 @@ dependencies {
 
     // Reveal Swipe
     implementation(libs.revealswipe)
+
+    // Firebase auth
+//    implementation("com.firebaseui:firebase-ui-auth:7.2.0")
+
+
+    // Import the BoM for the Firebase platform
+    implementation(platform(libs.google.firebase.bom))
+
+    // Add the dependency for the Firebase Authentication library
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation(libs.google.firebase.auth)
 }
 
 //kapt {

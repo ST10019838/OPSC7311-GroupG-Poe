@@ -12,31 +12,20 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Column
-import androidx.compose.material.Button
-import androidx.compose.material.Text
 import androidx.compose.runtime.getValue
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import cafe.adriel.voyager.navigator.tab.TabNavigator
-import com.chargemap.compose.numberpicker.FullHours
-import com.example.chronometron.api.addCategory
-import com.example.chronometron.api.archiveEntry
-import com.example.chronometron.api.removeCategory
-import com.example.chronometron.api.toggleDarkMode
-import com.example.chronometron.api.unarchiveEntry
-import com.example.chronometron.api.updateMaximumGoal
-import com.example.chronometron.api.updateMinimumGoal
-import com.example.chronometron.api.updateTimeEntry
-import com.example.chronometron.types.Category
-import com.example.chronometron.types.TimeEntry
-import com.example.chronometron.ui.composables.ScreenLayout
-import com.example.chronometron.ui.tabs.TimeEntriesTab
+import cafe.adriel.voyager.navigator.Navigator
+import cafe.adriel.voyager.transitions.SlideTransition
+import com.example.chronometron.Firebase.Authentication.auth
+import com.example.chronometron.Firebase.Authentication.signOut
+import com.example.chronometron.ui.screens.LandingScreen
+import com.example.chronometron.ui.screens.LoginScreen
 import com.example.chronometron.ui.theme.ChronoMetronTheme
 import com.example.chronometron.ui.viewModels.SessionState
-import java.util.Date
-import java.util.UUID
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 
 //@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -82,23 +71,40 @@ class MainActivity : ComponentActivity() {
             )
         }
 
+        auth = Firebase.auth
+
+//        signOut()
+//        Firebase.auth.signOut()
+
 
         setContent {
             val isDarkMode by SessionState.isDarkMode.collectAsStateWithLifecycle()
 
             ChronoMetronTheme(darkTheme = isDarkMode) {
-                TabNavigator(TimeEntriesTab) { tabNavigator ->
-                    ScreenLayout(tabNavigator)
-                }
-
-//                Navigator(LoginScreen(
-////                    onLogin = { email, password -> signInWithEmail(email, password) },
-////                    onGoogleSignIn = { signInWithGoogle() },
-////                    onGithubSignIn = { /* Implement GitHub login if necessary */ },
-////                    onSignUp = { /* navController.navigate("signupScreen") */}
-//                )){
-//                    SlideTransition(it)
+//                TabNavigator(TimeEntriesTab) { tabNavigator ->
+//                    ScreenLayout(tabNavigator)
 //                }
+
+//                if (currentUser != null){
+//                    Text("USER NOT NULL " + currentUser.uid )
+//
+//                } else{
+//                    Text("USEr NULL")
+//                }
+
+                Navigator(
+                    if (auth.currentUser != null)
+                        LandingScreen()
+                    else
+                        LoginScreen(
+//                    onLogin = { email, password -> signInWithEmail(email, password) },
+//                    onGoogleSignIn = { signInWithGoogle() },
+//                    onGithubSignIn = { /* Implement GitHub login if necessary */ },
+//                    onSignUp = { /* navController.navigate("signupScreen") */}
+                        )
+                ) {
+                    SlideTransition(it)
+                }
             }
         }
     }
