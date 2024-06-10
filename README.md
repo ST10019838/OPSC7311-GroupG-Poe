@@ -4,6 +4,7 @@
 
 ChronoMetron is an advanced time management application designed for Android, meticulously developed to enhance user productivity and time tracking. Developed as part of a group assignment for OPSC7311, this application integrates a variety of features to cater to comprehensive time management needs.
 
+
 ### Key Features
 
 - **User Authentication:** Secure login with options to authenticate via Google or via the defined user/password
@@ -13,6 +14,21 @@ ChronoMetron is an advanced time management application designed for Android, me
 - **Detailed Reporting:** View and filter timesheet entries over selectable periods and access detailed analytics on time spent across categories.
 - **User-Friendly Interface:** Intuitive UI that handles invalid inputs gracefully.
 
+
+### Unique Features
+- **Timesheet Entry Archiving:** You can archive your timesheet entries to hide them, reminisce about them later, or instead of deleting them (for hoarding purposes or fear that they might be needed later).
+- **Swipable Timesheet Entries:** Swipe a timesheet entry to the right or the left in order to reveal an action, allowing you to quickly and easily delete or archive that entry,
+- **Theme Toggler:** Can change the apps theme to light and dark mode.
+
+<br>
+
+### Note:
+The completed code for the app is on the main branch.
+
+The link for the main repository: https://github.com/ST10019838/OPSC7311-GroupG-Poe
+
+<br>
+
 ## Installation
 
 To run the ChronoMetron app, clone this repository and import the project into Android Studio. Ensure you have the latest version of Android Studio and the Kotlin plugin installed.
@@ -20,6 +36,8 @@ To run the ChronoMetron app, clone this repository and import the project into A
 ```bash
 git clone https://github.com/ST10019838/OPSC7311-GroupG-Poe
 ```
+
+<br>
 
 ## Usage
 - **Login/Register:** Securely log in or register a new account.
@@ -29,12 +47,29 @@ git clone https://github.com/ST10019838/OPSC7311-GroupG-Poe
 - **Set Goals:** Define your daily minimum and maximum work hours.
 - **View Reports:** Access detailed reports to monitor your productivity.
 
+<br>
+
 ## Demostration
-Refer to the demonstration video in the repository to see the app in action, showcasing all functionalities through a simulated environment.
+Refer to the demonstration videos in the repository to see the app in action, showcasing all functionalities through a simulated environment.
+
+For **basic features (Part 2)**, refer to: 
+> - GroupG_OPSC7311_POE_Part-2_DemonstrationVideo.mov
+
+<br>
+
+For **advanced features/improvements (Part 3)**, refer to:
+> - GroupG_OPSC7311_POE_Part-3_DemonstrationVideo.mov
+
+
+
+<br>
 
 ## Contributers - Group-G
 - Guillaume Swanevelder (ST10019972)
 - Damian Dare (ST10019838)
+
+
+<br>
 
 ## Dependencies
 
@@ -54,6 +89,9 @@ ChronoMetron relies on several libraries and tools for its functionality. Ensure
 - implementation(libs.androidx.material3)
 - implementation("androidx.compose.material:material-icons-extended:1.5.1")
 - implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
+- implementation(libs.ycharts)
+- implementation(libs.revealswipe)
+- implementation("com.chargemap.compose:numberpicker:1.0.3")
 
 ### CameraX for Image Capturing
 - val cameraxVersion = "1.3.0-rc01"
